@@ -1,0 +1,43 @@
+@font-face {
+  font-family: "Moderat";
+  src:
+  		// url("/fonts/KMRWaldenburg-Medium.woff2") format("woff2"),
+		// url("/fonts/KMRWaldenburg-Medium.woff") format("woff"),
+		url("/fonts/Moderat-Trial-Extended-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Moderat";
+  src:
+  		// url("/fonts/KMRWaldenburg-Medium.woff2") format("woff2"),
+		// url("/fonts/KMRWaldenburg-Medium.woff") format("woff"),
+		url("/fonts/Moderat-Trial-Extended-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Typography */
+html {
+	font-size: clamp(12px, calc(10px + 0.2646vw), 16px);
+	// font-size: clamp(12px, 12px, 16px);
+}
+.md {
+	&,
+	&-12,
+	&-24,
+	&-36, {
+		font-family: "Moderat", Helvetica, Arial, sans-serif;
+		font-weight: 400;
+		font-style: normal;
+	}
+
+	&-12		{ font-size: 1rem; letter-spacing: 0em; line-height: 1.1;}
+	&-24		{ font-size: 2rem; letter-spacing: 0em; line-height: 1.1;}
+	&-36		{ font-size: 3rem; letter-spacing: 0em; line-height: 1.1;}
+
+	@media screen and (max-width: 1080px) {
+		&-12-mb	{ font-size: 1rem; letter-spacing: .01em; line-height: 1.2; }
+	}
+}
+.uppercase		{ text-transform: uppercase; }

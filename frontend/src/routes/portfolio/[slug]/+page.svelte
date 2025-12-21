@@ -1,0 +1,164 @@
+<script>
+    import Media from '$lib/components/media/Media.svelte';
+    import Related from '$lib/components/Related.svelte';
+    import PortableTextStyleProject from '$lib/components/portableTextStyles/portableTextStyleProject.svelte';
+	import {PortableText} from '@portabletext/svelte'
+	let { data } = $props()
+	const project = data.project[0]
+	$inspect(data)
+
+	function getGutter(size) {
+		if (size == 'xs') {
+			return '.416rem'
+		}
+		if (size == 's') {
+			return '.833rem'
+		}
+		if (size == 'm') {
+			return '1.25rem'
+		}
+		if (size == 'l') {
+			return '2.5rem'
+		}
+		if (size == 'xl') {
+			return '5rem'
+		}
+	}
+</script>
+<main>
+	<section id="wide">
+		<Media media={project.wide} />
+	</section>
+	<section id="info" class="md-24">
+		<div class="md-36">
+			<h1>{project.title}</h1>
+			{#if project.subtitle}<h2>{project.subtitle}</h2>{/if}
+		</div>
+		<div>
+			<p><span>Year</span><span>{new Date(project.date).getFullYear()}</span></p>
+			{#if project.client}<p><span>Client</span><span>{project.client.title}</span></p>{/if}
+			{#if project.category}<p><span>Category</span><span>{project.category.title}</span></p>{/if}
+		</div>
+	</section>
+	<section id="media" class="md-24">
+		{#each project.media as block, i}
+			{#if block._type == "mediaText"}
+				<div class="mediaText portableText {block.alignment ? block.alignment : 'left'}">
+					<PortableText value={block.text}
+					components={{
+						block: {
+							normal: PortableTextStyleProject,
+						},
+						listItem: PortableTextStyleProject,
+						marks: {
+							link: PortableTextStyleProject,
+						},
+					}}/>
+				</div>
+			{:else if block._type == "mediaGrid"}
+				<div class="mediaGrid {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
+				style="--cols: {block.items.length};">
+					{#each block.items as item, i}
+						<Media media={item} />
+					{/each}
+				</div>
+			{:else if block._type == "mediaCentered"}
+				<div class="mediaCentered {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'}"
+				style="--cols: {block.items.length};">
+					{#each block.items as item, i}
+						<Media media={item} customWidthActive={true}/>
+					{/each}
+				</div>
+			{:else if block._type == "mediaFull"}
+				<div class="mediaFull {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'}"
+				style="--cols: {block.items.length};">
+					{#each block.items as item, i}
+						<Media media={item} />
+					{/each}
+				</div>
+			{:else}
+				<span style="grid-column: 1 / span 12">Missing block type</span>
+			{/if}
+		{/each}
+	</section>
+	{#if project.related}
+		<Related related={project.related} title={"Progetti correlati"}/>
+	{/if}
+</main>
+
+<style>
+	main {		
+		#wide {
+			width: 100%;
+			height: 100vh;
+		}
+		#info {
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			column-gap: var(--gutter);
+			padding: var(--sp-m);
+
+			div:nth-child(1) {
+				grid-column: 1 / span 6;
+			}
+			div:nth-child(2) {
+				grid-column: 7 / span 6;
+			}
+		}
+		#media {
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			column-gap: var(--gutter);
+			padding: var(--sp-m);
+			
+			.mediaText {
+				&.left {
+					grid-column: 1 / span 6;
+				}
+				&.right {
+					grid-column: 7 / span 6;
+				}
+			}
+
+			.mediaGrid {
+				grid-column: 1 / span 12;
+				display: grid;
+				grid-template-columns: repeat(var(--cols), 1fr);
+
+				&.sp-zero { column-gap: 0;}
+				&.sp-xs { column-gap: var(--sp-xs);}
+				&.sp-s { column-gap: var(--gutter);}
+				&.sp-m { column-gap: var(--sp-s);}
+				&.sp-l { column-gap: var(--sp-m);}
+				&.sp-xl { column-gap: var(--sp-l);}
+				&.sp-xxl { column-gap: var(--sp-xl);}
+
+				&.left { grid-column: 1 / span 6; }
+				&.right { grid-column: 7 / span 6; }
+				&.center { grid-column: 4 / span 6; }
+			}
+
+			.mediaCentered {
+				grid-column: 1 / span 12;
+				display: grid;
+				grid-template-columns: repeat(var(--cols), 1fr);
+				margin: 0 calc(var(--sp-m)*-1);
+			}
+
+			.mediaFull {
+				grid-column: 1 / span 12;
+				display: grid;
+				grid-template-columns: repeat(var(--cols), 1fr);
+				margin: 0 calc(var(--sp-m)*-1);
+			}
+
+			*.mt-zero {margin-top: 0;}
+			*.mt-xs {margin-top: var(--sp-xs);}
+			*.mt-s {margin-top: var(--sp-s);}
+			*.mt-m {margin-top: var(--sp-m);}
+			*.mt-l {margin-top: var(--sp-l);}
+			*.mt-xl {margin-top: var(--sp-xl);}
+			*.mt-xxl {margin-top: var(--sp-xxl);}
+		}
+	}
+</style>

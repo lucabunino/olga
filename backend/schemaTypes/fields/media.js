@@ -1,0 +1,90 @@
+export function media(name, customWidth = false) {
+	let fields = [
+		{
+			name: 'type',
+			type: 'string',
+			options: {
+				list: [
+				{ title: 'Image', value: 'image' },
+				{ title: 'GIF (multiple images)', value: 'gif' },
+				{ title: 'Video (mp4 + cover)', value: 'video' },
+				],
+			},
+			initialValue: 'image',
+			validation: Rule => Rule.required(),
+		},
+		{
+			name: 'customWidth',
+			title: "Custom width (% of container's width)",
+			type: 'number',
+			hidden: () => !customWidth,
+			validation: Rule => Rule.min(1).max(100).error('Width must be between 1 and 100'),
+		},
+		{
+			name: 'image',
+			title: 'Image',
+			type: 'image',
+			hidden: ({ parent }) => parent?.type !== 'image',
+			validation: Rule =>
+				Rule.custom((value, context) =>
+				context.parent.type === 'image' && !value
+					? 'Image is required'
+					: true
+				)
+		},
+		{
+			name: 'gifFrames',
+			title: 'GIF Frames',
+			type: 'array',
+			of: [{ type: 'image' }],
+			hidden: ({ parent }) => parent?.type !== 'gif',
+			validation: Rule =>
+			Rule.custom((value, context) =>
+			context.parent.type === 'gif' && (!value || value.length < 2)
+				? 'At least 2 images are required for a GIF'
+				: true
+			)
+		},
+		{
+			name: 'gifInterval',
+			title: 'GIF Interval (ms)',
+			description: 'Sets the interval between each image. If not set, default is 500ms',
+			type: 'number',
+			hidden: ({ parent }) => parent?.type !== 'gif',
+		},
+		{
+			name: 'video',
+			title: 'Video File (.mp4)',
+			type: 'file',
+			options: {
+				accept: 'video/mp4',
+				storeOriginalFilename: true,
+			},
+			hidden: ({ parent }) => parent?.type !== 'video',
+			validation: Rule =>
+				Rule.custom((value, context) =>
+				context.parent.type === 'video' && !value
+					? 'MP4 file is required'
+					: true
+				)
+		},
+		{
+			name: 'videoCover',
+			title: 'Video Cover Image',
+			type: 'image',
+			hidden: ({ parent }) => parent?.type !== 'video',
+			validation: Rule =>
+				Rule.custom((value, context) =>
+				context.parent.type === 'video' && !value
+					? 'Cover image is required'
+					: true
+				)
+		},
+	]
+
+	return {
+		name: name,
+		type: 'object',
+		fields,
+	}
+}
