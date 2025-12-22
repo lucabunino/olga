@@ -29,21 +29,21 @@
 	<section id="wide">
 		<Media media={project.wide} />
 	</section>
-	<section id="info" class="md-24">
-		<div class="md-36">
+	<section id="info" class="md-24 md-20-mb">
+		<div class="md-36 md-26-mb">
 			<h1>{project.title}</h1>
 			{#if project.subtitle}<h2>{project.subtitle}</h2>{/if}
 		</div>
 		<div>
-			<p><span>Year</span><span>{new Date(project.date).getFullYear()}</span></p>
-			{#if project.client}<p><span>Client</span><span>{project.client.title}</span></p>{/if}
-			{#if project.category}<p><span>Category</span><span>{project.category.title}</span></p>{/if}
+			<p><label>Year</label><span>{new Date(project.date).getFullYear()}</span></p>
+			{#if project.client}<p><label>Client</label><span>{project.client.title}</span></p>{/if}
+			{#if project.category}<p><label>Category</label><span>{project.category.title}</span></p>{/if}
 		</div>
 	</section>
-	<section id="media" class="md-24">
+	<section id="media" class="md-24 md-16-mb">
 		{#each project.media as block, i}
 			{#if block._type == "mediaText"}
-				<div class="mediaText portableText {block.alignment ? block.alignment : 'left'}">
+				<div class="mediaText portableText {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment ? block.alignment : 'left'}">
 					<PortableText value={block.text}
 					components={{
 						block: {
@@ -91,32 +91,66 @@
 		#wide {
 			width: 100%;
 			height: 100vh;
+
+			@media screen and (max-width: 768px) {
+				height: 80vh;
+			}
 		}
 		#info {
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
-			padding: var(--sp-m);
+			row-gap: var(--sp-m);
+			padding: var(--sp-m) var(--sp-m) 0;
 
 			div:nth-child(1) {
 				grid-column: 1 / span 6;
+
+				@media screen and (max-width: 768px) {
+					grid-column: 1 / span 12;
+				}
 			}
 			div:nth-child(2) {
 				grid-column: 7 / span 6;
+
+				p {
+					display: grid;
+					grid-template-columns: repeat(6, 1fr);
+					column-gap: var(--gutter);
+
+					label {
+						grid-column: 1 / span 2;
+					}
+					span {
+						grid-column: 3 / span 4;
+					}
+				}
+
+				@media screen and (max-width: 768px) {
+					grid-column: 1 / span 12;
+				}
 			}
 		}
 		#media {
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
-			padding: var(--sp-m);
+			padding: 0 var(--sp-m) var(--sp-m);
 			
 			.mediaText {
 				&.left {
 					grid-column: 1 / span 6;
+
+					@media screen and (max-width: 768px) {
+						grid-column: 1 / span 12;
+					}
 				}
 				&.right {
 					grid-column: 7 / span 6;
+
+					@media screen and (max-width: 768px) {
+						grid-column: 1 / span 12;
+					}
 				}
 			}
 
@@ -124,6 +158,11 @@
 				grid-column: 1 / span 12;
 				display: grid;
 				grid-template-columns: repeat(var(--cols), 1fr);
+
+				@media screen and (max-width: 768px) {
+					grid-template-columns: 1fr;
+					row-gap: var(--sp-s);
+				}
 
 				&.sp-zero { column-gap: 0;}
 				&.sp-xs { column-gap: var(--sp-xs);}

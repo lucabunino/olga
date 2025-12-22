@@ -1,9 +1,8 @@
 
 <script>
     import { browser } from "$app/environment";
-    import Image from "./Image.svelte";
     import { urlFor } from "$lib/utils/image";
-    let { frames, interval = 500 } = $props()
+    let { frames, interval = 500, minHeight = undefined } = $props()
 	let activeFrame = $state(0)
 	$effect(() => {
 		if (browser) {
@@ -20,9 +19,9 @@
 
 {#each frames as frame, i}
 		<div class="wrapper" style="z-index: {i == activeFrame ? 2 : 0};">
-			<!-- <Image image={frames[activeFrame]}/> -->
 			<figure>
 				<img
+					style="min-height: {minHeight}px"
 					alt="To be done"
 					loading="lazy"
 					decoding="async"

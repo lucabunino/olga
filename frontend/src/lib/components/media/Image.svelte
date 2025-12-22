@@ -1,10 +1,11 @@
 <script>
 import { urlFor } from "$lib/utils/image";
-let { image } = $props();
+let { image, minHeight = undefined } = $props();
 </script>
 
 <figure>
 	<img
+		style="min-height: {minHeight}px"
 		alt="To be done"
 		loading="lazy"
 		decoding="async"

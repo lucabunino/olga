@@ -32,7 +32,7 @@
 			{/if}
 			{#if info.email || info.vat}
 				<div>
-					{#if info.email}<p>{info.email}</p>{/if}
+					{#if info.email}<p><a href="mailto:{info.email}">{info.email}</a></p>{/if}
 					{#if info.vat}<p>P.IVA {info.vat}</p>{/if}
 				</div>
 			{/if}
@@ -93,15 +93,61 @@ footer {
 	}
 
 	#title {
-		font-size: 15vw;
+		font-size: clamp(60px, 15vw, 400px);
 		font-weight: 500;
+		line-height: 1;
 		letter-spacing: -.01em;
 		display: flex;
 		justify-content: space-between;
-		margin-top: 12vw;
+		margin-top: clamp(60px, 12vw, 400px);
 
 		.typewriter {
 			display: inline-flex;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		padding: var(--sp-s) var(--margin-mb);
+
+		#contacts {
+			display: flex;
+			flex-direction: column;
+			row-gap: var(--sp-m);
+
+			>div:nth-child(1) {
+				grid-template-columns: repeat(6, 1fr);
+				column-gap: var(--gutter);
+				grid-auto-flow: dense;
+				row-gap: var(--sp-m);
+
+				div:nth-child(1),
+				div:nth-child(2) {
+					grid-column: 1 / span 4;
+
+					@media screen and (max-width: 300px) {
+						grid-column: 1 / span 6;
+					}
+				}
+				div:nth-child(3) {
+					grid-column: 5 / span 2;
+
+					@media screen and (max-width: 300px) {
+						grid-column: 1 / span 6;
+					}
+				}
+			}
+			
+			>div:nth-child(2) {
+				margin-left: unset;
+			}
+		}
+
+		#title {
+			flex-direction: column;
+
+			.typewriter {
+				display: inline-flex;
+			}
 		}
 	}
 }

@@ -17,6 +17,7 @@ $colors: (
 	--transition-m: cubic-bezier(.77,0,.175,1) 800ms;
 	--transition-l: cubic-bezier(.77,0,.175,1) 1200ms;
 	--gutter: .833rem;
+	--margin-mb: .833rem;
 	--sp-xxl: 10rem;
 	--sp-xl: 7.5rem;
 	--sp-l: 5rem;
@@ -24,7 +25,8 @@ $colors: (
 	--sp-s: 1.25rem;
 	--sp-xs: 0.416rem;
 
-	@media screen and (max-width: 1080px) {
+	@media screen and (max-width: 768px) {
+		--gutter: .416rem;
 		--sp-xl: 10rem;
 		--sp-l: 5rem;
 		--sp-m: 2.5rem;
@@ -40,23 +42,6 @@ html {
 }
 main {
 	padding: var(--margin) 4rem;
-}
-
-// Visibility
-.hidden { display: none; }
-.invisible { opacity: 0; pointer-events: none; }
-
-.desktop-only { display: inherit; }
-.mobile-only, .mobile-s-only { display: none; }
-
-@media screen and (max-width: 1080px) {
-  .desktop-only { display: none; }
-  .mobile-only { display: inherit; }
-}
-
-@media screen and (max-width: 768px) {
-  .desktop-s-only { display: none; }
-  .mobile-s-only { display: inherit; }
 }
 
 // Buttons

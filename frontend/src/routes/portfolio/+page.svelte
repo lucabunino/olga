@@ -63,7 +63,7 @@
 	}
 </script>
 <main>
-	<section id="options" class="md-24">
+	<section id="options" class="md-24 md-20-mb">
 		<div>
 			<Filters categories={data.categories} />
 		</div>
@@ -95,11 +95,15 @@
 					<ProjectCover {project}/>
 				{/if}
 			{:else if portfolio.view == 'list'}
-				<a class="project {matchesSearch(project) ? undefined : 'hidden'}" href={project.slug.current} onmouseenter={() => activeProject = i}>
-					{#if project.date}<time class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date}>{new Date(project.date).getFullYear()}</time>{/if}
-					{#if project.client}<span class="client">{project.client.title}</span>{/if}
-					<span class="title">{project.title}</span>
-					<span class="category">{project.category.title}</span>
+				<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href={project.slug.current} onmouseenter={() => activeProject = i}>
+					<label for="year" class="md-12-mb">year</label>
+					{#if project.date}<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date}>{new Date(project.date).getFullYear()}</time>{/if}
+					<label for="client" class="md-12-mb">client</label>
+					{#if project.client}<span id="client" class="client">{project.client.title}</span>{/if}
+					<label for="title" class="md-12-mb">title</label>
+					<span id="title" class="title">{project.title}</span>
+					<label for="category" class="md-12-mb">category</label>
+					<span id="category" class="category">{project.category.title}</span>
 				</a>
 				{(() => {previousYear = new Date(project.date).getFullYear()})()}
 			{/if}
@@ -119,6 +123,11 @@
 		margin-top: 7rem;
 		min-height: calc(100vh - 7rem);
 
+		@media screen and (max-width: 768px) {
+			margin-top: 8rem;
+			min-height: calc(100svh - 8rem);
+		}
+
 		#options {
 			display: flex;
 			justify-content: space-between;
@@ -127,6 +136,10 @@
 			div:nth-child(1) {
 				display: flex;
 			}
+
+			@media screen and (max-width: 768px) {
+				padding: var(--sp-s) var(--margin-mb) 0;
+			}
 		}
 		.labels {
 			display: grid;
@@ -134,6 +147,10 @@
 			margin: var(--sp-l) var(--sp-m) 0;
 			gap: var(--gutter);
 			color: var(--gray-dark);
+
+			@media screen and (max-width: 768px) {
+				display: none;
+			}
 
 			.year {
 				grid-column: 1 / span 4;
@@ -151,39 +168,97 @@
 		#portfolio {
 			display: grid;
 			column-gap: var(--gutter);
+
 			&.grid {
 				margin: var(--sp-l) var(--sp-m);
-				grid-template-columns: repeat(4, 1fr);
+				grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+				row-gap: var(--sp-s);
+
+				@media screen and (max-width: 768px) {
+					margin: var(--sp-l) var(--margin-mb);
+					grid-template-columns: repeat(2, 1fr);
+				}
+
+				@media screen and (max-width: 320px) {
+					grid-template-columns: 1fr;
+				}
 			}
 			&.list {
 				margin: 0 var(--sp-m) var(--sp-l);
 				grid-template-columns: repeat(1, 1fr);
 				position: relative;
+
+				@media screen and (max-width: 768px) {
+					margin: var(--sp-l) var(--margin-mb) var(--sp-l);
+				}
 				
 				.project {
 					display: grid;
 					grid-template-columns: repeat(12, 1fr);
 					column-gap: var(--gutter);
 
+					@media screen and (max-width: 768px) {
+						padding-bottom: var(--sp-s);
+
+						& {
+							border-top: solid 1px var(--black);
+						}
+
+						&.hidden + .project:not(.hidden),
+						&:first-child:not(.hidden) {
+							border-top: none;
+						}
+					}
+
 					&.hidden {
 						display: none;
+					}
+
+					label {
+						display: none;
+
+						@media screen and (max-width: 768px) {
+							color: var(--gray-dark);
+							grid-column: 1 / span 12;
+							display: block;
+							margin-top: var(--sp-s);
+							margin-bottom: var(--sp-xs);
+						}
 					}
 
 					.year {
 						grid-column: 1 / span 1;
 
+						@media screen and (max-width: 768px) {
+							grid-column: 1 / span 12;
+						}
+
 						&.hidden {
-							display: none;
+							@media screen and (min-width: 769px) {
+								display: none;
+							}
 						}
 					}
 					.client {
 						grid-column: 5 / span 2;
+
+						@media screen and (max-width: 768px) {
+							grid-column: 1 / span 12;
+						}
 					}
 					.title {
 						grid-column: 7 / span 5;
+
+						@media screen and (max-width: 768px) {
+							grid-column: 1 / span 12;
+						}
 					}
 					.category {
 						grid-column: 12 / span 1;
+
+						@media screen and (max-width: 768px) {
+							grid-column: 1 / span 12;
+						}
 					}
 
 					&:hover {
@@ -198,6 +273,10 @@
 				top: 0;
 				aspect-ratio: 3/4;
 				z-index: -1;
+
+				@media screen and (max-width: 768px) {
+					display: none;
+				}
 
 				&.active {
 					z-index: 2;

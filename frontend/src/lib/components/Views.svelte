@@ -25,6 +25,7 @@
 		align-items: center;
 		column-gap: .6em;
 		width: calc((100% - var(--gutter)*2)/12);
+		min-width: fit-content;
 
 		.list {
 			width: 1.2em;

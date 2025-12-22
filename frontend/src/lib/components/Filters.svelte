@@ -171,6 +171,10 @@
 			overflow: hidden;
 			white-space: nowrap;
 
+			@media screen and (max-width: 768px) {
+				width: unset;
+			}
+
 			&:focus {
 				color: var(--black);
 				outline: none;
@@ -184,6 +188,10 @@
 			border: none;
 			padding: 0;
 			width: 300px;
+
+			@media screen and (max-width: 768px) {
+				width: unset;
+			}
 		}
 
 		.underline {
@@ -193,6 +201,10 @@
 			width: 300px;
 			height: 1px;
 			background: var(--black);
+
+			@media screen and (max-width: 768px) {
+				width: calc(100vw - var(--margin-mb)*2);
+			}
 		}
 	}
 </style>

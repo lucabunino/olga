@@ -3,6 +3,7 @@
 	import { Canvas } from '@threlte/core'
   	import Grid from '$lib/components/Grid.svelte'
     import { innerHeight, innerWidth } from 'svelte/reactivity/window';
+	// import Marquee from 'svelte-fast-marquee';
 
 	let { data } = $props()
 	$inspect(data)
@@ -11,31 +12,18 @@
 </script>
 
 <main>
+	<!-- {#if data.homepage.marquee}
+		<Marquee speed=100>
+			<p id="marquee" class="md-12">
+				{#if data.homepage.marqueeHref}
+					<a href={data.homepage.marqueeHref} target={data.homepage.marqueeExternal ? '_blank' : undefined}>{data.homepage.marquee}</a>
+				{:else}
+					{data.homepage.marqueeHref}
+				{/if}
+			</p>
+		</Marquee>
+	{/if} -->
 	<section id="images" style="--cursor: {cursor ? cursor : 'grab'}">
-		{#each data.homepage?.images as image, i}
-			<!-- <a href="portfolio/{image.project.slug.current}">
-				<figure>
-					<img
-						alt={image.project.title ?? ""}
-						loading="lazy"
-						decoding="async"
-						width={image.cover.asset.metadata.dimensions.width}
-						height={image.cover.asset.metadata.dimensions.height}
-						src={urlFor(image.cover).width(800)}
-						srcset={`
-							${urlFor(image.cover).width(320)} 320w,
-							${urlFor(image.cover).width(480)} 480w,
-							${urlFor(image.cover).width(768)} 768w,
-							${urlFor(image.cover).width(1024)} 1024w,
-							${urlFor(image.cover).width(1600)} 1600w
-						`}
-						sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-					/>
-				</figure>
-			</a> -->
-			<!-- {$inspect(urlFor(image.cover))} -->
-		{/each}
-
 		<Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
 			<Grid images={data.homepage.images} bind:cursor={cursor}/>
 		</Canvas>
@@ -43,6 +31,9 @@
 </main>
 
 <style>
+#marquee {
+	background-color: var(--yellow);
+}
 #images {
 	width: 100vw;
 	height: 100vh;

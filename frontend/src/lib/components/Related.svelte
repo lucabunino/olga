@@ -1,61 +1,87 @@
 <script>
-	import ProjectCover from "./ProjectCover.svelte";
-	import { gsap } from "gsap";
-	import { Draggable } from "gsap/Draggable";
-	import { InertiaPlugin } from "gsap/InertiaPlugin";
-	import { horizontalLoop } from "$lib/utils/gsap"
-	gsap.registerPlugin(Draggable, InertiaPlugin);
+    import ProjectCover from "./ProjectCover.svelte";
+    import { gsap } from "gsap";
+    import { Draggable } from "gsap/Draggable";
+    import { InertiaPlugin } from "gsap/InertiaPlugin";
+    import { horizontalLoop } from "$lib/utils/gsap"
+    import { innerWidth } from "svelte/reactivity/window";
+    gsap.registerPlugin(Draggable, InertiaPlugin);
 
-	let { related, title } = $props();
-	let track = $state(undefined)
+    let { related, title } = $props();
+    let track = $state(undefined);
 
-	let isDynamic = $derived(related?.length >= 5 ? true : false)
+    let isDynamic = $derived.by(() => {
+        if (!related?.length) return false;
+        if (innerWidth.current < 640) return related.length >= 3;
+        if (innerWidth.current < 1024) return related.length >= 4;
+        return related.length >= 5;
+    });
 
-	
-	$effect(() => {
-		if (track && isDynamic) {
-			const projects = gsap.utils.toArray(".project");
+    let displayProjects = $derived.by(() => {
+        if (!related?.length) return [];
+        if (!isDynamic) return related;
+       
+        const multiplier = related.length < 6 ? 3 : 2;
+        return Array.from({ length: multiplier }, () => related).flat();
+    });
 
-			let activeElement;
+    $effect(() => {
+        if (track && isDynamic && displayProjects.length > 0) {
+            const projects = gsap.utils.toArray(".project");
 
-			const loop = horizontalLoop(projects, {
-				paused: false, 
-				draggable: true,
-				center: false,
-				speed: .5,
-				wheel: true,
-  				wheelSpeed: 1.2,
-				onChange: (element, index) => { // when the active element changes, this function gets called.
-					activeElement && activeElement.classList.remove("active");
-					element.classList.add("active");
-					activeElement = element;
-				}
-			});
+            let activeElement;
 
-			projects.forEach((box, i) => box.addEventListener("click", () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"})));
-		}
-	});
+            const loop = horizontalLoop(projects, {
+                paused: false, 
+                draggable: true,
+                center: false,
+                speed: .5,
+                wheel: true,
+                wheelSpeed: 1.2,
+                onChange: (element, index) => {
+                    activeElement?.classList.remove("active");
+                    element.classList.add("active");
+                    activeElement = element;
+                }
+            });
+
+            const clickHandlers = projects.map((box, i) => {
+                const handler = () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"});
+                box.addEventListener("click", handler);
+                return { box, handler };
+            });
+
+            return () => {
+                clickHandlers.forEach(({ box, handler }) => box.removeEventListener("click", handler));
+                loop.kill();
+            };
+        }
+    });
 </script>
 
 <section id="related">
-	{#if title}
-		<h3 class="md-36">{title}</h3>
-	{/if}
-	<div class="marquee">
-		<div class="track {isDynamic ? 'dynamic' : 'static'}" bind:this={track}>
-			{#each related as project}
-				<div class="project">
-					<ProjectCover {project} />
-				</div>
-			{/each}
-		</div>
-	</div>
+    {#if title}
+        <h3 class="md-36 md-26-mb">{title}</h3>
+    {/if}
+    <div class="marquee">
+        <div class="track {isDynamic ? 'dynamic' : 'static'}" bind:this={track}>
+            {#each displayProjects as project, i}
+                <div class="project">
+                    <ProjectCover {project} />
+                </div>
+            {/each}
+        </div>
+    </div>
 </section>
 
 <style>
 	#related {
 		h3 {
 			padding: var(--sp-l) var(--sp-m) var(--sp-s);
+
+			@media screen and (max-width: 768px) {
+				padding: var(--sp-l) var(--margin-mb) var(--sp-s);
+			}
 		}
 		.marquee {
 			margin-bottom: var(--sp-l);
@@ -73,19 +99,24 @@
 				position: absolute;
 				top: 0;
 				left: 0;
-				width: 100%;
 				height: 100%;
 				display: flex;
 				justify-content: flex-start;
+				will-change: transform;
 
 				&.static {
+					width: 100%;
 					padding: 0 var(--sp-m);
+
+					@media screen and (max-width: 768px) {
+						padding: 0 var(--margin-mb);
+					}
 				}
 
 				.project {
 					flex-shrink: 0;
 					width: 18vw;
-					min-width: 200px;
+					min-width: 150px;
 					max-width: 400px;
 					padding-right: var(--gutter);
 				}

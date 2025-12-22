@@ -3,7 +3,7 @@
     let {project} = $props()
 </script>
 
-<a href="portfolio/{project.slug.current}">
+<a href="/portfolio/{project.slug.current}">
 	<div class="media-wrapper">
 		<Media media={project.cover} customWidthActive={false} />
 	</div>
