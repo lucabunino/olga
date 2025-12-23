@@ -68,5 +68,13 @@ export default {
 				]
 			}]
 		},
+		{
+			name: 'footerLoop',
+			type: 'array',
+			of: [{
+				name: 'word',
+				type: 'string',
+			}]
+		},
 	],
 };

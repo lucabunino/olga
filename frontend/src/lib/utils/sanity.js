@@ -13,30 +13,48 @@ export const client = createClient({
 });
 
 const media = `
-	type,
-	customWidth,
-	image {
-		asset->{
-			_ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
-		},
-	},
-	gifFrames[] {
-		asset->{
-			_ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
-		},
-	},
-	gifInterval,
-	"info": asset->{
-		title, description, altText, metadata {dimensions, lqip}
-	},
-	video {
-		asset-> { url }
-	},
-	videoCover {
-		asset->{
-			_ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
-		},
-	},
+    type,
+    customWidth,
+    image {
+        asset->{
+            _ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
+        },
+    },
+    imageMobile {
+        asset->{
+            _ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
+        },
+    },
+    gifFrames[] {
+        asset->{
+            _ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
+        },
+    },
+    gifFramesMobile[] {
+        asset->{
+            _ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
+        },
+    },
+    gifInterval,
+    video {
+        asset-> { url }
+    },
+    videoMobile {
+        asset-> { url }
+    },
+    videoCover {
+        asset->{
+            _ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
+        },
+    },
+    videoCoverMobile {
+        asset->{
+            _ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
+        },
+    },
+    "info": asset->{
+        title, description, altText, metadata {dimensions, lqip}
+    }
 `;
 
 export async function getSEO() {
@@ -79,7 +97,9 @@ export async function getHomepage() {
 						_ref, _id, _type, title, description, altText, metadata {dimensions, lqip}
 					},
 				},
-				size,			
+				size,
+				positionX,
+				positionY,	
 				project->{slug}
 			}
 		}`
@@ -93,7 +113,7 @@ export async function getPortfolio() {
 			slug,
 			date,
 			client->{title},
-			category->{title, slug},
+			categories[]->{title, slug},
 			cover {
 				${media}
 			},
@@ -133,7 +153,7 @@ export async function getProject(slug) {
 					${media}
 				}
 			},
-			category->{
+			categories->{
 				title,
 			},
 			client->{

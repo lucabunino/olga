@@ -4,6 +4,7 @@
     import PortableTextStyleProject from '$lib/components/portableTextStyles/portableTextStyleProject.svelte';
     import ProjectCover from '$lib/components/ProjectCover.svelte';
     import { PortableText } from '@portabletext/svelte';
+    import { innerWidth } from 'svelte/reactivity/window';
 	let { data } = $props()
 	const studio = data.studio
 </script>

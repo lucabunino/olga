@@ -48,6 +48,18 @@ export default {
 							validation: (Rule) => Rule.min(0).max(1)
 						},
 						{
+							name: 'positionX',
+							type: 'number',
+							description: 'Relative size to the square (0 = left, 1 = right)',
+							validation: (Rule) => Rule.min(0).max(1)
+						},
+						{
+							name: 'positionY',
+							type: 'number',
+							description: 'Relative size to the square (0 = bottom, 1 = top)',
+							validation: (Rule) => Rule.min(0).max(1)
+						},
+						{
 							name: 'project',
 							type: 'reference',
 							to: [{ type: 'project' }],

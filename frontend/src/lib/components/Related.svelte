@@ -53,7 +53,6 @@
 
             return () => {
                 clickHandlers.forEach(({ box, handler }) => box.removeEventListener("click", handler));
-                loop.kill();
             };
         }
     });

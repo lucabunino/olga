@@ -11,8 +11,9 @@ export const myStructure = (S, context) => {
       .child(S.document().schemaType('homepage').documentId('homepage')),
     orderableDocumentListDeskItem({type: 'project', title: 'Projects', icon: ProjectsIcon, S, context}),
     S.divider(),
+	S.documentTypeListItem('client').title('Clients'),
     S.documentTypeListItem('category').title('Categories'),
-    S.documentTypeListItem('area').title('Area (temp)'),
+    // S.documentTypeListItem('area').title('Area (temp)'),
     S.divider(),
     S.listItem()
       .title('Studio')

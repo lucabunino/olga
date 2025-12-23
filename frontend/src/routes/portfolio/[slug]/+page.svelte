@@ -37,7 +37,7 @@
 		<div>
 			<p><label>Year</label><span>{new Date(project.date).getFullYear()}</span></p>
 			{#if project.client}<p><label>Client</label><span>{project.client.title}</span></p>{/if}
-			{#if project.category}<p><label>Category</label><span>{project.category.title}</span></p>{/if}
+			{#if project.categories}<p><label>Category</label><span>{project.categories[0].title}</span></p>{/if}
 		</div>
 	</section>
 	<section id="media" class="md-24 md-16-mb">

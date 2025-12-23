@@ -51,8 +51,10 @@ export default {
 				type: 'reference',
 				to: [{ type: 'category' }],
 			}],
+			validation: Rule => Rule.required(),
 		},
 		media("cover"),
+		media("opening"),
 		media("wide"),
 		{
 			name: 'media',

@@ -3,18 +3,17 @@
 	
 	let { info, policies } = $props()
 
-	const words = ["olga", "lago"];
 	let wordsIndex = $state(0)
-	let string = $derived(words[wordsIndex])
+	let string = $derived(info.footerLoop[wordsIndex])
 
 	$effect(() => {
 		setInterval(() => {
-			if (wordsIndex < words.length - 1) {
+			if (wordsIndex < info.footerLoop.length - 1) {
 				wordsIndex++
 			} else {
 				wordsIndex = 0
 			}
-		}, 2000);
+		}, 3000);
 	})
 </script>
 

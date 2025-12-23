@@ -97,8 +97,8 @@
 	#filters {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
-		height: 1.1em;
+		align-items: flex-start;
+		min-height: 1.1em;
 
 		.toggle {
 			position: relative;
@@ -148,10 +148,16 @@
 		}
 
 		.categories {
-			display: flex;
-			column-gap: var(--gutter);
+			display: inline;
 
 			.category {
+				&:not(:last-of-type) {
+					&::after {
+						content: '/';
+						margin: 0 .3em;
+					}
+				}
+
 				&:hover,
 				&[aria-pressed="true"] {
 					color: var(--gray-dark);

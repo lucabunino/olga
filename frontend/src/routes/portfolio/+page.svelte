@@ -33,7 +33,7 @@
             case 'year': return project.date ? new Date(project.date).getTime() : 0;
             case 'client': return project.client?.title?.toLowerCase() || '';
             case 'project': return project.title?.toLowerCase() || '';
-            case 'category': return project.category?.title?.toLowerCase() || '';
+            case 'category': return project.categories[0]?.title?.toLowerCase() || '';
             default: return '';
         }
     }
@@ -57,7 +57,7 @@
 		return [
 			project.title,
 			project.client?.title,
-			project.category?.title,
+			project.categories[0]?.title,
 			project.date ? new Date(project.date).getFullYear().toString() : ''
 		].some(field => field?.toLowerCase().includes(s));
 	}
@@ -96,14 +96,22 @@
 				{/if}
 			{:else if portfolio.view == 'list'}
 				<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href={project.slug.current} onmouseenter={() => activeProject = i}>
-					<label for="year" class="md-12-mb">year</label>
-					{#if project.date}<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date}>{new Date(project.date).getFullYear()}</time>{/if}
-					<label for="client" class="md-12-mb">client</label>
-					{#if project.client}<span id="client" class="client">{project.client.title}</span>{/if}
-					<label for="title" class="md-12-mb">title</label>
-					<span id="title" class="title">{project.title}</span>
-					<label for="category" class="md-12-mb">category</label>
-					<span id="category" class="category">{project.category.title}</span>
+					{#if project.date}
+						<label for="year" class="md-12-mb">year</label>
+						<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date}>{new Date(project.date).getFullYear()}</time>
+					{/if}
+					{#if project.client}
+						<label for="client" class="md-12-mb">client</label>
+						<span id="client" class="client">{project.client.title}</span>
+					{/if}
+					{#if project.title}
+						<label for="title" class="md-12-mb">title</label>
+						<span id="title" class="title">{project.title}</span>
+					{/if}
+					{#if project.categories}
+						<label for="category" class="md-12-mb">category</label>
+						<span id="category" class="category">{project.categories[0].title}</span>
+					{/if}
 				</a>
 				{(() => {previousYear = new Date(project.date).getFullYear()})()}
 			{/if}

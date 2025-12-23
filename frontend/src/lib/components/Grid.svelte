@@ -71,10 +71,11 @@
 
     const onWheel = (e) => {
         if (e.ctrlKey) {
-            e.preventDefault();
-            gridScale = Math.max(0.4, Math.min(2.5, gridScale - e.deltaY * 0.01));
+            // e.preventDefault();
+            gridScale = Math.max(0.6, Math.min(2.5, gridScale - e.deltaY * 0.01));
         } else {
-            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) e.preventDefault();
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX))
+			e.preventDefault();
             velX += e.deltaX * 0.001;
             velY -= e.deltaY * 0.001;
         }

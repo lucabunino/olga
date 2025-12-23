@@ -6,7 +6,7 @@
 
 <svelte:head>
 	{#if browser}
-		<script defer src="https://cloud.umami.is/script.js" data-website-id="3e32a832-2bf2-438c-bbc1-f295f745e1d3"></script>
+		<!-- <script defer src="https://cloud.umami.is/script.js" data-website-id="3e32a832-2bf2-438c-bbc1-f295f745e1d3"></script> -->
 	{/if}
 
 	<link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
