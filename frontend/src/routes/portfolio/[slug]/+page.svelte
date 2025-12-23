@@ -26,8 +26,8 @@
 	}
 </script>
 <main>
-	<section id="wide">
-		<Media media={project.wide} />
+	<section id="opening">
+		<Media media={project.opening} />
 	</section>
 	<section id="info" class="md-24 md-20-mb">
 		<div class="md-36 md-26-mb">
@@ -88,7 +88,7 @@
 
 <style>
 	main {		
-		#wide {
+		#opening {
 			width: 100%;
 			height: 100vh;
 

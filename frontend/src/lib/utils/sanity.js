@@ -144,7 +144,7 @@ export async function getProject(slug) {
 			title,
 			subtitle,
 			date,
-			wide {
+			opening {
 				${media}
 			},
 			media[] {
