@@ -95,7 +95,7 @@
 					<ProjectCover {project}/>
 				{/if}
 			{:else if portfolio.view == 'list'}
-				<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href={project.slug.current} onmouseenter={() => activeProject = i}>
+				<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href="/portfolio/{project.slug.current}" onmouseenter={() => activeProject = i}>
 					{#if project.date}
 						<label for="year" class="md-12-mb">year</label>
 						<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date}>{new Date(project.date).getFullYear()}</time>
