@@ -1,10 +1,6 @@
 import { gsap } from 'gsap';
 import { TextPlugin } from 'gsap/TextPlugin';
 
-if (typeof window !== 'undefined') {
-    gsap.registerPlugin(TextPlugin);
-}
-
 // Default values in milliseconds
 const DEFAULT_SPEED = 50;   
 const DEFAULT_DELAY = 0;
@@ -14,6 +10,8 @@ const DEFAULT_PAUSE = 1500;
  * 1. SINGLE ANIMATION
  */
 export function typewriter(node, options = {}) {
+	gsap.registerPlugin(TextPlugin);
+
     const { 
         text = node.textContent, 
         speed = DEFAULT_SPEED, 
@@ -41,6 +39,8 @@ export function typewriter(node, options = {}) {
  * 2. LOOP ANIMATION
  */
 export function typewriterLoop(node, options = {}) {
+	gsap.registerPlugin(TextPlugin);
+
     const { 
         words = [], 
         speed = DEFAULT_SPEED, 
@@ -104,6 +104,8 @@ export function typewriterLoop(node, options = {}) {
  * Works with in: out: or transition:
  */
 export function typewriterTransition(node, options = {}) {
+	gsap.registerPlugin(TextPlugin);
+	
     const {
         speed = DEFAULT_SPEED,
         delay = DEFAULT_DELAY,
