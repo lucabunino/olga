@@ -23,19 +23,9 @@
 	in:pageIn={{ duration: DURATION, delay: 0, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
 	out:pageOut={{ duration: DURATION, delay: 0, scrollY: scrollY, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
 	>
-	<!-- <div class="page"
-	in:pageIn={{ duration: 500, pageHeight: innerHeight.current }}
-	out:pageOut={{ duration: 500, scrollY: scrollY }}
-	> -->
 		{@render children()}
 		{#if page.url.pathname !== '/'}
 			<Footer info={data.info} policies={data.policies}/>
 		{/if}
 	</div>
 {/key}
-
-<style>
-.page {
-	background-color: var(--white);
-}
-</style>

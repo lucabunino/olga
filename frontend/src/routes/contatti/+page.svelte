@@ -56,7 +56,7 @@
 
 <style>
 	main {
-		margin-top: 7rem;
+		margin-top: var(--headerHeight);
 		padding: var(--sp-s) var(--sp-m) var(--sp-l);
 
 		#contacts {
@@ -137,7 +137,6 @@
 		}
 
 		@media screen and (max-width: 768px) {
-			margin-top: 8rem;
 			padding: var(--sp-s) var(--margin-mb) var(--sp-l);
 		}
 	}

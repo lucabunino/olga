@@ -39,7 +39,7 @@
     let cols = $derived((innerWidth.current < 768 ? 3 : innerWidth.current < 1440 ? 5 : 7) + 4);
     
     // Ensure we always have a full rectangle
-    let totalSlots = $derived(Math.ceil(images.length / cols) * cols);
+    let totalSlots = $derived(Math.ceil(images?.length / cols) * cols);
     let rows = $derived(totalSlots / cols);
     
     let gridWidth = $derived(cols * cell);
@@ -172,7 +172,7 @@
 <T.Group scale={gridScale}>
     {#each { length: totalSlots } as _, i (i)}
         <GridItem 
-            image={images[i % images.length]} 
+            image={images[i % images?.length]} 
             {i} {cols} {rows} {cell}
             {gridWidth} {gridHeight}
             {currentX} {currentY} 

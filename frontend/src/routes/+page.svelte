@@ -45,7 +45,7 @@
 
     <section id="images" style="--cursor: {cursor ? cursor : 'grab'}">
         <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-            <Grid images={data.homepage.images} bind:cursor={cursor}/>
+            <Grid images={data.homepage?.images} bind:cursor={cursor}/>
         </Canvas>
     </section>
 </main>
@@ -55,7 +55,7 @@
     background-color: var(--yellow);
     width: 100%;
     position: fixed;
-    top: 7rem;
+    top: var(--headerHeight);
     left: 0;
     z-index: 2;
     overflow: hidden;

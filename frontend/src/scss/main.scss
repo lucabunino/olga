@@ -2,6 +2,7 @@
 $colors: (
 	"white":			#FFFFFF,
 	"white-70":			#FFFFFFB3,
+	"white-50":			#ffffff80,
 	"black":			#000000,
 	"gray-light":		#EBEBEA,
 	"gray-light-70":	#EBEBEAB3,
@@ -24,6 +25,7 @@ $colors: (
 	--sp-m: 2.5rem;
 	--sp-s: 1.25rem;
 	--sp-xs: 0.416rem;
+	--headerHeight: 6rem;
 
 	@media screen and (max-width: 768px) {
 		--gutter: .416rem;
@@ -32,6 +34,7 @@ $colors: (
 		--sp-m: 2.5rem;
 		--sp-s: 1.25rem;
 		--sp-xs: 0.416rem;
+		--headerHeight: 8rem;
 	}
 }
 html {

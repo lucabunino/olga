@@ -5,7 +5,9 @@
     import { InertiaPlugin } from "gsap/InertiaPlugin";
     import { horizontalLoop } from "$lib/utils/gsap"
     import { innerWidth } from "svelte/reactivity/window";
-    gsap.registerPlugin(Draggable, InertiaPlugin);
+    
+    // REMOVED: gsap.registerPlugin(Draggable, InertiaPlugin); 
+    // This was causing the 500 error on SSR
 
     let { related, title } = $props();
     let track = $state(undefined);
@@ -26,11 +28,11 @@
     });
 
     $effect(() => {
-        // Ensure track exists, it is dynamic, and we actually have projects in the DOM
+        // Safe to register here because $effect only runs on the client
+        gsap.registerPlugin(Draggable, InertiaPlugin);
+
         if (track && isDynamic && displayProjects.length > 0) {
             const projects = gsap.utils.toArray(".project");
-            
-            // Safety check: if projects haven't rendered yet, don't init
             if (projects.length === 0) return;
 
             let activeElement;
@@ -49,12 +51,10 @@
                 }
             });
 
-            // If the horizontalLoop utility failed to return an object, stop here
             if (!loop) return;
 
             const clickHandlers = projects.map((box, i) => {
                 const handler = () => {
-                    // ADDED SAFETY CHECK HERE
                     if (loop && typeof loop.toIndex === 'function') {
                         loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"});
                     }
@@ -64,7 +64,6 @@
             });
 
             return () => {
-                // Kill the GSAP loop/animations and cleanup listeners
                 loop?.kill?.(); 
                 clickHandlers.forEach(({ box, handler }) => box.removeEventListener("click", handler));
             };

@@ -15,7 +15,7 @@
         
         // Convert 7rem to pixels based on current root font size
         const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const thresholdPx = rootFontSize * 7;
+        const thresholdPx = rootFontSize * 6;
 
         if (e.clientY <= thresholdPx) {
             menuer.setHidden(false);
@@ -89,11 +89,11 @@ header {
         top: 0;
         left: 0;
         width: 100%;
-        padding: 2rem var(--sp-m);
+        padding: 1.5rem var(--sp-m);
         align-items: center;
         z-index: 10;
         background-color: var(--white-70);
-        backdrop-filter: blur(3rem);
+        backdrop-filter: blur(1rem);
 		transition: var(--transition-s);
 
         &.bg-gray {

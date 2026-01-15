@@ -29,13 +29,12 @@
 
 <style>
 	main {
-		margin-top: 7rem;
-		min-height: calc(100vh - 7rem);
+		margin-top: var(--headerHeight);
+		min-height: calc(100svh - var(--headerHeight));
 		width: 100vw;
 		padding: var(--sp-s) var(--sp-m) var(--sp-l);
 
 		@media screen and (max-width: 768px) {
-			margin-top: 8rem;
 			min-height: calc(100svh - 8rem);
 			padding: var(--sp-s) var(--margin-mb) var(--sp-l);
 		}

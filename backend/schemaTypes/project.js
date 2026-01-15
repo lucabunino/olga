@@ -60,7 +60,6 @@ export default {
 		},
 		media("cover"),
 		media("opening"),
-		media("wide"),
 		{
 			name: 'media',
 			type: 'array',
