@@ -9,16 +9,18 @@
     let cursor = $state()
 
 	import { getMenu } from '$lib/stores/menu.svelte.js';
-    let menu = getMenu();
+    import { pageIn, pageOut } from '$lib/utils/transitions.js';
+    let menuer = getMenu();
 
-    // Ensure the text repeats enough to fill the screen width
-    // We create an array of e.g., 10 instances of the text
     const repeatedText = $derived(Array.from({ length: 10 }, () => data.homepage.marquee));
 </script>
 
 <main>
     {#if data.homepage.marquee}
-        <div id="marquee" class="md-12 {menu.up ? 'up' : 'down'}">
+        <div id="marquee" class="md-12 {menuer.hidden ? 'up' : 'down'}"
+		in:pageIn={{ duration: DURATION, delay: 0, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
+		out:pageOut={{ duration: DURATION, delay: 0, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
+		>
             <Marquee speed={70} pauseOnHover={true}>
                 <div class="marquee-content">
                     {#each repeatedText as text}
@@ -58,11 +60,19 @@
     z-index: 2;
     overflow: hidden;
 	align-items: center;
+	transition: var(--transition-s);
+
+	&.up {
+		top: 0;
+	}
 
     .marquee-content {
         display: flex;
         align-items: center;
-		height: 1.8rem;
+
+		p {
+			line-height: 1.8rem;
+		}
     }
 
     p {
@@ -81,6 +91,15 @@
         color: inherit;
         display: inline-block;
     }
+
+	@media screen and (max-width: 768px) {
+		top: unset;
+		bottom: 0;
+
+		&.up {
+			top: unset;
+		}
+	}
 }
 
 #images {

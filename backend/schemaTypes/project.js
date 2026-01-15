@@ -3,11 +3,16 @@ import { SquareIcon } from "@sanity/icons";
 import { mediaText, mediaFull, mediaGrid, mediaCentered } from "./blocks";
 import { media } from "./fields/media";
 import { status } from './fields/status';
+import seoFields from './fields/seo';
 
 export default {
 	name: 'project',
 	type: 'document',
 	icon: SquareIcon,
+	groups: [
+		{name: 'Basics'},
+		{name: 'SEO'},
+	],
 	fields: [
 		orderRankField({ type: "project" }),
 		{
@@ -77,7 +82,7 @@ export default {
 				to: [{ type: 'project' }],
 			}],
 		},
-		
+		...seoFields(),
 	],
 
 	preview: {

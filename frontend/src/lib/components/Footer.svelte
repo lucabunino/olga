@@ -1,6 +1,5 @@
 <script>
-    import typewriter from "$lib/utils/typewriter";
-	
+	import { typewriterLoop } from '$lib/utils/typewriter.js';
 	let { info, policies } = $props()
 
 	let wordsIndex = $state(0)
@@ -55,9 +54,11 @@
 	<section id="title">
 		<p>studio</p>
 		<div class="typewriter">
-			{#key string}
-				<p in:typewriter={{ speed: 100, delay: 200 }} out:typewriter={{ speed: 100 }}>{string}</p>
-			{/key}
+			<p use:typewriterLoop={{ 
+				words: info.footerLoop, 
+				speed: 100, 
+				pause: 2000
+			}}></p>
 		</div>
 	</section>
 </footer>

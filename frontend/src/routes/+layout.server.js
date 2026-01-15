@@ -1,4 +1,4 @@
-import { getSEO, getInfo, getPolicies } from '$lib/utils/sanity';
+import { getSeo, getInfo, getPolicies } from '$lib/utils/sanity';
 import { error } from '@sveltejs/kit';
 
 export async function load({ url, setHeaders }) {
@@ -10,7 +10,7 @@ export async function load({ url, setHeaders }) {
 
   try {
     [seo, info, policies] = await Promise.all([
-      getSEO(),
+      getSeo(),
       getInfo(),
 	  getPolicies()
     ]);

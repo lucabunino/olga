@@ -1,13 +1,21 @@
-let up = $state(false)
+let open = $state(false)
+let hidden = $state(false)
 
 export function getMenu() {
-	function setMenu(m) {
-		menu = m
+	function setOpen(o) {
+		open = o
+	}
+	function setHidden(h) {
+		hidden = h
 	}
 	return {
-		get menu() {
-			return menu;
+		get open() {
+			return open;
 		},
-		setMenu,
+		setOpen,
+		get hidden() {
+			return hidden;
+		},
+		setHidden,
 	};
 }

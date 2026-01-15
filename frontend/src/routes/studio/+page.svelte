@@ -5,17 +5,29 @@
     import ProjectCover from '$lib/components/ProjectCover.svelte';
     import { PortableText } from '@portabletext/svelte';
     import { innerWidth } from 'svelte/reactivity/window';
+	import { typewriter } from '$lib/utils/typewriter.js';
+    import HeadSingle from '$lib/components/HeadSingle.svelte';
 	let { data } = $props()
 	const studio = data.studio
+	let isLoaded = $state(false)
+	$effect(() => {
+		isLoaded = true
+	})
 </script>
+
+<HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Studio'}}/>
+
 <main>
 	{#if studio.poem}
 		<section id="poem" class="md-36 md-26-mb">
-			<p class="poem">
-				{#each studio.poem as line}
-					<span class="line">{line.children[0].text}</span>	
-				{/each}
-			</p>
+			{#if isLoaded}
+				<p class="poem">
+					{#each studio.poem as line, i}
+						<span class="line-keeper" aria-hidden="true">{line.children[0].text}</span>
+						<span class="line" use:typewriter={{ text: line.children[0].text, speed: 20, delay: i*500 }}></span>
+					{/each}
+				</p>
+			{/if}
 		</section>
 	{/if}
 	{#if studio.location && studio.bio}
@@ -55,6 +67,12 @@
 			padding: 0 var(--sp-m);
 
 			.poem {
+				.line-keeper {
+					display: block;
+					visibility: hidden;
+					height: 0;
+					pointer-events: none;
+				}
 				.line {
 					display: block;
 					min-height: 1.1em;

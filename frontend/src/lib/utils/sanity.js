@@ -57,13 +57,12 @@ const media = `
     }
 `;
 
-export async function getSEO() {
+export async function getSeo() {
 	return await client.fetch(
 		`*[_type == "seo" && !(_id in path('drafts.**'))] {
-			SEOTitle,
-			SEODescription,
-			SEOKeywords,
-			SEOImage,
+			seoTitle,
+			seoDescription,
+			seoImage,
 		}|order(year desc)`
 	);
 }
@@ -165,6 +164,11 @@ export async function getProject(slug) {
 				cover {
 					${media}
 				}
+			},
+			"seo": {
+				"seoTitle": title,
+				seoDescription,
+				seoImage,
 			}
 		}`, { slug });
 }

@@ -65,6 +65,15 @@
     .mobile-only { display: none; }
     .desktop-only { display: block; }
 
+	.placeholder {
+		width: 100%;
+		height: 100%;
+		background-color: var(--gray-light);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
     @media (max-width: 768px) {
         /* Only switch if the mobile version actually exists */
         .media-container:has(.mobile-only) .desktop-only { display: none; }

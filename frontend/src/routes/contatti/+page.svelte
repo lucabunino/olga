@@ -1,8 +1,12 @@
 <script>
+    import HeadSingle from '$lib/components/HeadSingle.svelte';
+
 	let { data } = $props()
-	$inspect(data)
 	const contact = data.contact
 </script>
+
+<HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Contatti'}}/>
+
 <main class="md-24">
 	<section id="contacts">
 		<h1 class="md-36 md-26-mb">contattaci</h1>

@@ -26,8 +26,12 @@
     });
 
     $effect(() => {
+        // Ensure track exists, it is dynamic, and we actually have projects in the DOM
         if (track && isDynamic && displayProjects.length > 0) {
             const projects = gsap.utils.toArray(".project");
+            
+            // Safety check: if projects haven't rendered yet, don't init
+            if (projects.length === 0) return;
 
             let activeElement;
 
@@ -45,13 +49,23 @@
                 }
             });
 
+            // If the horizontalLoop utility failed to return an object, stop here
+            if (!loop) return;
+
             const clickHandlers = projects.map((box, i) => {
-                const handler = () => loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"});
+                const handler = () => {
+                    // ADDED SAFETY CHECK HERE
+                    if (loop && typeof loop.toIndex === 'function') {
+                        loop.toIndex(i, {duration: 0.8, ease: "power1.inOut"});
+                    }
+                };
                 box.addEventListener("click", handler);
                 return { box, handler };
             });
 
             return () => {
+                // Kill the GSAP loop/animations and cleanup listeners
+                loop?.kill?.(); 
                 clickHandlers.forEach(({ box, handler }) => box.removeEventListener("click", handler));
             };
         }

@@ -31,10 +31,12 @@
     const offsetY = (pY - 0.5) * (cell - planeHeight);
 
     // Stable Grid Positions + Offset
-    const baseX = (i % cols - (cols - 1) / 2) * cell + offsetX;
-    // Note: Y is inverted in 3D space, but since 1 is Top in your backend, 
-    // we add the offsetY to move it "up"
-    const baseY = (Math.floor(i / cols) - (rows - 1) / 2) * -cell + offsetY;
+    // const baseX = (i % cols - (cols - 1) / 2) * cell + offsetX;
+    // // Note: Y is inverted in 3D space, but since 1 is Top in your backend, 
+    // // we add the offsetY to move it "up"
+    // const baseY = (Math.floor(i / cols) - (rows - 1) / 2) * -cell + offsetY;
+	let baseX = $derived((i % cols - (cols - 1) / 2) * cell + offsetX);
+    let baseY = $derived((Math.floor(i / cols) - (rows - 1) / 2) * -cell + offsetY);
 
     const wrap = (v, range) => {
         const half = range / 2;
@@ -70,7 +72,7 @@
 
 <T.Mesh
     bind:ref={mesh}
-    onclick={() => !isDragging && introProgress > 1.2 && goto(`/portfolio/${image.project.slug.current}`)}
+    onclick={() => !isDragging && introProgress > 1.2 && image.project?.slug && goto(`/portfolio/${image.project.slug.current}`)}
     onpointerenter={() => { if (introProgress > 1.2) { hovered = true; cursor = 'pointer'; } }}
     onpointerleave={() => { hovered = false; cursor = ''; }}
 >

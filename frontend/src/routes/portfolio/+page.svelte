@@ -3,10 +3,10 @@
     import ProjectCover from '$lib/components/ProjectCover.svelte';
     import Views from '$lib/components/Views.svelte';
     import Filters from '$lib/components/Filters.svelte';
-    import typewriter from '$lib/utils/typewriter.js';
     import { fade, slide } from 'svelte/transition';
 	let { data } = $props()
 	import { getPortfolio } from '$lib/stores/portfolio.svelte.js';
+    import HeadSingle from '$lib/components/HeadSingle.svelte';
     let portfolio = getPortfolio();
 
 	 // Keep your other logic...
@@ -32,7 +32,7 @@
         switch (key) {
             case 'year': return project.date ? new Date(project.date).getTime() : 0;
             case 'client': return project.client?.title?.toLowerCase() || '';
-            case 'project': return project.title?.toLowerCase() || '';
+            case 'title': return project.title?.toLowerCase() || '';
             case 'category': return project.categories[0]?.title?.toLowerCase() || '';
             default: return '';
         }
@@ -52,16 +52,32 @@
 	let previousYear = 3000
 
 	function matchesSearch(project) {
-		if (!portfolio.search || portfolio.search == 'search') return true;
+		if (!portfolio.search || portfolio.search === 'search') return true;
 		const s = portfolio.search.toLowerCase();
-		return [
+
+		// Combine all text into one array, including all category titles
+		const allSearchableTerms = [
 			project.title,
 			project.client?.title,
-			project.categories[0]?.title,
-			project.date ? new Date(project.date).getFullYear().toString() : ''
-		].some(field => field?.toLowerCase().includes(s));
+			project.date ? new Date(project.date).getFullYear().toString() : '',
+			...(project.categories?.map(cat => cat.title) || []) // Spreads all category titles into the array
+		];
+
+		return allSearchableTerms.some(field => field?.toLowerCase().includes(s));
+	}
+
+	function getDisplayCategory(project) {
+		const s = portfolio.search?.toLowerCase();
+		if (!s || s === 'search') return project.categories[0]?.title || '';
+		const matchingCategory = project.categories?.find(cat => 
+			cat.title?.toLowerCase().includes(s)
+		);
+		return matchingCategory ? matchingCategory.title : (project.categories[0]?.title || '');
 	}
 </script>
+
+<HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Portfolio'}}/>
+
 <main>
 	<section id="options" class="md-24 md-20-mb">
 		<div>
@@ -77,8 +93,8 @@
 			<button class="client" onclick={() => sortby('client')}>
 				client {sortKey === 'client' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
 			</button>
-			<button class="project" onclick={() => sortby('project')}>
-				project {sortKey === 'project' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
+			<button class="title" onclick={() => sortby('title')}>
+				project {sortKey === 'title' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
 			</button>
 			<button class="category" onclick={() => sortby('category')}>
 				category {sortKey === 'category' ? (sortDirection === 'asc' ? '↑' : '↓') : ''}
@@ -110,7 +126,7 @@
 					{/if}
 					{#if project.categories}
 						<label for="category" class="md-12-mb">category</label>
-						<span id="category" class="category">{project.categories[0].title}</span>
+						<span id="category" class="category">{getDisplayCategory(project)}</span>
 					{/if}
 				</a>
 				{(() => {previousYear = new Date(project.date).getFullYear()})()}
@@ -130,6 +146,7 @@
 	main {
 		margin-top: 7rem;
 		min-height: calc(100vh - 7rem);
+		width: 100vw;
 
 		@media screen and (max-width: 768px) {
 			margin-top: 8rem;
@@ -166,11 +183,17 @@
 			.client {
 				grid-column: 5 / span 2;
 			}
-			.project {
+			.title {
 				grid-column: 7 / span 5;
+				@media screen and (max-width: 1512px) {
+					grid-column: 7 / span 4;
+				}
 			}
 			.category {
 				grid-column: 12 / span 1;
+				@media screen and (max-width: 1512px) {
+					grid-column: 11 / span 2;
+				}
 			}
 		}
 		#portfolio {
@@ -257,13 +280,19 @@
 					.title {
 						grid-column: 7 / span 5;
 
+						@media screen and (max-width: 1512px) {
+							grid-column: 7 / span 4;
+						}
 						@media screen and (max-width: 768px) {
 							grid-column: 1 / span 12;
 						}
 					}
 					.category {
 						grid-column: 12 / span 1;
-
+						
+						@media screen and (max-width: 1512px) {
+							grid-column: 11 / span 2;
+						}
 						@media screen and (max-width: 768px) {
 							grid-column: 1 / span 12;
 						}

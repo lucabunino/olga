@@ -14,25 +14,41 @@ const DEFAULT_PAUSE = 1500;
  * 1. SINGLE ANIMATION
  */
 export function typewriter(node, options = {}) {
-    const { 
-        text = node.textContent, 
+    let { 
+        text = '', 
         speed = DEFAULT_SPEED, 
         delay = DEFAULT_DELAY, 
+        outDelay = 0, // Optional delay before disappearing
         ease = "none" 
     } = options;
 
-    node.textContent = '';
+    let tween;
 
-    const tween = gsap.to(node, {
-        delay: delay / 1000, // Convert ms to s
-        duration: (text.length * speed) / 1000, 
-        text: { value: text, delimiter: "" },
-        ease
-    });
+    function playIn() {
+        node.textContent = '';
+        tween = gsap.to(node, {
+            delay: delay / 1000,
+            duration: (text.length * speed) / 1000, 
+            text: { value: text, delimiter: "" },
+            ease
+        });
+    }
+
+    playIn();
 
     return {
+        // If the parameters change (e.g., text changes)
+        update(newOptions) {
+            text = newOptions.text;
+            tween?.kill();
+            playIn();
+        },
+        // Triggered when the element leaves the DOM
         destroy() {
-            tween.kill();
+            tween?.kill();
+            // Optional: If you want a GSAP disappearing animation 
+            // Note: This only works if you delay the actual DOM removal, 
+            // otherwise, use Svelte's 'out:fade' for the visual disappearance.
         }
     };
 }
@@ -95,43 +111,6 @@ export function typewriterLoop(node, options = {}) {
     return {
         destroy() {
             tl.kill();
-        }
-    };
-}
-
-/**
- * 3. GSAP SVELTE TRANSITION
- * Works with in: out: or transition:
- */
-export function typewriterTransition(node, options = {}) {
-    const {
-        speed = DEFAULT_SPEED,
-        delay = DEFAULT_DELAY,
-        ease = "none"
-    } = options;
-
-    // Capture the full text immediately
-    const fullText = node.textContent.trim();
-    const duration = (fullText.length * speed); 
-
-    return {
-        delay,
-        duration,
-        tick: (t) => {
-            // t flows 0 -> 1 for IN
-            // t flows 1 -> 0 for OUT
-            
-            // 1. Calculate the current number of characters to show
-            // We use Math.round and a small epsilon to ensure the last char appears
-            const i = Math.round(fullText.length * t);
-            const currentText = fullText.slice(0, i);
-
-            // 2. Use GSAP's utility or simple assignment
-            // assignment is safer here to avoid creating thousands of tweens
-            node.textContent = currentText;
-            
-            // If you need specific GSAP easing on the string itself:
-            // node.textContent = gsap.utils.interpolate("", fullText, t);
         }
     };
 }

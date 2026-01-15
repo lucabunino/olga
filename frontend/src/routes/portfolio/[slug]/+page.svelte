@@ -3,6 +3,7 @@
     import Related from '$lib/components/Related.svelte';
     import PortableTextStyleProject from '$lib/components/portableTextStyles/portableTextStyleProject.svelte';
 	import {PortableText} from '@portabletext/svelte'
+    import HeadSingle from '$lib/components/HeadSingle.svelte';
 	let { data } = $props()
 	const project = data.project[0]
 	$inspect(data)
@@ -24,7 +25,14 @@
 			return '5rem'
 		}
 	}
+
+	let seoSingle = $derived(project.seo)
 </script>
+
+{#if seoSingle}
+	<HeadSingle seo={data.seo[0]} {seoSingle} hidden={project.hidden} />
+{/if}
+
 <main>
 	<section id="opening">
 		<Media media={project.opening} />
@@ -103,6 +111,10 @@
 			row-gap: var(--sp-m);
 			padding: var(--sp-m) var(--sp-m) 0;
 
+			@media screen and (max-width: 768px) {
+				padding: var(--sp-m) var(--margin-mb) 0;
+			}
+
 			div:nth-child(1) {
 				grid-column: 1 / span 6;
 
@@ -136,6 +148,10 @@
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
 			padding: 0 var(--sp-m) var(--sp-m);
+
+			@media screen and (max-width: 768px) {
+				padding: 0 var(--margin-mb) var(--sp-m);
+			}
 			
 			.mediaText {
 				&.left {

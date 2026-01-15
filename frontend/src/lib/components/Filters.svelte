@@ -1,5 +1,5 @@
 <script>
-    import typewriter from "$lib/utils/typewriter";
+    import { typewriterTransition } from "$lib/utils/typewriter";
     import { fade, slide } from "svelte/transition";
 	import { getPortfolio } from '$lib/stores/portfolio.svelte.js';
     import { tick } from "svelte";
@@ -46,13 +46,13 @@
 					<span class="line"></span>
 				</div>
 			{:else}
-				<span in:typewriter|global={{ speed: 20, delay: 200 }} out:typewriter|global={{ speed: 20 }}>filters</span>
+				<span in:typewriterTransition|global={{ speed: 20, delay: 200 }} out:typewriterTransition|global={{ speed: 20 }}>filters</span>
 			{/if}
 		</button>
 		<div id="filters-panel" class="categories">
 			{#each categories as category, i}
 				{#if portfolio.filters && portfolio.view == 'grid' && portfolio.category == undefined || portfolio.category == category.slug.current}
-					<button class="category" in:typewriter|global={{ speed: 20, delay: 0 }} out:typewriter|global={{ speed: 20 }}
+					<button class="category" in:typewriterTransition|global={{ speed: 20, delay: 0 }} out:typewriterTransition|global={{ speed: 20 }}
 					aria-pressed={portfolio.category === category.slug.current}
 					onclick={() =>
 								portfolio.category === category.slug.current
@@ -68,7 +68,7 @@
 	{:else if portfolio.view == "list"}
 		<div id="search">
 				<span
-				class="search" in:typewriter|global={{ speed: 20, delay: 300 }} out:typewriter|global={{ speed: 20 }}
+				class="search" in:typewriterTransition|global={{ speed: 20, delay: 300 }} out:typewriterTransition|global={{ speed: 20 }}
 				contenteditable="true"
 				role="textbox"
 				aria-label="Search"
