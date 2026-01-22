@@ -1,8 +1,9 @@
 <script>
     import ProjectCover from "./ProjectCover.svelte";
     import { gsap } from "gsap";
-    import { Draggable } from "gsap/Draggable";
-    import { InertiaPlugin } from "gsap/InertiaPlugin";
+	import { Draggable } from "gsap/dist/Draggable";
+    import { InertiaPlugin } from "gsap/dist/InertiaPlugin";
+	gsap.registerPlugin(Draggable, InertiaPlugin);
     import { horizontalLoop } from "$lib/utils/gsap"
     import { innerWidth } from "svelte/reactivity/window";
     
@@ -28,9 +29,6 @@
     });
 
     $effect(() => {
-        // Safe to register here because $effect only runs on the client
-        gsap.registerPlugin(Draggable, InertiaPlugin);
-
         if (track && isDynamic && displayProjects.length > 0) {
             const projects = gsap.utils.toArray(".project");
             if (projects.length === 0) return;
