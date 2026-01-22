@@ -3,38 +3,45 @@
     import { page } from "$app/state";
     import { innerWidth } from "svelte/reactivity/window";
     import { getMenu } from '$lib/stores/menu.svelte.js';
+    
     let menuer = getMenu();
+    let y = $state(0);
+    let y_old = $state(0);
+    let y_threshold = $state(0);
 
-    let y = $state(0)
-    let y_old = $state(0)
-    let y_threshold = $state(0)
+    // Force header to show when at the very top or when page changes
+    $effect(() => {
+        if (y < 50) {
+            menuer.setHidden(false);
+            y_threshold = 0;
+        }
+    });
 
-    // New: Handle mouse position to show header at the top
+    // Handle mouse position to show header at the top
     function handleMouseMove(e) {
         if (!browser || menuer.open) return;
         
-        // Convert 7rem to pixels based on current root font size
         const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
         const thresholdPx = rootFontSize * 6;
 
         if (e.clientY <= thresholdPx) {
             menuer.setHidden(false);
-            y_threshold = 0; // Reset scroll threshold when manually shown
+            y_threshold = 0;
         }
     }
 
-    function handleScroll(e) {
+    function handleScroll() {
         if (!browser) return;
 
         const delta = y - y_old;
-        if (y < 50) {
-            menuer.setHidden(false);
-            y_threshold = 0;
-        } else {
+		
+        if (y > 50) {
             if (delta < 0) {
+                // Scrolling Up
                 menuer.setHidden(false);
                 y_threshold = 0;
             } else if (delta > 0) {
+                // Scrolling Down
                 y_threshold += delta;
                 if (y_threshold > 50) {
                     menuer.setHidden(true);

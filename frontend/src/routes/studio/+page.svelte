@@ -5,14 +5,25 @@
     import ProjectCover from '$lib/components/ProjectCover.svelte';
     import { PortableText } from '@portabletext/svelte';
     import { innerWidth } from 'svelte/reactivity/window';
-	import { typewriter } from '$lib/utils/typewriter.js';
+	import { typewriterKeep } from '$lib/utils/typewriter.js';
     import HeadSingle from '$lib/components/HeadSingle.svelte';
+    import { fade } from 'svelte/transition';
 	let { data } = $props()
 	const studio = data.studio
 	let isLoaded = $state(false)
+	let isPast = $state(false)
+	let D = 300
+	let lineOffset =$state(4)
 	$effect(() => {
 		isLoaded = true
+		setTimeout(() => {
+			isPast = true
+		}, D);
 	})
+
+	const getBlankOffset = (index) => {
+        return studio.poem.slice(0, index).filter(line => line.isBlank).length;
+    };
 </script>
 
 <HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Studio'}}/>
@@ -21,15 +32,37 @@
 	{#if studio.poem}
 		<section id="poem" class="md-36 md-26-mb">
 			{#if isLoaded}
-				<p class="poem">
-					{#each studio.poem as line, i}
-						<span class="line-keeper" aria-hidden="true">{line.children[0].text}</span>
-						<span class="line" use:typewriter={{ text: line.children[0].text, speed: 20, delay: i*500 }}></span>
-					{/each}
-				</p>
+				{#each studio.poem as line, i}
+					{@const activeIndex = i - getBlankOffset(i)}
+
+					<p class="line">
+						{#each line.units as span, j}
+							{#if span._type === 'o'}
+								{#if !isPast}
+									<svg class="dot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60.004 52.003"
+									in:fade|global={{ duration: 1, delay: activeIndex*D*2.5}}
+									out:fade|global={{ duration: 1, delay: activeIndex*D*2.5}}
+									>
+										<path d="M0 26.002C0 11.102 12.8 0 30.002 0c17.101 0 30.002 11.101 30.002 26.002 0 14.8-12.901 26.001-30.002 26.001C12.8 52.003 0 40.803 0 26.002Z"/>
+									</svg>
+								{/if}
+							{/if}
+							<span class="animated {span._type}" use:typewriterKeep={{ speed: 40, delay: 
+								span._type === 'o' ? activeIndex*D*2.5 + D :
+								span._type === 'l' ? activeIndex*D*2.5 + D*1.5 :
+								span._type === 'g' ? activeIndex*D*2.5 + D*2 :
+								span._type === 'a' ? activeIndex*D*2.5 + D*2.5 :
+								span._type === 'custom' ? (activeIndex+lineOffset)*D*2.5 + j*D/2 : '0'
+							}}>{@html span.text}</span>
+						{/each}
+						<br>
+					</p>
+				{/each}
 			{/if}
 		</section>
 	{/if}
+
+
 	{#if studio.location && studio.bio}
 		<section id="bio">
 			<p class="location md-36 md-26-mb">{studio.location}</p>
@@ -61,21 +94,30 @@
 	main {
 		#poem {
 			display: flex;
+			flex-direction: column;
 			justify-content: center;
-			align-items: center;
+			align-items: flex-start;
 			min-height: 100vh;
-			padding: 0 var(--sp-m);
+			justify-self: center;
 
-			.poem {
-				.line-keeper {
-					display: block;
-					visibility: hidden;
-					height: 0;
-					pointer-events: none;
+			.line {
+				flex-basis: 100%;
+				display: inline-table;
+				position: relative;
+				white-space-collapse: break-spaces;
+
+				.dot {
+					position: absolute;
+					top: .38em;
+					left: .03em;
+					height: .54em;
+					fill: var(--yellow);
+					margin: 0;
+					padding: 0;
 				}
-				.line {
-					display: block;
-					min-height: 1.1em;
+
+				.animated {
+					visibility: hidden;
 				}
 			}
 

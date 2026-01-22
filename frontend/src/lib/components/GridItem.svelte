@@ -3,11 +3,13 @@
     import { ImageMaterial } from '@threlte/extras';
     import { urlFor } from '$lib/utils/image';
     import { goto } from '$app/navigation';
+	import { getMenu } from '$lib/stores/menu.svelte.js';
 
     let { 
         image, i, cols, rows, cell, gridWidth, gridHeight, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable() 
     } = $props();
 
+	let menuer = getMenu();
     let mesh;
     let hovered = $state(false);
     let lerpScale = $state(0);
@@ -15,7 +17,7 @@
     // Sizing
     const dims = image.cover.asset.metadata.dimensions;
     const aspect = dims.width / dims.height;
-    const baseSize = (image.size ?? 0.8) * cell;
+    const baseSize = (image.size ?? 0.7) * cell;
     const planeWidth = aspect > 1 ? baseSize : baseSize * aspect;
     const planeHeight = aspect > 1 ? baseSize / aspect : baseSize;
 
@@ -57,7 +59,7 @@
         mesh.position.set(targetX * posEase, targetY * posEase, 0);
 
         // Scale logic
-        const targetHover = hovered ? 1.2 : 1.0;
+        const targetHover = hovered ? 1.1 : 1.0;
         const finalTargetScale = (0.3 + 0.7 * p) * targetHover;
         lerpScale += (finalTargetScale - lerpScale) * 0.15;
         mesh.scale.set(lerpScale, lerpScale, 1);
@@ -72,13 +74,21 @@
 
 <T.Mesh
     bind:ref={mesh}
-    onclick={() => !isDragging && introProgress > 1.2 && image.project?.slug && goto(`/portfolio/${image.project.slug.current}`)}
+    onclick={() => {
+		if (!isDragging && introProgress > 1.2 && image.project?.slug) {
+			goto(`/portfolio/${image.project.slug.current}`);
+			setTimeout(() => {
+				menuer.setHidden(false)
+			}, 400);
+		}
+	}
+	}
     onpointerenter={() => { if (introProgress > 1.2) { hovered = true; cursor = 'pointer'; } }}
     onpointerleave={() => { hovered = false; cursor = ''; }}
 >
     <T.PlaneGeometry args={[planeWidth, planeHeight]} />
     <ImageMaterial 
-        url={urlFor(image.cover).width(800).auto('format').url()} 
+        url={urlFor(image.cover).width(400).auto('format').url()} 
         transparent
     />
 </T.Mesh>

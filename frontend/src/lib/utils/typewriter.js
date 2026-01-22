@@ -137,3 +137,40 @@ export function typewriterTransition(node, options = {}) {
         }
     };
 }
+
+/**
+ * typewriterKeep: Letter-by-letter reveal
+ * Changes visibility character by character to maintain layout.
+ */
+export function typewriterKeep(node, options = {}) {
+    const { 
+        speed = 50, 
+        delay = 0 
+    } = options;
+
+    const text = node.textContent.split(""); // Split into individual characters
+    node.textContent = ""; // Clear original text
+
+    // 1. Create spans for every character (including spaces) to keep layout
+    const charElements = text.map(char => {
+        const span = document.createElement('span');
+        span.textContent = char;
+        // span.style.visibility = 'hidden'; // Keep hidden but taking space
+        node.appendChild(span);
+        return span;
+    });
+
+    // 2. Animate visibility with a stagger
+    const tween = gsap.to(charElements, {
+        visibility: 'visible',
+        delay: delay / 1000,
+        stagger: speed / 1000, // Time between each letter appearing
+        duration: 0, // Instant pop-in for each letter
+    });
+
+    return {
+        destroy() {
+            tween.kill();
+        }
+    };
+}
