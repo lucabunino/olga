@@ -6,7 +6,6 @@
     import HeadSingle from '$lib/components/HeadSingle.svelte';
 	let { data } = $props()
 	const project = data.project[0]
-	$inspect(data)
 
 	function getGutter(size) {
 		if (size == 'xs') {
