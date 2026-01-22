@@ -12,6 +12,17 @@
 	let { data, children } = $props();
 	let scrollY = $state(0)
 	let DURATION = 500
+
+	import { onNavigate } from '$app/navigation';
+    onNavigate((navigation) => {
+        if (!document.startViewTransition) return;
+        return new Promise((resolve) => {
+            document.startViewTransition(async () => {
+                resolve();
+                await navigation.complete;
+            });
+        });
+    });
 </script>
 
 <svelte:window bind:scrollY></svelte:window>

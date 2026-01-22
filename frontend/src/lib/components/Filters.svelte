@@ -9,10 +9,21 @@
 	let searchInput = $state(undefined)
 
 	function openSearch() {
-		searchInput.textContent = '';
-	}
+        if (portfolio.search === 'search') {
+            portfolio.setSearch('');
+            searchInput.textContent = '';
+        }
+    }
+
+	function handleBlur() {
+        if (portfolio.search.trim() === '') {
+            portfolio.setSearch('search');
+            searchInput.textContent = 'search';
+        }
+    }
 
 	function handleInput(e) {
+		const text = e.target.innerText.replace(/\n/g, '');
 		portfolio.setSearch(e.target.innerText.replace(/^\s+|\s+$/g, ''));
 	}
 
@@ -78,6 +89,7 @@
 				onkeydown={handleKeydown}
 				oninput={handleInput}
 				onclick={() => {openSearch()}}
+				onblur={handleBlur}
 				>{@html portfolio.search || '&ZeroWidthSpace;'}</span>
 			<span in:slide|global={{ duration: 200, delay: 300, axis: 'x' }} out:slide|global={{ duration: 200, axis: 'x' }} class="underline"></span>
 		</div>
@@ -177,13 +189,19 @@
 			overflow: hidden;
 			white-space: nowrap;
 
+			&.is-placeholder {
+                color: var(--gray-dark);
+                font-style: italic;
+            }
+
+            &:focus {
+                color: var(--black);
+                font-style: normal;
+                outline: none;
+            }
+
 			@media screen and (max-width: 768px) {
 				width: unset;
-			}
-
-			&:focus {
-				color: var(--black);
-				outline: none;
 			}
 		}
 

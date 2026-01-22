@@ -2,13 +2,14 @@
     import { T, useTask } from '@threlte/core';
     import { ImageMaterial } from '@threlte/extras';
     import { urlFor } from '$lib/utils/image';
-    import { goto } from '$app/navigation';
+    import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
 
     let { 
         image, i, cols, rows, cell, gridWidth, gridHeight, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable() 
     } = $props();
 
+	let projectUrl = $derived(`/portfolio/${image.project.slug.current}`)
 	let menuer = getMenu();
     let mesh;
     let hovered = $state(false);
@@ -21,22 +22,13 @@
     const planeWidth = aspect > 1 ? baseSize : baseSize * aspect;
     const planeHeight = aspect > 1 ? baseSize / aspect : baseSize;
 
-    // --- POSITIONING LOGIC ---
-    // Extract positions from backend, defaulting to 0.5 (center)
+	// Positioning
     const pX = image.positionX ?? 0.5;
     const pY = image.positionY ?? 0.5;
 
-    // Calculate offset within the cell
-    // (pX - 0.5) converts 0->1 range to -0.5->0.5 range
-    // Multiplying by (cell - planeWidth) ensures the image stays within the cell bounds
     const offsetX = (pX - 0.5) * (cell - planeWidth);
     const offsetY = (pY - 0.5) * (cell - planeHeight);
 
-    // Stable Grid Positions + Offset
-    // const baseX = (i % cols - (cols - 1) / 2) * cell + offsetX;
-    // // Note: Y is inverted in 3D space, but since 1 is Top in your backend, 
-    // // we add the offsetY to move it "up"
-    // const baseY = (Math.floor(i / cols) - (rows - 1) / 2) * -cell + offsetY;
 	let baseX = $derived((i % cols - (cols - 1) / 2) * cell + offsetX);
     let baseY = $derived((Math.floor(i / cols) - (rows - 1) / 2) * -cell + offsetY);
 
@@ -76,15 +68,25 @@
     bind:ref={mesh}
     onclick={() => {
 		if (!isDragging && introProgress > 1.2 && image.project?.slug) {
-			goto(`/portfolio/${image.project.slug.current}`);
+			goto(projectUrl);
 			setTimeout(() => {
 				menuer.setHidden(false)
 			}, 400);
 		}
 	}
 	}
-    onpointerenter={() => { if (introProgress > 1.2) { hovered = true; cursor = 'pointer'; } }}
-    onpointerleave={() => { hovered = false; cursor = ''; }}
+    onpointerenter={() => {
+		preloadCode(projectUrl);
+        preloadData(projectUrl);
+		if (introProgress > 1.2) {
+			hovered = true;
+			cursor = 'pointer';
+		}
+	}}
+    onpointerleave={() => {
+		hovered = false;
+		cursor = '';
+	}}
 >
     <T.PlaneGeometry args={[planeWidth, planeHeight]} />
     <ImageMaterial 

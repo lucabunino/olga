@@ -10,6 +10,7 @@
 
 	import { getMenu } from '$lib/stores/menu.svelte.js';
     import { pageIn, pageOut } from '$lib/utils/transitions.js';
+    import { fade } from 'svelte/transition';
     let menuer = getMenu();
 
     const repeatedText = $derived(Array.from({ length: 10 }, () => data.homepage.marquee));
@@ -51,68 +52,70 @@
 </main>
 
 <style>
-#marquee {
-    background-color: var(--yellow);
-    width: 100%;
-    position: fixed;
-    top: var(--headerHeight);
-    left: 0;
-    z-index: 2;
-    overflow: hidden;
-	align-items: center;
-	transition: var(--transition-s);
+	main {
+		#marquee {
+			background-color: var(--yellow);
+			width: 100%;
+			position: fixed;
+			top: var(--headerHeight);
+			left: 0;
+			z-index: 2;
+			overflow: hidden;
+			align-items: center;
+			transition: var(--transition-s);
 
-	&.up {
-		top: 0;
+			&.up {
+				top: 0;
+			}
+
+			.marquee-content {
+				display: flex;
+				align-items: center;
+
+				p {
+					line-height: 1.8rem;
+				}
+			}
+
+			p {
+				white-space: nowrap;
+				padding-right: .3em;
+				margin: 0;
+
+				&::after {
+					content: '–';
+					margin-left: .3em;
+				}
+			}
+
+			a {
+				text-decoration: none;
+				color: inherit;
+				display: inline-block;
+			}
+
+			@media screen and (max-width: 768px) {
+				top: unset;
+				bottom: 0;
+
+				&.up {
+					top: unset;
+				}
+			}
+		}
+
+		#images {
+			width: 100vw;
+			height: 100vh;
+			position: fixed;
+			left: 0;
+			top: 0;
+			background-color: var(--white);
+			cursor: var(--cursor);
+			
+			&:active {
+				cursor: grabbing;
+			}
+		}
 	}
-
-    .marquee-content {
-        display: flex;
-        align-items: center;
-
-		p {
-			line-height: 1.8rem;
-		}
-    }
-
-    p {
-        white-space: nowrap;
-        padding-right: .3em;
-        margin: 0;
-
-		&::after {
-			content: '–';
-			margin-left: .3em;
-		}
-    }
-
-    a {
-        text-decoration: none;
-        color: inherit;
-        display: inline-block;
-    }
-
-	@media screen and (max-width: 768px) {
-		top: unset;
-		bottom: 0;
-
-		&.up {
-			top: unset;
-		}
-	}
-}
-
-#images {
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background-color: var(--white);
-    cursor: var(--cursor);
-    
-    &:active {
-        cursor: grabbing;
-    }
-}
 </style>

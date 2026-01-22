@@ -6,20 +6,15 @@
 	gsap.registerPlugin(Draggable, InertiaPlugin);
     import { horizontalLoop } from "$lib/utils/gsap"
     import { innerWidth } from "svelte/reactivity/window";
-    
-    // REMOVED: gsap.registerPlugin(Draggable, InertiaPlugin); 
-    // This was causing the 500 error on SSR
 
     let { related, title } = $props();
     let track = $state(undefined);
-
     let isDynamic = $derived.by(() => {
         if (!related?.length) return false;
         if (innerWidth.current < 640) return related.length >= 3;
         if (innerWidth.current < 1024) return related.length >= 4;
         return related.length >= 5;
     });
-
     let displayProjects = $derived.by(() => {
         if (!related?.length) return [];
         if (!isDynamic) return related;

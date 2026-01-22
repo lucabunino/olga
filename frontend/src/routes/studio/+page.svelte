@@ -34,7 +34,6 @@
 			{#if isLoaded}
 				{#each studio.poem as line, i}
 					{@const activeIndex = i - getBlankOffset(i)}
-
 					<p class="line">
 						{#each line.units as span, j}
 							{#if span._type === 'o'}
@@ -99,6 +98,8 @@
 			align-items: flex-start;
 			min-height: 100vh;
 			justify-self: center;
+			width: max-content;
+			padding: 0 var(--sp-m);
 
 			.line {
 				flex-basis: 100%;
@@ -123,6 +124,7 @@
 
 			@media screen and (max-width: 768px) {
 				padding: 0 var(--margin-mb);
+				width: auto;
 			}
 		}
 

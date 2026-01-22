@@ -37,12 +37,12 @@
 	<section id="opening">
 		<Media media={project.opening} />
 	</section>
-	<section id="info" class="md-24 md-20-mb">
+	<section id="info">
 		<div class="md-36 md-26-mb">
 			<h1>{project.title}</h1>
 			{#if project.subtitle}<h2>{project.subtitle}</h2>{/if}
 		</div>
-		<div>
+		<div class="md-24 md-16-mb">
 			<p><label>Year</label><span>{new Date(project.date).getFullYear()}</span></p>
 			{#if project.client}<p><label>Client</label><span>{project.client.title}</span></p>{/if}
 			{#if project.categories}<p><label>Category</label><span>{project.categories[0].title}</span></p>{/if}
@@ -111,10 +111,6 @@
 			row-gap: var(--sp-m);
 			padding: var(--sp-m) var(--sp-m) 0;
 
-			@media screen and (max-width: 768px) {
-				padding: var(--sp-m) var(--margin-mb) 0;
-			}
-
 			div:nth-child(1) {
 				grid-column: 1 / span 6;
 
@@ -142,16 +138,16 @@
 					grid-column: 1 / span 12;
 				}
 			}
+
+			@media screen and (max-width: 768px) {
+				padding: var(--sp-m) var(--margin-mb) 0;
+			}
 		}
 		#media {
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
 			padding: 0 var(--sp-m) var(--sp-m);
-
-			@media screen and (max-width: 768px) {
-				padding: 0 var(--margin-mb) var(--sp-m);
-			}
 			
 			.mediaText {
 				&.left {
@@ -180,17 +176,68 @@
 					row-gap: var(--sp-s);
 				}
 
-				&.sp-zero { column-gap: 0;}
-				&.sp-xs { column-gap: var(--sp-xs);}
-				&.sp-s { column-gap: var(--gutter);}
-				&.sp-m { column-gap: var(--sp-s);}
-				&.sp-l { column-gap: var(--sp-m);}
-				&.sp-xl { column-gap: var(--sp-l);}
-				&.sp-xxl { column-gap: var(--sp-xl);}
+				&.sp-zero {
+					column-gap: 0;
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
+				&.sp-xs {
+					column-gap: var(--sp-xs);
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
+				&.sp-s { 
+					column-gap: var(--gutter);
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
+				&.sp-m { 
+					column-gap: var(--sp-s);
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
+				&.sp-l { 
+					column-gap: var(--sp-m);
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
+				&.sp-xl { 
+					column-gap: var(--sp-l);
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
+				&.sp-xxl { 
+					column-gap: var(--sp-xl);
+					@media screen and (max-width: 768px) {
+						row-gap: var(--margin-mb);
+					}
+				}
 
-				&.left { grid-column: 1 / span 6; }
-				&.right { grid-column: 7 / span 6; }
-				&.center { grid-column: 4 / span 6; }
+				&.left {
+					grid-column: 1 / span 6;
+					@media screen and (max-width: 768px) {
+						grid-column: 1 / span 12;
+					}
+				}
+				&.right {
+					grid-column: 7 / span 6;
+					@media screen and (max-width: 768px) {
+						grid-column: 1 / span 12;
+					}
+				}
+				&.center {
+					grid-column: 4 / span 6;
+					@media screen and (max-width: 768px) {
+						grid-column: 1 / span 12;
+					}
+					
+				}
 			}
 
 			.mediaCentered {
@@ -198,6 +245,9 @@
 				display: grid;
 				grid-template-columns: repeat(var(--cols), 1fr);
 				margin: 0 calc(var(--sp-m)*-1);
+				@media screen and (max-width: 768px) {
+					margin: unset;
+				}
 			}
 
 			.mediaFull {
@@ -205,15 +255,57 @@
 				display: grid;
 				grid-template-columns: repeat(var(--cols), 1fr);
 				margin: 0 calc(var(--sp-m)*-1);
+				@media screen and (max-width: 768px) {
+					margin: unset;
+				}
 			}
 
-			*.mt-zero {margin-top: 0;}
-			*.mt-xs {margin-top: var(--sp-xs);}
-			*.mt-s {margin-top: var(--sp-s);}
-			*.mt-m {margin-top: var(--sp-m);}
-			*.mt-l {margin-top: var(--sp-l);}
-			*.mt-xl {margin-top: var(--sp-xl);}
-			*.mt-xxl {margin-top: var(--sp-xxl);}
+			*.mt-zero {
+				margin-top: 0;
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+			*.mt-xs {
+				margin-top: var(--sp-xs);
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+			*.mt-s {
+				margin-top: var(--sp-s);
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+			*.mt-m {
+				margin-top: var(--sp-m);
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+			*.mt-l {
+				margin-top: var(--sp-l);
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+			*.mt-xl {
+				margin-top: var(--sp-xl);
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+			*.mt-xxl {
+				margin-top: var(--sp-xxl);
+				@media screen and (max-width: 768px) {
+					margin-top: var(--margin-mb);
+				}
+			}
+
+			@media screen and (max-width: 768px) {
+				padding: 0 var(--margin-mb) var(--sp-m);
+			}
 		}
 	}
 </style>

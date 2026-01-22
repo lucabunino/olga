@@ -34,13 +34,17 @@
 		width: 100vw;
 		padding: var(--sp-s) var(--sp-m) var(--sp-l);
 
+		h1 {
+			margin-bottom: var(--sp-m);
+		}
+		
+		.policyText {
+			max-width: 800px;
+		}
+
 		@media screen and (max-width: 768px) {
 			min-height: calc(100svh - 8rem);
 			padding: var(--sp-s) var(--margin-mb) var(--sp-l);
-		}
-
-		h1 {
-			margin-bottom: var(--sp-m);
 		}
 	}
 </style>

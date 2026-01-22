@@ -9,15 +9,11 @@
     import HeadSingle from '$lib/components/HeadSingle.svelte';
     let portfolio = getPortfolio();
 
-	 // Keep your other logic...
     let activeProject = $state(0);
-    
-    // 1. Track sorting state
     let sortKey = $state('year');
-    let sortDirection = $state('desc'); // 'asc' or 'desc'
+    let sortDirection = $state('desc');
 
 	let sortedPortfolio = $derived.by(() => {
-        // Create a copy to avoid mutating the original prop
         return [...data.portfolio].sort((a, b) => {
             let aVal = getSortValue(a, sortKey);
             let bVal = getSortValue(b, sortKey);
@@ -54,13 +50,11 @@
 	function matchesSearch(project) {
 		if (!portfolio.search || portfolio.search === 'search') return true;
 		const s = portfolio.search.toLowerCase();
-
-		// Combine all text into one array, including all category titles
 		const allSearchableTerms = [
 			project.title,
 			project.client?.title,
 			project.date ? new Date(project.date).getFullYear().toString() : '',
-			...(project.categories?.map(cat => cat.title) || []) // Spreads all category titles into the array
+			...(project.categories?.map(cat => cat.title) || [])
 		];
 
 		return allSearchableTerms.some(field => field?.toLowerCase().includes(s));
@@ -223,19 +217,6 @@
 					grid-template-columns: repeat(12, 1fr);
 					column-gap: var(--gutter);
 
-					@media screen and (max-width: 768px) {
-						padding-bottom: var(--sp-s);
-
-						& {
-							border-top: solid 1px var(--black);
-						}
-
-						&.hidden + .project:not(.hidden),
-						&:first-child:not(.hidden) {
-							border-top: none;
-						}
-					}
-
 					&.hidden {
 						display: none;
 					}
@@ -254,16 +235,17 @@
 
 					.year {
 						grid-column: 1 / span 1;
-
-						@media screen and (max-width: 768px) {
-							grid-column: 1 / span 12;
-						}
-
+						
 						&.hidden {
 							@media screen and (min-width: 769px) {
 								display: none;
 							}
 						}
+
+						@media screen and (max-width: 768px) {
+							grid-column: 1 / span 12;
+						}
+
 					}
 					.client {
 						grid-column: 5 / span 2;
@@ -296,6 +278,19 @@
 					&:hover {
 						color: var(--gray-dark);
 					}
+
+					@media screen and (max-width: 768px) {
+						padding-bottom: var(--sp-s);
+
+						& {
+							border-top: solid 1px var(--black);
+						}
+
+						&.hidden + .project:not(.hidden),
+						&:first-child:not(.hidden) {
+							border-top: none;
+						}
+					}
 				}
 			}
 			.cover {
@@ -306,12 +301,12 @@
 				aspect-ratio: 3/4;
 				z-index: -1;
 
-				@media screen and (max-width: 768px) {
-					display: none;
-				}
-
 				&.active {
 					z-index: 2;
+				}
+
+				@media screen and (max-width: 768px) {
+					display: none;
 				}
 			}
 		}
