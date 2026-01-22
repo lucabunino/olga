@@ -1,5 +1,5 @@
 import { gsap } from 'gsap';
-import { TextPlugin } from 'gsap/TextPlugin';
+import { TextPlugin } from 'gsap/dist/TextPlugin';
 
 // Default values in milliseconds
 const DEFAULT_SPEED = 50;   
