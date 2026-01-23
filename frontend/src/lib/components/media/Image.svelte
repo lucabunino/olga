@@ -1,20 +1,31 @@
 <script>
     import { urlFor } from "$lib/utils/image";
 
-    let { image, imageMobile = undefined, minHeight = undefined } = $props();
+    let { image, imageMobile = undefined, minHeight = undefined, size = 'm' } = $props();
     let isLoaded = $state(false);
-    
+
+	// Image metadata
     const { width, height, lqip } = image.asset.metadata;
 
-    // A single action to handle everything: decoding, 200ms, and viewport
+	// Image size management
+	const widths = [768, 1080, 1920, 2560];
+	const srcSet = widths
+        .map(w => `${urlFor(image).width(w).auto('format').url()} ${w}w`)
+        .join(', ');
+	const sizesMap = {
+        xl: '100vw',
+        l: '75vw',
+        m: '(max-width: 1024px) 100vw, 50vw', // 100vw on mobile, 50vw on desktop
+        s: '(max-width: 768px) 50vw, 25vw'
+    };
+
     function reveal(node) {
         const observer = new IntersectionObserver(async ([entry]) => {
             if (entry.isIntersecting) {
                 const img = node.querySelector('img');
                 
-                // Wait for both 200ms and the image to be decoded
                 await Promise.all([
-                    // new Promise(r => setTimeout(r, 200)),
+                    new Promise(r => setTimeout(r, 200)),
                     img.complete ? img.decode() : new Promise(r => img.onload = () => img.decode().then(r))
                 ]);
                 
