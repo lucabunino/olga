@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
-	// ssr: {
-	// 	noExternal: ['gsap']
-	// }
+	ssr: {
+		noExternal: ['gsap']
+	}
 });

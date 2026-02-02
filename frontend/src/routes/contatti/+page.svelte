@@ -80,10 +80,6 @@
 				column-gap: var(--gutter);
 				row-gap: var(--sp-m);
 
-				@media screen and (max-width: 576px) {
-					grid-column: 1 / span 12;
-				}
-
 				.email {
 					grid-column: 1 / span 3;
 					text-decoration: underline;
@@ -107,6 +103,10 @@
 				}
 				.socials {
 					grid-column: 1 / span 6;
+				}
+
+				@media screen and (max-width: 576px) {
+					grid-column: 1 / span 12;
 				}
 			}
 		}

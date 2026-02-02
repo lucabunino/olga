@@ -3,7 +3,7 @@
     import Gif from "./Gif.svelte";
     import Video from "./Video.svelte";
 
-    let { media, customWidthActive = false, minHeight = undefined } = $props();
+    let { media, customWidthActive = false, minHeight = undefined, size = 'm' } = $props();
     let customWidth = media?.customWidth ?? 65;
 </script>
 
@@ -13,6 +13,7 @@
             image={media.image} 
             imageMobile={media.imageMobile} 
             {minHeight}
+			{size}
         />
     {:else if media && media.type == 'video'}
         <div class="video-wrapper">
@@ -49,6 +50,7 @@
         width: 100%;
         height: 100%;
         position: relative;
+
 		@media screen and (max-width: 768px) {
 			 width: 100% !important;
 		}
@@ -78,7 +80,6 @@
 	}
 
     @media (max-width: 768px) {
-        /* Only switch if the mobile version actually exists */
         .media-container:has(.mobile-only) .desktop-only { display: none; }
         .media-container:has(.mobile-only) .mobile-only { display: block; }
     }

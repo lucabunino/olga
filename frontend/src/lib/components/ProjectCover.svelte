@@ -6,7 +6,7 @@
 <a href="/portfolio/{project.slug.current}">
 	<div class="media-wrapper">
 		<div>
-			<Media media={project.cover} customWidthActive={false} />
+			<Media media={project.cover} customWidthActive={false} size='m' />
 		</div>
 	</div>
 	<h2 class="md-12">{project.title}</h2>

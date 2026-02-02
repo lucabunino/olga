@@ -4,7 +4,6 @@
         children 
     } = $props();
 
-    // Access properties directly to maintain clean reactivity in Svelte 5
     const value = $derived(portableText.value);
     const style = $derived(value?.style);
     const listItem = $derived(value?.listItem);
@@ -27,7 +26,7 @@
 {/if}
 
 <style>
-	 :global(.portableText p + p) {
+	:global(.portableText p + p) {
         margin-top: 1.1em;
     }
 	:global(.portableText ul) {

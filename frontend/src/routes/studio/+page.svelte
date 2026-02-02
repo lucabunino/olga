@@ -81,7 +81,7 @@
 	{/if}
 	{#if studio.image}
 		<section id="image">
-			<Media media={studio.image} minHeight={300}/>
+			<Media media={studio.image} minHeight={300} size='xl'/>
 		</section>
 	{/if}
 	{#if studio.related}

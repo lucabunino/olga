@@ -3,15 +3,19 @@
     import ProjectCover from '$lib/components/ProjectCover.svelte';
     import Views from '$lib/components/Views.svelte';
     import Filters from '$lib/components/Filters.svelte';
-    import { fade, slide } from 'svelte/transition';
+    import { fade, fly, slide } from 'svelte/transition';
 	let { data } = $props()
 	import { getPortfolio } from '$lib/stores/portfolio.svelte.js';
     import HeadSingle from '$lib/components/HeadSingle.svelte';
+    import { typewriterKeep } from '$lib/utils/typewriter.js';
     let portfolio = getPortfolio();
 
     let activeProject = $state(0);
     let sortKey = $state('year');
     let sortDirection = $state('desc');
+	let domLoaded = $state(false)
+	let activeSorting = $state('year')
+	let previousYear = 3000
 
 	let sortedPortfolio = $derived.by(() => {
         return [...data.portfolio].sort((a, b) => {
@@ -24,6 +28,10 @@
         });
     });
 
+	$effect(() => {
+		domLoaded = true
+	})
+	
 	function getSortValue(project, key) {
         switch (key) {
             case 'year': return project.date ? new Date(project.date).getTime() : 0;
@@ -33,7 +41,6 @@
             default: return '';
         }
     }
-
     function sortby(key) {
         if (sortKey === key) {
             sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -42,11 +49,6 @@
             sortDirection = 'asc';
         }
     }
-
-	
-	let activeSorting = $state('year')
-	let previousYear = 3000
-
 	function matchesSearch(project) {
 		if (!portfolio.search || portfolio.search === 'search') return true;
 		const s = portfolio.search.toLowerCase();
@@ -59,7 +61,6 @@
 
 		return allSearchableTerms.some(field => field?.toLowerCase().includes(s));
 	}
-
 	function getDisplayCategory(project) {
 		const s = portfolio.search?.toLowerCase();
 		if (!s || s === 'search') return project.categories[0]?.title || '';
@@ -96,42 +97,48 @@
 		</section>
 	{/if}
 	<section id="portfolio" class={portfolio.view}>
-		{#each sortedPortfolio as project, i}
-			{@const currentYear = project.date ? new Date(project.date).getFullYear() : null}
-			{@const previous = i > 0 ? (sortedPortfolio[i - 1].date ? new Date(sortedPortfolio[i - 1].date).getFullYear() : null) : null}
-			{@const isFirst = sortKey === 'year' ? (currentYear !== previous) : true}
-			{#if portfolio.view == 'grid'}
-				{#if portfolio.category == undefined || portfolio.category == project.category?.slug.current}
-					<ProjectCover {project}/>
+		{#if domLoaded}
+			{#each sortedPortfolio as project, i}
+				{@const currentYear = project.date ? new Date(project.date).getFullYear() : null}
+				{@const previous = i > 0 ? (sortedPortfolio[i - 1].date ? new Date(sortedPortfolio[i - 1].date).getFullYear() : null) : null}
+				{@const isFirst = sortKey === 'year' ? (currentYear !== previous) : true}
+				{#if portfolio.view == 'grid'}
+					{#if portfolio.category == undefined || portfolio.category == project.category?.slug.current}
+						<div in:fly|global={{ duration: 500, y: 600, delay: i*50 }}>
+							<ProjectCover {project}/>
+						</div>
+					{/if}
+				{:else if portfolio.view == 'list'}
+					<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href="/portfolio/{project.slug.current}" onmouseenter={() => activeProject = i}>
+						{#if domLoaded &&project.date}
+							<label for="year" class="md-12-mb" >year</label>
+							<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date} use:typewriterKeep={{ speed: 40, delay: i*50}}>{new Date(project.date).getFullYear()}</time>
+						{/if}
+						{#if domLoaded &&project.client}
+							<label for="client" class="md-12-mb" use:typewriterKeep={{ speed: 40, delay: i*50}}>client</label>
+							<span id="client" class="client" use:typewriterKeep={{ speed: 40, delay: i*50}}>{project.client.title}</span>
+						{/if}
+						{#if domLoaded &&project.title}
+							<label for="title" class="md-12-mb" use:typewriterKeep={{ speed: 40, delay: i*50}}>title</label>
+							<span id="title" class="title" use:typewriterKeep={{ speed: 40, delay: i*50}}>{project.title}</span>
+						{/if}
+						{#if domLoaded &&project.categories}
+							<label for="category" class="md-12-mb" use:typewriterKeep={{ speed: 40, delay: i*50}}>category</label>
+							<span id="category" class="category" use:typewriterKeep={{ speed: 40, delay: i*50}}>{getDisplayCategory(project)}</span>
+						{/if}
+					</a>
+					{(() => {previousYear = new Date(project.date).getFullYear()})()}
 				{/if}
-			{:else if portfolio.view == 'list'}
-				<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href="/portfolio/{project.slug.current}" onmouseenter={() => activeProject = i}>
-					{#if project.date}
-						<label for="year" class="md-12-mb">year</label>
-						<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date}>{new Date(project.date).getFullYear()}</time>
-					{/if}
-					{#if project.client}
-						<label for="client" class="md-12-mb">client</label>
-						<span id="client" class="client">{project.client.title}</span>
-					{/if}
-					{#if project.title}
-						<label for="title" class="md-12-mb">title</label>
-						<span id="title" class="title">{project.title}</span>
-					{/if}
-					{#if project.categories}
-						<label for="category" class="md-12-mb">category</label>
-						<span id="category" class="category">{getDisplayCategory(project)}</span>
-					{/if}
-				</a>
-				{(() => {previousYear = new Date(project.date).getFullYear()})()}
-			{/if}
-		{/each}
-		{#if portfolio.view == 'list'}
-			{#key activeProject}
-				<div class="cover" in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
-					<Media media={sortedPortfolio[activeProject].cover}/>
+			{/each}
+			{#if portfolio.view == 'list'}
+				<div in:fly|global={{ duration: 500, y: 10 }}>
+					{#key activeProject}
+						<div class="cover">
+							<Media media={sortedPortfolio[activeProject].cover} size='m'/>
+						</div>
+					{/key}
 				</div>
-			{/key}
+			{/if}
 		{/if}
 	</section>
 </main>

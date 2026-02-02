@@ -34,7 +34,7 @@
 
 <main>
 	<section id="opening">
-		<Media media={project.opening} />
+		<Media media={project.opening} size='xl'/>
 	</section>
 	<section id="info">
 		<div class="md-36 md-26-mb">
@@ -66,21 +66,21 @@
 				<div class="mediaGrid {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
 				style="--cols: {block.items.length};">
 					{#each block.items as item, i}
-						<Media media={item} />
+						<Media media={item}  size='l'/>
 					{/each}
 				</div>
 			{:else if block._type == "mediaCentered"}
 				<div class="mediaCentered {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'}"
 				style="--cols: {block.items.length};">
 					{#each block.items as item, i}
-						<Media media={item} customWidthActive={true}/>
+						<Media media={item} customWidthActive={true} size='l'/>
 					{/each}
 				</div>
 			{:else if block._type == "mediaFull"}
 				<div class="mediaFull {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'}"
 				style="--cols: {block.items.length};">
 					{#each block.items as item, i}
-						<Media media={item} />
+						<Media media={item} size='xl'/>
 					{/each}
 				</div>
 			{:else}

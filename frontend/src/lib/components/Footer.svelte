@@ -56,7 +56,7 @@
 		<div class="typewriter">
 			<p use:typewriterLoop={{ 
 				words: info.footerLoop, 
-				speed: 100, 
+				speed: 100 , 
 				pause: 2000
 			}}></p>
 		</div>

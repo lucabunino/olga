@@ -1,6 +1,7 @@
 <script>
     import { urlFor } from '$lib/utils/image.js';
     import { Canvas } from '@threlte/core'
+    import { Suspense } from '@threlte/extras'
     import Grid from '$lib/components/Grid.svelte'
     import { innerHeight, innerWidth } from 'svelte/reactivity/window';
     import Marquee from 'svelte-fast-marquee';
@@ -46,7 +47,17 @@
 
     <section id="images" style="--cursor: {cursor ? cursor : 'grab'}">
         <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-            <Grid images={data.homepage?.images} bind:cursor={cursor}/>
+            <!-- <Grid images={data.homepage?.images} bind:cursor={cursor}/> -->
+			<Suspense>
+				{#snippet fallback()}
+					<T.Mesh>
+						<T.BoxGeometry args={[1, 1, 1]} />
+						<T.MeshBasicMaterial color="black" />
+					</T.Mesh>
+				{/snippet}
+
+				<Grid images={data.homepage?.images} bind:cursor={cursor}/>
+			</Suspense>
         </Canvas>
     </section>
 </main>

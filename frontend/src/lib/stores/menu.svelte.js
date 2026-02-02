@@ -1,5 +1,5 @@
 let open = $state(false)
-let hidden = $state(false)
+let hidden = $state(true)
 
 export function getMenu() {
 	function setOpen(o) {

@@ -47,18 +47,23 @@
     style:background-image={lqip ? `url(${lqip})` : 'none'}
 >
     <picture>
-        {#if imageMobile}
-            <source media="(max-width: 768px)" srcset={urlFor(imageMobile).width(768).url()} />
-        {/if}
-        <img
-            class:loaded={isLoaded}
-            alt={image.asset?.altText || ""}
-            loading="lazy"
-            decoding="async"
-            {width}
+		{#if imageMobile}
+			<source 
+				media="(max-width: 768px)" 
+				srcset="{urlFor(imageMobile).width(768).url()} 768w, {urlFor(imageMobile).width(1536).url()} 1536w"
+				sizes="100vw"
+			/>
+		{/if}
+		<img
+			class:loaded={isLoaded}
+			loading="lazy"
+			{width}
             {height}
-            src={urlFor(image).width(1920).url()}
-        />
+			{srcSet}
+			sizes={sizesMap[size]}
+			src={urlFor(image).width(1920).url()} 
+			alt={image.asset?.altText || ""}
+		/>
     </picture>
 </figure>
 
