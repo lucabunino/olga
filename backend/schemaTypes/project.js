@@ -45,11 +45,6 @@ export default {
 			to: [{ type: 'client' }],
 		},
 		{
-			name: 'category',
-			type: 'reference',
-			to: [{ type: 'category' }],
-		},
-		{
 			name: 'categories',
 			type: 'array', 
 			of: [{
@@ -57,6 +52,14 @@ export default {
 				to: [{ type: 'category' }],
 			}],
 			validation: Rule => Rule.required(),
+		},
+		{
+			name: 'subcategories',
+			type: 'array', 
+			of: [{
+				type: 'reference',
+				to: [{ type: 'subcategory' }],
+			}],
 		},
 		media("cover"),
 		media("opening"),

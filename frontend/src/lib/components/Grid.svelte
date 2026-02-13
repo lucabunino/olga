@@ -8,7 +8,7 @@
 	import { getMenu } from '$lib/stores/menu.svelte.js';
     let menuer = getMenu();
 
-    let { images, cursor = $bindable() } = $props();
+    let { images, cursor = $bindable(), isExiting } = $props();
 	let body = $state()
 
 	$effect(() => {
@@ -178,6 +178,7 @@
             {currentX} {currentY} 
             {introProgress} {isDragging}
             {gridScale}
+			{isExiting}
             bind:cursor
         />
     {/each}

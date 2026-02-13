@@ -32,3 +32,14 @@ export function pageOut(node, { delay, duration, scrollY, pageHeight, pageWidth 
     }
   };
 }
+
+export function mock(node, { delay, duration }) {
+  return {
+    delay,
+    duration,
+    css: (t) => {
+      return `
+      `;
+    }
+  };
+}

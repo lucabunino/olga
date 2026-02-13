@@ -1,12 +1,14 @@
 <script>
-    import { typewriterTransition } from "$lib/utils/typewriter";
+    import { typewriterKeep, typewriterTransition } from "$lib/utils/typewriter";
     import { fade, slide } from "svelte/transition";
 	import { getPortfolio } from '$lib/stores/portfolio.svelte.js';
     import { tick } from "svelte";
 	let { categories } = $props()
-
+	
+	const SPEED = 5
 	let portfolio = getPortfolio()
 	let searchInput = $state(undefined)
+	let filtersHeight = $state(0)
 
 	function openSearch() {
         if (portfolio.search === 'search') {
@@ -37,9 +39,48 @@
         	searchInput?.blur();
 		}
 	}
+
+	let categoriesTimeline = $derived.by(() => {
+        let currentTotalChars = 0;
+        const SEP_STR = " / ";
+        
+        return categories.map((cat, i) => {
+            const buttonDelay = currentTotalChars * SPEED;
+            currentTotalChars += cat.title.length;
+
+            const isLast = i === categories.length - 1;
+            const separatorDelay = currentTotalChars * SPEED;
+            
+            if (!isLast) currentTotalChars += SEP_STR.length;
+
+            return { ...cat, buttonDelay, separatorDelay, isLast };
+        });
+    });
+
+    let subcategoriesTimeline = $derived.by(() => {
+        const activeCat = categories.find(c => c.slug.current === portfolio.category);
+        if (!activeCat || !activeCat.subcategories) return [];
+
+        let currentTotalChars = 0; 
+        const SEP_STR = " / ";
+        const BASE_OFFSET = 200;
+
+        return activeCat.subcategories.filter(Boolean).map((sub, i) => {
+            // Naming unified to buttonDelay
+            const buttonDelay = BASE_OFFSET + (currentTotalChars * SPEED);
+            currentTotalChars += sub.title.length;
+
+            const isLast = i === activeCat.subcategories.filter(Boolean).length - 1;
+            const separatorDelay = BASE_OFFSET + (currentTotalChars * SPEED);
+            
+            if (!isLast) currentTotalChars += SEP_STR.length;
+
+            return { ...sub, buttonDelay, separatorDelay, isLast };
+        });
+    });
 </script>
 
-<div id="filters">
+<div id="filters" style="height: {portfolio.filters ? `${filtersHeight}px` : '1.1em'}">
 	{#if portfolio.view == "grid"}
 		<button
 			class="toggle"
@@ -57,25 +98,47 @@
 					<span class="line"></span>
 				</div>
 			{:else}
-				<span in:typewriterTransition|global={{ speed: 20, delay: 200 }} out:typewriterTransition|global={{ speed: 20 }}>filters</span>
+				<span in:typewriterTransition|global={{ speed: 20, delay: 300 }} out:typewriterTransition|global={{ speed: 20 }}>filters</span>
 			{/if}
 		</button>
-		<div id="filters-panel" class="categories">
-			{#each categories as category, i}
-				{#if portfolio.filters && portfolio.view == 'grid' && portfolio.category == undefined || portfolio.category == category.slug.current}
-					<button class="category" in:typewriterTransition|global={{ speed: 20, delay: 0 }} out:typewriterTransition|global={{ speed: 20 }}
-					aria-pressed={portfolio.category === category.slug.current}
-					onclick={() =>
+			<div id="filters-panel" class="categories" bind:clientHeight={filtersHeight}>
+			{#if portfolio.filters}
+				{#each categoriesTimeline as category, i}
+					{#if portfolio.category == undefined || portfolio.category == category.slug.current}
+						<button 
+							class="category" 
+							use:typewriterKeep={{ speed: SPEED, delay: category.buttonDelay }}
+							out:typewriterKeep|global={{ speed: SPEED }}
+							aria-pressed={portfolio.category === category.slug.current}
+							onclick={() =>
 								portfolio.category === category.slug.current
 								? (portfolio.setCategory(undefined))
 								: (portfolio.setCategory(category.slug.current))
 							}
 						>
-						{category.title}
-					</button>
-				{/if}
-			{/each}
-		</div>
+							{category.title}
+						</button>{#if !category.isLast && portfolio.category == undefined}<span class="separator" use:typewriterKeep={{ speed: SPEED, delay: category.separatorDelay }} >{@html " / "}</span>{/if}
+					{/if}
+					{#if portfolio.category == category.slug.current}
+						<div class="subcategories">
+							{#each subcategoriesTimeline as subcategory}
+								<button 
+									class="subcategory" 
+									use:typewriterKeep={{ speed: SPEED, delay: subcategory.buttonDelay }}
+									aria-pressed={portfolio.subcategories.includes(subcategory.slug.current)}
+									onclick={() => portfolio.toggleSubcategory(subcategory.slug.current)}
+								>
+									{subcategory.title}
+								</button>
+								{#if !subcategory.isLast}
+									<span class="separator" use:typewriterKeep={{ speed: SPEED, delay: subcategory.separatorDelay }}>{@html " / "}</span>
+								{/if}
+							{/each}
+						</div>
+					{/if}
+				{/each}
+			{/if}
+</div>
 	{:else if portfolio.view == "list"}
 		<div id="search">
 				<span
@@ -110,7 +173,9 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		min-height: 1.1em;
+		width: calc((100% - var(--gutter)*2)/12 * 11);
+		transition: var(--transition-s);
+		position: relative;
 
 		.toggle {
 			position: relative;
@@ -161,19 +226,34 @@
 
 		.categories {
 			display: inline;
+			width: stretch;
 
 			.category {
-				&:not(:last-of-type) {
-					&::after {
-						content: '/';
-						margin: 0 .3em;
-					}
+				&:hover {
+					color: var(--gray-dark);
 				}
+			}
 
+			.separator {
+				color: var(--black);
+			}
+		}
+
+		.subcategories {
+			display: inline;
+			width: 70%;
+			position: absolute;
+			right: 0;
+
+			.subcategory {
 				&:hover,
 				&[aria-pressed="true"] {
 					color: var(--gray-dark);
 				}
+			}
+
+			.separator {
+				color: var(--black);
 			}
 		}
 	}

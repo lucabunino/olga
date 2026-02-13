@@ -13,7 +13,7 @@ export const myStructure = (S, context) => {
     S.divider(),
 	S.documentTypeListItem('client').title('Clients'),
     S.documentTypeListItem('category').title('Categories'),
-    // S.documentTypeListItem('area').title('Area (temp)'),
+    S.documentTypeListItem('subcategory').title('Subcategories'),
     S.divider(),
     S.listItem()
       .title('Studio')

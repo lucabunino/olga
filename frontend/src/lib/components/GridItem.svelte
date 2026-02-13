@@ -7,7 +7,7 @@
 	import { getMenu } from '$lib/stores/menu.svelte.js';
 
     let { 
-        image, i, cols, rows, cell, gridWidth, gridHeight, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable() 
+        image, i, cols, rows, cell, gridWidth, gridHeight, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable(), isExiting
     } = $props();
 
 	const loader = new TextureLoader();
@@ -45,6 +45,7 @@
         return ((((v + half) % range) + range) % range) - half;
     };
 
+	let exitProgress = $state(0);
     useTask(() => {
         if (!mesh) return;
 

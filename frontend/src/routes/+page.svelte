@@ -5,23 +5,46 @@
     import Grid from '$lib/components/Grid.svelte'
     import { innerHeight, innerWidth } from 'svelte/reactivity/window';
     import Marquee from 'svelte-fast-marquee';
-
-    let { data } = $props()
-    let cursor = $state()
-
 	import { getMenu } from '$lib/stores/menu.svelte.js';
-    import { pageIn, pageOut } from '$lib/utils/transitions.js';
-    import { fade } from 'svelte/transition';
-    let menuer = getMenu();
+    import { pageIn, pageOut, mock } from '$lib/utils/transitions.js';
+    import { fade, slide, fly } from 'svelte/transition';
+	import { onNavigate } from '$app/navigation';
 
+	let { data } = $props()
+    let cursor = $state()
+    let domLoaded = $state(false)
+    let menuer = getMenu();
     const repeatedText = $derived(Array.from({ length: 10 }, () => data.homepage.marquee));
+	let isExiting = $state(false);
+    const DURATION = 800;
+
+	$effect(() => {
+		domLoaded = true
+
+		return () => {
+			domLoaded = false
+		}
+	})
+
+    onNavigate(() => {
+        // 1. Attiviamo lo stato di uscita per far partire eventuali animazioni/fade
+        isExiting = true;
+
+        // 2. Restituiamo una Promise: SvelteKit aspetterà che si risolva
+        // prima di distruggere questa pagina e montare la prossima.
+        // return new Promise((resolve) => {
+        //     setTimeout(() => {
+        //         resolve();
+        //     }, DURATION);
+        // });
+    });
 </script>
 
 <main>
-    {#if data.homepage.marquee}
+    {#if data.homepage.marquee && !isExiting}
         <div id="marquee" class="md-12 {menuer.hidden ? 'up' : 'down'}"
 		in:pageIn={{ duration: DURATION, delay: 0, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
-		out:pageOut={{ duration: DURATION, delay: 0, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
+		out:fly={{ duration: 300, y: -20 }}
 		>
             <Marquee speed={70} pauseOnHover={true}>
                 <div class="marquee-content">
@@ -44,22 +67,26 @@
             </Marquee>
         </div>
     {/if}
+	{#if !isExiting}
+		<!-- <section id="images" style="--cursor: {cursor ? cursor : 'grab'}"
+		out:pageOut={{ duration: DURATION, delay: 0, scrollY: scrollY, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}> -->
+		<section id="images" style="--cursor: {cursor ? cursor : 'grab'}"
+		out:mock={{ duration: DURATION}}>
+			<Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
+				<Grid images={data.homepage?.images} bind:cursor={cursor} {isExiting}/>
+				<!-- <Suspense>
+					{#snippet fallback()}
+						<T.Mesh>
+							<T.BoxGeometry args={[1, 1, 1]} />
+							<T.MeshBasicMaterial color="black" />
+						</T.Mesh>
+					{/snippet}
 
-    <section id="images" style="--cursor: {cursor ? cursor : 'grab'}">
-        <Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-            <!-- <Grid images={data.homepage?.images} bind:cursor={cursor}/> -->
-			<Suspense>
-				{#snippet fallback()}
-					<T.Mesh>
-						<T.BoxGeometry args={[1, 1, 1]} />
-						<T.MeshBasicMaterial color="black" />
-					</T.Mesh>
-				{/snippet}
-
-				<Grid images={data.homepage?.images} bind:cursor={cursor}/>
-			</Suspense>
-        </Canvas>
-    </section>
+					<Grid images={data.homepage?.images} bind:cursor={cursor}/>
+				</Suspense> -->
+			</Canvas>
+		</section>
+	{/if}
 </main>
 
 <style>

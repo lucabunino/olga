@@ -1,7 +1,7 @@
 import { TagIcon } from "@sanity/icons";
 
 export default {
-	name: 'category',
+	name: 'subcategory',
 	type: 'document',
 	icon: TagIcon,
 	fields: [
@@ -18,14 +18,6 @@ export default {
 				source: 'title',
 				maxLength: 96,
 			},
-		},
-		{
-			name: 'subcategories',
-			type: 'array', 
-			of: [{
-				type: 'reference',
-				to: [{ type: 'subcategory' }],
-			}],
 		},
 	],
 };

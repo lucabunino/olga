@@ -113,6 +113,7 @@ export async function getPortfolio() {
 			date,
 			client->{title},
 			categories[]->{title, slug},
+			subcategories[]->{title, slug},
 			cover {
 				${media}
 			},
@@ -132,7 +133,11 @@ export async function getPortfolioCategories() {
 			) > 0
 		] | order(title asc) {
 			title,
-			slug
+			slug,
+			subcategories[]-> {
+				title,
+				slug,
+			}
 		}
 		`
 	);

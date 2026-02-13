@@ -2,6 +2,7 @@ import homepage from './homepage'
 import project from './project'
 import client from './client'
 import category from './category'
+import subcategory from './subcategory'
 import area from './area'
 import studio from './studio'
 import contact from './contact'
@@ -16,6 +17,7 @@ export const schemaTypes = [
 	project,
 	client,
 	category,
+	subcategory,
 	area,
 	studio,
 	contact,
