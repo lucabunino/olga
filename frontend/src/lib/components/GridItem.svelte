@@ -14,7 +14,9 @@
 	const lqipUrl = image.cover.asset.metadata.lqip;
     const mainUrl = urlFor(image.cover).width(600).quality(60).auto('format').url();
 	const placeholderTexture = loader.load(lqipUrl);
-    const mainTexture = loader.load(mainUrl);
+    const mainTexture = loader.load(mainUrl, (tex) => {
+		tex.colorSpace = 'srgb';
+	});
 	mainTexture.matrixAutoUpdate = false;
 
 	let projectUrl = $derived(`/portfolio/${image.project.slug.current}`)
