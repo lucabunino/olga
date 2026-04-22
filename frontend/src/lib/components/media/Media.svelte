@@ -29,7 +29,7 @@
     {:else if media && media.type == 'gif'}
          <div class="gif-wrapper">
             <div class="desktop-only">
-                <Gif frames={media.gifFrames} interval={media.gifInterval} {minHeight}/>
+                <Gif frames={media.gifFrames} interval={media.gifInterval > 0 ? media.gifInterval : 500} {minHeight}/>
             </div>
             {#if media.gifFramesMobile?.length > 0}
                 <div class="mobile-only">

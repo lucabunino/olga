@@ -18,7 +18,10 @@
     };
 
     const currentFrames = $derived(innerWidth.current <= 768 && framesMobile?.length > 0 ? framesMobile : frames);
-    const { width, height, lqip } = $derived(currentFrames[0]?.asset?.metadata || {});
+    const { width, height } = $derived(currentFrames[0]?.asset?.metadata.dimensions || {});
+    const { lqip } = $derived(currentFrames[0]?.asset?.metadata || {});
+
+	$inspect(currentFrames[0])
 
     // Per-frame srcset generation
     const getSrcSet = (frame) => widths
@@ -82,11 +85,11 @@
     {/each}
 </div>
 
-<style>
+<style lang="scss">
     .gif-container {
         position: relative;
         width: 100%;
-        height: 100%;
+        // height: 100%;
         overflow: hidden;
         background-size: cover;
         background-position: center;

@@ -66,7 +66,7 @@
 				<div class="mediaGrid {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
 				style="--cols: {block.items.length};">
 					{#each block.items as item, i}
-						<Media media={item}  size='l'/>
+						<Media media={item} size='l'/>
 					{/each}
 				</div>
 			{:else if block._type == "mediaCentered"}
