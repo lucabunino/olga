@@ -154,7 +154,7 @@
 				onclick={() => {openSearch()}}
 				onblur={handleBlur}
 				>{@html portfolio.search || '&ZeroWidthSpace;'}</span>
-			<span in:slide|global={{ duration: 200, delay: 300, axis: 'x' }} out:slide|global={{ duration: 200, axis: 'x' }} class="underline"></span>
+			<span in:slide|global={{ duration: 300, delay: 300, axis: 'x' }} out:slide|global={{ duration: 300, axis: 'x' }} class="underline"></span>
 		</div>
 	{/if}
 </div>
@@ -262,6 +262,7 @@
 		color: var(--gray-dark);
 		position: relative;
 		height: 1.1em;
+		width: 100%;
 		
 		.search {
 			width: 300px;
@@ -307,7 +308,7 @@
 			background: var(--black);
 
 			@media screen and (max-width: 768px) {
-				width: calc(100vw - var(--margin-mb)*2);
+				width: calc(100vw - var(--margin-mb)*2 - 80px);
 			}
 		}
 	}

@@ -7,6 +7,7 @@
 	import { getPortfolio } from '$lib/stores/portfolio.svelte.js';
     import HeadSingle from '$lib/components/HeadSingle.svelte';
     import { typewriterKeep } from '$lib/utils/typewriter.js';
+    import { innerWidth } from 'svelte/reactivity/window';
 
 	const SPEED = 10
 	const FLY_Y = 400
@@ -85,7 +86,9 @@
 <main>
 	<section id="options" class="md-24 md-20-mb" aria-expanded={portfolio.filters}>
 		<Filters categories={data.categories} />
-		<Views />
+		{#if !(innerWidth.current < 768 && portfolio.filters)}
+			<Views />
+		{/if}
 	</section>
 	<section id="portfolio" class={portfolio.view}>
 		{#if domLoaded}
@@ -173,6 +176,7 @@
 			justify-content: space-between;
 			padding: var(--sp-s) var(--sp-m) 0;
 			transition: var(--transition-s);
+			column-gap: var(--margin-mb);
 
 			@media screen and (max-width: 768px) {
 				padding: var(--sp-s) var(--margin-mb) 0;
@@ -343,7 +347,10 @@
 					top: 0;
 					aspect-ratio: 3/4;
 					z-index: -1;
-					
+
+					@media screen and (max-width: 768px) {
+						display: none;
+					}
 				}
 			}
 			.cover-wrapper {
@@ -356,10 +363,6 @@
 				.cover {
 					width: 100%;
 					height: 100%;
-				}
-
-				@media screen and (max-width: 768px) {
-					display: none;
 				}
 			}
 		}

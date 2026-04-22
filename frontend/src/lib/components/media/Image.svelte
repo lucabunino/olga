@@ -15,7 +15,7 @@
 	const sizesMap = {
         xl: '100vw',
         l: '75vw',
-        m: '(max-width: 1024px) 100vw, 50vw', // 100vw on mobile, 50vw on desktop
+        m: '(max-width: 1024px) 100vw, 50vw',
         s: '(max-width: 768px) 50vw, 25vw'
     };
 
