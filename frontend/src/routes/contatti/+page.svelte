@@ -1,12 +1,16 @@
 <script>
     import HeadSingle from '$lib/components/HeadSingle.svelte';
+    import { urlFor } from '$lib/utils/image.js';
     import { typewriterKeep } from '$lib/utils/typewriter.js';
+    import Marquee from 'svelte-fast-marquee';
+    import { fade } from 'svelte/transition';
 
 	const SPEED = 10
 	const START = 500;
 	const STEP = 50;
 
 	let { data } = $props()
+	let loaded = $state(false)
 	const contact = data.contact
 
 	let currentDelay = START;
@@ -15,6 +19,10 @@
         currentDelay += STEP;
         return d;
     }
+	
+	$effect(() => {
+		loaded = true
+	})
 </script>
 
 <HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Contatti'}}/>
@@ -57,11 +65,15 @@
 		{/if}
 	</section>
 	<section id="clients">
-		<h2 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>clienti</h2>
-		{#if contact.clients}
-			<p class="clients md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>
-				{#each contact.clients as client, i}{client.title}{#if i+2 < contact.clients.length}{@html ', '}{:else if i+2 == contact.clients.length}{@html ' e '}{/if}{/each}
-			</p>
+		<h2 class="md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>con chi abbiamo collaborato</h2>
+		{#if contact.clientLines && loaded}
+			{#each contact.clientLines as line, i}
+				<Marquee speed={50} pauseOnHover={true} direction={i%2 ? 'left' : 'right'}>
+					{#each line.clients as client, j}
+						<img in:fade|global={{duration: 100, delay: nextDelay()}} class="client" src={urlFor(client.logo)} alt="Logo di {client.title}">
+					{/each}
+				</Marquee>
+			{/each}
 		{/if}
 	</section>
 </main>
@@ -123,8 +135,7 @@
 			}
 		}
 
-		#services,
-		#clients {
+		#services {
 			margin-top: var(--sp-l);
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
@@ -145,6 +156,40 @@
 				@media screen and (max-width: 576px) {
 					grid-column: 1 / span 12;
 				}
+			}
+		}
+
+		#clients {
+			margin: var(--sp-m) calc(var(--sp-m)*-1) var(--sp-xl);
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			column-gap: var(--gutter);
+
+			h2 {
+				grid-column: 7 / span 6;
+
+				@media screen and (max-width: 576px) {
+					grid-column: 1 / span 12;
+				}
+			}
+
+			:global(.marquee-container) {
+				grid-column: 1 / span 12;
+				margin: var(--sp-l) 0;
+				column-gap: var(--sp-l);
+				
+				:global(.marquee) {
+					column-gap: var(--sp-l);
+
+					.client {
+						height: 4rem;
+						width: auto;
+					}
+				}
+			}
+
+			:global(.marquee-container + .marquee-container) {
+				margin: 0 0 var(--sp-l);
 			}
 		}
 

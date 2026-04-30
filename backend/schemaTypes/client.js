@@ -19,5 +19,10 @@ export default {
 				maxLength: 96,
 			},
 		},
+		{
+			name: 'logo',
+			type: 'image',
+			validation: Rule => Rule.required(),
+		},
 	],
 };

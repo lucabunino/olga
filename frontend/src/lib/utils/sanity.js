@@ -216,8 +216,10 @@ export async function getContact() {
 			services[]-> {
 				title
 			},
-			clients[]-> {
-				title
+			clientLines[] {
+				clients[]-> {
+					logo,
+				}
 			}
 		}`
 	);
