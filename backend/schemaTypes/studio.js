@@ -4,6 +4,9 @@ import { RemoveIcon, InsertBelowIcon, TextIcon, AsteriskIcon } from '@sanity/ico
 export default {
 	name: 'studio',
 	type: 'document',
+	fieldsets: [
+		{ name: 'poem' }
+	],
 	fields: [
 		{
 			name: 'title',
@@ -23,6 +26,7 @@ export default {
 		},
 		{
 			name: 'poem',
+			title: 'Lines',
 			type: 'array',
 			of: [
 				{
@@ -71,7 +75,14 @@ export default {
 						}
 					}
 				}
-			]
+			],
+			fieldset: 'poem'
+		},
+		{
+			name: 'poemAuthor',
+			title: 'Author',
+			type: 'string',
+			fieldset: 'poem'
 		},
 		{
 			name: 'location',

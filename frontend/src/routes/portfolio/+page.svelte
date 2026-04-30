@@ -16,13 +16,20 @@
     let portfolio = getPortfolio();
     let activeProject = $state(0);
     let sortKey = $state('year');
+	let directions = $state({
+		year: 'desc',
+		client: 'asc',
+		title: 'asc',
+		category: 'asc'
+	});
     let sortDirection = $state('desc');
 	let domLoaded = $state(false)
 	let activeSorting = $state('year')
 	let previousYear = 3000
+	
 	let sortedPortfolio = $derived.by(() => {
 		const currentSortKey = sortKey;
-		const currentDirection = sortDirection;
+		const currentDirection = directions[currentSortKey];
 		const rawData = [...data.portfolio];
 
 		return rawData.sort((a, b) => {
@@ -52,10 +59,11 @@
 	}
     function sortby(key) {
 		if (sortKey === key) {
-			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+			// Toggle the direction for this specific key
+			directions[key] = directions[key] === 'asc' ? 'desc' : 'asc';
 		} else {
+			// Just switch the active key, keeping its last known direction
 			sortKey = key;
-			sortDirection = key === 'year' ? 'desc' : 'asc';
 		}
 		activeProject = 0;
 	}
@@ -131,24 +139,36 @@
 				{/if}
 			{/each}
 
-			{#snippet arrow()}
-				<svg class="arrow {sortDirection}" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+			{#snippet arrow(key)}
+				<svg class="arrow {directions[key]}" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M9.14645 0.146447C9.34171 -0.0488153 9.65821 -0.0488153 9.85348 0.146447C10.0487 0.341709 10.0487 0.658216 9.85348 0.853478L5.35348 5.35348C5.15822 5.54874 4.84171 5.54874 4.64645 5.35348L0.146447 0.853478C-0.0488155 0.658216 -0.0488155 0.341709 0.146447 0.146447C0.341709 -0.0488155 0.658216 -0.0488155 0.853478 0.146447L4.99996 4.29293L9.14645 0.146447Z" fill="#939393"/>
 				</svg>
 			{/snippet}
 			{#if portfolio.view == 'list'}
 				<section class="labels">
 					<button class="label year" onclick={() => sortby('year')}>
-						<span>year</span>{#if sortKey === 'year'}{@render arrow()}{/if}
+						<span>year</span>
+						<!-- {#if sortKey === 'year'} -->
+							{@render arrow('year')}
+						<!-- {/if} -->
 					</button>
 					<button class="label client" onclick={() => sortby('client')}>
-						<span>client</span>{#if sortKey === 'client'}{@render arrow()}{/if}
+						<span>client</span>
+						<!-- {#if sortKey === 'client'} -->
+							{@render arrow('client')}
+						<!-- {/if} -->
 					</button>
 					<button class="label title" onclick={() => sortby('title')}>
-						<span>project</span>{#if sortKey === 'title'}{@render arrow()}{/if}
+						<span>project</span>
+						<!-- {#if sortKey === 'title'} -->
+							{@render arrow('title')}
+						<!-- {/if} -->
 					</button>
 					<button class="label category" onclick={() => sortby('category')}>
-						<span>category</span>{#if sortKey === 'category'}{@render arrow()}{/if}
+						<span>category</span>
+						<!-- {#if sortKey === 'category'} -->
+							{@render arrow('category')}
+						<!-- {/if} -->
 					</button>
 				</section>
 				{#key activeProject}

@@ -63,8 +63,8 @@
 					}}/>
 				</div>
 			{:else if block._type == "mediaGrid"}
-				<div class="mediaGrid {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
-				style="--cols: {block.items.length};">
+				<div class="mediaGrid x{block.items.length} {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
+				style="--cols: {block.items.length}; --row: {i + 1};">
 					{#each block.items as item, i}
 						<Media media={item} size='l'/>
 					{/each}
@@ -175,6 +175,10 @@
 					row-gap: var(--sp-s);
 				}
 
+				&.x1 {
+					grid-row: var(--row);
+				}
+
 				&.sp-zero {
 					column-gap: 0;
 					@media screen and (max-width: 768px) {
@@ -276,6 +280,7 @@
 			}
 			*.mt-s {
 				margin-top: var(--sp-s);
+				margin-top: var(--gutter);
 				@media screen and (max-width: 768px) {
 					margin-top: var(--sp-l);
 				}

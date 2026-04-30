@@ -12,7 +12,7 @@
 	const studio = data.studio
 	let isLoaded = $state(false)
 	let isPast = $state(false)
-	let D = 300
+	let D = 250
 	let lineOffset =$state(4)
 	$effect(() => {
 		isLoaded = true
@@ -57,6 +57,10 @@
 						<br>
 					</p>
 				{/each}
+				{#if studio.poemAuthor}
+					{@const totalActiveLines = studio.poem.length - getBlankOffset(studio.poem.length)}
+					<p use:typewriterKeep={{ speed: 40, delay: totalActiveLines*D*2.5 }} class="author md-24 md-16-mb">{@html studio.poemAuthor}</p>
+				{/if}
 			{/if}
 		</section>
 	{/if}
@@ -120,6 +124,10 @@
 				.animated {
 					visibility: hidden;
 				}
+			}
+
+			.author {
+				margin-top: var(--sp-l);
 			}
 
 			@media screen and (max-width: 768px) {
