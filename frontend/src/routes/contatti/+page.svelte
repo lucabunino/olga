@@ -165,24 +165,29 @@
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
 
+			@media screen and (max-width: 576px) {
+				margin: var(--sp-m) calc(var(--margin-mb)*-1) var(--sp-xl);
+			}
+
 			h2 {
 				grid-column: 7 / span 6;
 
 				@media screen and (max-width: 576px) {
 					grid-column: 1 / span 12;
+					padding: 0 var(--margin-mb);
 				}
 			}
 
 			:global(.marquee-container) {
 				grid-column: 1 / span 12;
-				margin: var(--sp-l) 0;
+				margin: var(--sp-l) 0 var(--sp-m);
 				column-gap: var(--sp-l);
 				
 				:global(.marquee) {
 					column-gap: var(--sp-l);
 
 					.client {
-						height: 4rem;
+						height: clamp(3rem, calc(2rem + 2vw), 4rem);
 						width: auto;
 					}
 				}
