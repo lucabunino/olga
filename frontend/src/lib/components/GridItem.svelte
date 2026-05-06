@@ -33,8 +33,8 @@
     const planeHeight = aspect > 1 ? baseSize / aspect : baseSize;
 
 	// Positioning
-    const pX = image.positionX ?? 0.5;
-    const pY = image.positionY ?? 0.5;
+    const pX = image.positionX ?? Math.random();
+    const pY = image.positionY ?? Math.random();
 
     const offsetX = (pX - 0.5) * (cell - planeWidth);
     const offsetY = (pY - 0.5) * (cell - planeHeight);

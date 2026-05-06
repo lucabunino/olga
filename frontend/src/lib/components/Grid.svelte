@@ -36,7 +36,7 @@
     // --- 1. Fixed Grid with Buffer ---
     // We add +2 or +4 to the base columns to create the overscan buffer
     const cell = 3.5;
-    let cols = $derived((innerWidth.current < 768 ? 3 : innerWidth.current < 1440 ? 5 : 7) + 4);
+    let cols = $derived((innerWidth.current < 768 ? 3 : innerWidth.current < 1440 ? 5 : 7) + 1);
     
     // Ensure we always have a full rectangle
     let totalSlots = $derived(Math.ceil(images?.length / cols) * cols);
@@ -57,37 +57,38 @@
 
     let velX = 0;
     let velY = 0;
-    const FRICTION = 0.94;
-    const DRAG_SENS = 0.012;
+	const FRICTION = 0.9;
+	const DRAG_SENS = 0.01;
+	const WHEEL_SENS = 0.0006;
 
     let activePointers = new Map();
     let initialPinchDist = 0;
     let initialScale = 1;
 
     useTask((delta) => {
-        if (introProgress < 2.5) introProgress += delta * 0.6;
-        
-        currentX += velX;
-        currentY += velY;
+		if (introProgress < 2.5) introProgress += delta * 0.6;
+		
+		currentX += velX;
+		currentY += velY;
 
-        handleScroll();
+		handleScroll();
 
-        if (!isDragging) {
-            velX *= FRICTION;
-            velY *= FRICTION;
-        } else {
-            velX *= 0.5;
-            velY *= 0.5;
-        }
-    });
+		// Natural slowdown
+		velX *= FRICTION;
+		velY *= FRICTION;
+
+		// Optional: Stop tiny movements to save performance
+		if (Math.abs(velX) < 0.0001) velX = 0;
+		if (Math.abs(velY) < 0.0001) velY = 0;
+	});
 
     // --- 3. Interaction Handlers ---
     const getDist = (p1, p2) => Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
 
     const onWheel = (e) => {
 		e.preventDefault();
-		velX += e.deltaX * 0.001;
-		velY -= e.deltaY * 0.001;
+		velX += e.deltaX * WHEEL_SENS;
+		velY -= e.deltaY * WHEEL_SENS;
     };
 
 	let lastY = $state(0);
@@ -127,22 +128,27 @@
     };
 
     const onPointerMove = (e) => {
-        if (!isDragging) return;
-        activePointers.set(e.pointerId, e);
+		if (!isDragging) return;
+		activePointers.set(e.pointerId, e);
 
-        if (activePointers.size === 2) {
-            const [p1, p2] = Array.from(activePointers.values());
-            const currentDist = getDist(p1, p2);
-            gridScale = Math.max(0.4, Math.min(2.5, initialScale * (currentDist / initialPinchDist)));
-        } else if (activePointers.size === 1) {
-            const dx = e.movementX * DRAG_SENS;
-            const dy = e.movementY * DRAG_SENS;
-            currentX -= dx / gridScale;
-            currentY += dy / gridScale;
-            velX = -dx / gridScale;
-            velY = dy / gridScale;
-        }
-    };
+		if (activePointers.size === 2) {
+			const [p1, p2] = Array.from(activePointers.values());
+			const currentDist = getDist(p1, p2);
+			gridScale = Math.max(0.4, Math.min(2.5, initialScale * (currentDist / initialPinchDist)));
+		} else if (activePointers.size === 1) {
+			// Calculate movement
+			const dx = e.movementX * DRAG_SENS;
+			const dy = e.movementY * DRAG_SENS;
+			
+			currentX -= dx / gridScale;
+			currentY += dy / gridScale;
+
+			// Feed the velocity so it "flings" when released
+			// We use a slight multiplier here to make the flick feel stronger
+			velX = -dx * 1.5 / gridScale;
+			velY = dy * 1.5 / gridScale;
+		}
+	};
 
     const handlePointerUp = (e) => {
         activePointers.delete(e.pointerId);
