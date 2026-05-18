@@ -50,7 +50,8 @@
 	<section id="media" class="md-24 md-16-mb">
 		{#each project.media as block, i}
 			{#if block._type == "mediaText"}
-				<div class="mediaText portableText {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment ? block.alignment : 'left'}">
+				<div class="mediaText portableText {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment ? block.alignment : 'left'}"
+				style="--row: {i + 1};">
 					<PortableText value={block.text}
 					components={{
 						block: {
@@ -71,14 +72,14 @@
 				</div>
 			{:else if block._type == "mediaCentered"}
 				<div class="mediaCentered {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'}"
-				style="--cols: {block.items.length};">
+				style="--cols: {block.items.length}; --row: {i + 1};">
 					{#each block.items as item, i}
 						<Media media={item} customWidthActive={true} size='l'/>
 					{/each}
 				</div>
 			{:else if block._type == "mediaFull"}
 				<div class="mediaFull {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'}"
-				style="--cols: {block.items.length};">
+				style="--cols: {block.items.length}; --row: {i + 1};">
 					{#each block.items as item, i}
 						<Media media={item} size='xl'/>
 					{/each}
@@ -93,7 +94,7 @@
 	{/if}
 </main>
 
-<style>
+<style lang="scss">
 	main {		
 		#opening {
 			width: 100%;
@@ -149,6 +150,7 @@
 			padding: 0 var(--sp-m) var(--sp-m);
 			
 			.mediaText {
+				grid-row: var(--row);
 				&.left {
 					grid-column: 1 / span 6;
 
@@ -169,14 +171,11 @@
 				grid-column: 1 / span 12;
 				display: grid;
 				grid-template-columns: repeat(var(--cols), 1fr);
+				grid-row: var(--row);
 
 				@media screen and (max-width: 768px) {
 					grid-template-columns: 1fr;
 					row-gap: var(--sp-s);
-				}
-
-				&.x1 {
-					grid-row: var(--row);
 				}
 
 				&.sp-zero {
@@ -245,9 +244,11 @@
 
 			.mediaCentered {
 				grid-column: 1 / span 12;
+				grid-row: var(--row);
 				display: grid;
 				grid-template-columns: repeat(var(--cols), 1fr);
-				margin: 0 calc(var(--margin-mb)*-1);
+				margin: 0 calc(var(--sp-m)*-1);
+
 				@media screen and (max-width: 768px) {
 					margin: unset;
 					grid-template-columns: repeat(1, 1fr);
@@ -258,11 +259,13 @@
 
 			.mediaFull {
 				grid-column: 1 / span 12;
+				grid-row: var(--row);
 				display: grid;
 				grid-template-columns: repeat(var(--cols), 1fr);
-				margin: 0 calc(var(--margin-mb)*-1);
+				margin: 0 calc(var(--sp-m)*-1);
+				
 				@media screen and (max-width: 768px) {
-					/* margin: unset; */
+					margin: 0 calc(var(--margin-mb)*-1);
 				}
 			}
 

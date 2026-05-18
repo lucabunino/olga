@@ -55,16 +55,15 @@
 			/>
 		{/if}
 		<img
-			class:loaded={isLoaded}
-			loading="lazy"
-			{width}
-            {height}
-			{srcSet}
-			sizes={sizesMap[size]}
-			src={urlFor(image).width(1920).url()} 
-			alt={image.asset?.altText || ""}
-		/>
-    </picture>
+		class:loaded={isLoaded}
+		loading="lazy"
+		{width}
+		{height}
+		{srcSet}
+		sizes={sizesMap[size]}
+		src={urlFor(image).width(1920).url()} 
+		alt={image.asset?.altText || "Visual content for project"}
+		/>    </picture>
 </figure>
 
 <style>

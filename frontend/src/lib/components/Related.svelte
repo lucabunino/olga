@@ -32,13 +32,12 @@
     });
 
     $effect(() => {
-        // If we are in static mode, ensure GSAP doesn't hold onto transforms
+        // If we are in static mode, or the track is not yet bound, ensure GSAP doesn't hold onto transforms
         if (!isDynamic || !track) {
-            if (track) gsap.set(".project", { clearProps: "all" });
             return;
         }
 
-        const projects = gsap.utils.toArray(".project");
+        const projects = gsap.utils.toArray(".project", track);
         if (projects.length === 0) return;
 
         let activeElement;
@@ -58,22 +57,26 @@
             }
         });
 
-        // Handle clicks for centered navigation
-        const clickHandlers = projects.map((box, i) => {
-            const handler = () => {
-                if (loop?.toIndex) {
-                    loop.toIndex(i, { duration: 0.8, ease: "power1.inOut" });
+        // Handle clicks for centered navigation using event delegation
+        const handleClick = (e) => {
+            const project = e.target.closest(".project");
+            if (project && track.contains(project)) {
+                const index = projects.indexOf(project);
+                if (index !== -1 && loop?.toIndex) {
+                    loop.toIndex(index, { duration: 0.8, ease: "power1.inOut" });
                 }
-            };
-            box.addEventListener("click", handler);
-            return { box, handler };
-        });
+            }
+        };
+        track.addEventListener("click", handleClick);
 
         // CLEANUP: This runs whenever the effect re-triggers (on resize or data change)
         return () => {
             if (loop) loop.kill();
-            gsap.set(".project", { clearProps: "all" }); // Reset positions for static layout
-            clickHandlers.forEach(({ box, handler }) => box.removeEventListener("click", handler));
+            gsap.killTweensOf(track);
+            gsap.killTweensOf(projects);
+            gsap.set(track, { clearProps: "all" });
+            gsap.set(projects, { clearProps: "all" });
+            track.removeEventListener("click", handleClick);
         };
     });
 </script>
@@ -84,16 +87,18 @@
     {/if}
     
     <div class="marquee" class:is-static={!isDynamic}>
-        <div 
-            class="track {isDynamic ? 'dynamic' : 'static'}" 
-            bind:this={track}
-        >
-            {#each displayProjects as project, i}
-                <div class="project">
-                    <ProjectCover {project} />
-                </div>
-            {/each}
-        </div>
+        {#key isDynamic}
+            <div 
+                class="track {isDynamic ? 'dynamic' : 'static'}" 
+                bind:this={track}
+            >
+                {#each displayProjects as project, i}
+                    <div class="project">
+                        <ProjectCover {project} />
+                    </div>
+                {/each}
+            </div>
+        {/key}
     </div>
 </section>
 

@@ -14,14 +14,14 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="/favicon/site.webmanifest" />
 
-    {#if seo?.seoTitle}
-        <title>{seo.seoTitle}</title>
-        <meta name="title" content={seo.seoTitle} />
-        <meta name="apple-mobile-web-app-title" content={seo.seoTitle} />
-        <meta property="og:title" content={seo.seoTitle} />
-        <meta property="og:site_name" content={seo.seoTitle} />
-        <meta name="twitter:title" content={seo.seoTitle} />
-    {/if}
+	{#if seo?.seoTitle}
+		<title>{seo.seoTitle}</title>
+		<meta name="title" content={seo.seoTitle} />
+		<meta name="apple-mobile-web-app-title" content={seo.seoTitle} />
+		<meta property="og:title" content={seo.seoTitle} />
+		<meta property="og:site_name" content={seo.seoTitle} />
+		<meta name="twitter:title" content={seo.seoTitle} />
+	{/if}
 
     {#if seo?.seoDescription}
         <meta name="description" content={seo.seoDescription} />
@@ -35,11 +35,11 @@
     {/if}
 
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={page.url} />
+    <meta property="og:url" content={page.url.toString()} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={page.url} />
+    <meta name="twitter:url" content={page.url.toString()} />
 
-    <link rel="canonical" href={page.url} />
+    <link rel="canonical" href={page.url.toString()} />
     <meta name="robots" content="index,follow" />
     <meta name="googlebot" content="index,follow" />
 </svelte:head>
