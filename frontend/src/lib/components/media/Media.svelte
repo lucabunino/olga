@@ -4,7 +4,7 @@
     import Video from "./Video.svelte";
 
     let { media, customWidthActive = false, minHeight = undefined, size = 'm' } = $props();
-    let customWidth = media?.customWidth ?? 65;
+    let customWidth = $derived(media?.customWidth ?? 65);
 </script>
 
 <div class="media-container" style="{customWidthActive ? `width: ${customWidth}%` : undefined}">

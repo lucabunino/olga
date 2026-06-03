@@ -5,7 +5,7 @@
     let isLoaded = $state(false);
 
 	// Image metadata
-    const { width, height, lqip } = image.asset.metadata;
+    const { width, height, lqip } = $derived(image.asset.metadata);
 
 	// Image size management
 	const widths = [768, 1080, 1920, 2560];

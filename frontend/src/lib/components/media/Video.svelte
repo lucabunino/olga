@@ -5,7 +5,7 @@
     let isLoaded = $state(false);
 
     // Get metadata from the cover image (Sanity provides lqip here)
-    const { width, height, lqip } = videoCover.asset.metadata;
+    const { width, height, lqip } = $derived(videoCover.asset.metadata);
 
     function revealVideo(node) {
         const observer = new IntersectionObserver(async ([entry]) => {

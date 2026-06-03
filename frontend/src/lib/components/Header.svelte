@@ -87,7 +87,7 @@
     </nav>
 </header>
 
-<style>
+<style lang="scss">
 header {
     nav {
         display: flex;
