@@ -22,7 +22,7 @@
 			{#if info.adressLabel}
 				<div>
 					{#if info.adressHref}
-						<p><a href={info.adressHref} target="_blank" rel="noopener noreferrer">{info.adressLabel}</a></p>
+						<p><a class="hover-gray-dark" href={info.adressHref} target="_blank" rel="noopener noreferrer">{info.adressLabel}</a></p>
 					{:else}
 						<p>{info.adressLabel}</p>
 					{/if}
@@ -30,14 +30,14 @@
 			{/if}
 			{#if info.email || info.vat}
 				<div>
-					{#if info.email}<p><a href="mailto:{info.email}">{info.email}</a></p>{/if}
-					{#if info.vat}<p>P.IVA {info.vat}</p>{/if}
+					{#if info.email}<p><a class="hover-gray-dark" href="mailto:{info.email}">{info.email}</a></p>{/if}
+					{#if info.vat}<p>VAT {info.vat}</p>{/if}
 				</div>
 			{/if}
 			{#if info.socials}
 				<div>
 					{#each info.socials as social, i}
-						<p><a href={social.socialHref} target="_blank" rel="noopener noreferrer">{social.socialLabel}</a></p>
+						<p><a class="hover-gray-dark" href={social.socialHref} target="_blank" rel="noopener noreferrer">{social.socialLabel}</a></p>
 					{/each}
 				</div>
 			{/if}
@@ -46,7 +46,7 @@
 			<p>©{new Date().getFullYear()}</p>
 			{#if policies}
 				{#each policies as policy}
-					<p><a href="/{policy.slug.current}">{policy.title}</a></p>
+					<p><a class="hover-black" href="/{policy.slug.current}">{policy.title}</a></p>
 				{/each}
 			{/if}
 		</div>
@@ -63,7 +63,7 @@
 	</section>
 </footer>
 
-<style>
+<style lang="scss">
 footer {
 	background-color: var(--gray-light);
 	padding: var(--sp-m);

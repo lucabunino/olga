@@ -7,7 +7,6 @@
     let activeFrame = $state(0);
     let isLoaded = $state(false); 
     
-    // Resolution Tier Management
     const widths = [768, 1080, 1920, 2560];
     const sizesMap = {
         xl: '100vw',
@@ -21,9 +20,6 @@
     const { width, height } = $derived(currentFrames[0]?.asset?.metadata.dimensions || {});
     const { lqip } = $derived(currentFrames[0]?.asset?.metadata || {});
 
-	$inspect(currentFrames[0])
-
-    // Per-frame srcset generation
     const getSrcSet = (frame) => widths
         .map(w => `${urlFor(frame).width(w).auto('format').url()} ${w}w`)
         .join(', ');

@@ -90,7 +90,7 @@
 		{/each}
 	</section>
 	{#if project.related}
-		<Related related={project.related} title={"Progetti correlati"}/>
+		<Related related={project.related} title={"Related projects"}/>
 	{/if}
 </main>
 

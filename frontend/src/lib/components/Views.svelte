@@ -18,7 +18,7 @@
     </button>
 </div>
 
-<style>
+<style lang="scss">
     #views {
         display: flex;
         align-items: center;

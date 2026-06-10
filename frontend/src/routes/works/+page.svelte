@@ -117,7 +117,7 @@
 						</div>
 					{/if}
 				{:else if portfolio.view == 'list'}
-					<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href="/portfolio/{project.slug.current}" onmouseenter={() => activeProject = i}>
+					<a class="project md-16-mb {matchesSearch(project) ? undefined : 'hidden'}" href="/works/{project.slug.current}" onmouseenter={() => activeProject = i}>
 						{#if domLoaded &&project.date}
 							<label for="year" class="md-12-mb" >year</label>
 							<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date} use:typewriterKeep={{ speed: 40, delay: i*50}}>{new Date(project.date).getFullYear()}</time>
@@ -183,7 +183,7 @@
 	</section>
 </main>
 
-<style>
+<style lang="scss">
 	main {
 		margin-top: var(--headerHeight);
 		min-height: calc(100svh - var(--headerHeight));

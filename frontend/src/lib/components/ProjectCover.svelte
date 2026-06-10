@@ -3,7 +3,7 @@
     let {project} = $props()
 </script>
 
-<a href="/portfolio/{project.slug.current}">
+<a href="/works/{project.slug.current}">
 	<div class="media-wrapper">
 		<div>
 			<Media media={project.cover} customWidthActive={false} size='m' />
@@ -12,7 +12,7 @@
 	<h2 class="md-12">{project.title}</h2>
 </a>
 
-<style>
+<style lang="scss">
 	.media-wrapper {
 		aspect-ratio: 3/4;
 		width: 100%;

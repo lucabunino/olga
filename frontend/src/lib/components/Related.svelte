@@ -102,7 +102,7 @@
     </div>
 </section>
 
-<style>
+<style lang="scss">
     #related {
         h3 {
             padding: var(--sp-l) var(--sp-m) var(--sp-s);
@@ -117,8 +117,7 @@
             display: flex;
             align-items: center;
             overflow: hidden;
-            /* Adaptive height based on project aspect ratio */
-            height: clamp(300px, 40vh, 600px); 
+            height: clamp(300px, 30vw, 30vw); 
             cursor: grab;
 
             &:active { cursor: grabbing; }

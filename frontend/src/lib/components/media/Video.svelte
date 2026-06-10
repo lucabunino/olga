@@ -4,23 +4,18 @@
     let { video, videoCover, videoMobile, videoCoverMobile, minHeight } = $props();
     let isLoaded = $state(false);
 
-    // Get metadata from the cover image (Sanity provides lqip here)
     const { width, height, lqip } = $derived(videoCover.asset.metadata);
 
     function revealVideo(node) {
         const observer = new IntersectionObserver(async ([entry]) => {
             if (entry.isIntersecting) {
-                // Find all video elements (mobile/desktop)
                 const videos = node.querySelectorAll('video');
                 
                 const loadPromises = Array.from(videos).map(v => {
-                    // If video is already ready to play
                     if (v.readyState >= 3) return Promise.resolve();
-                    // Otherwise wait for canplaythrough
                     return new Promise(r => v.oncanplaythrough = r);
                 });
 
-                // Wait for 200ms + video buffering
                 await Promise.all([
                     new Promise(r => setTimeout(r, 200)),
                     ...loadPromises
@@ -65,7 +60,7 @@
     </video>
 </figure>
 
-<style>
+<style lang="scss">
     .video-container { 
         position: relative;
         width: 100%; 
@@ -74,7 +69,6 @@
         background-position: center;
     }
 
-    /* LQIP Blur Layer */
     .video-container::before {
         content: '';
         position: absolute;
@@ -86,7 +80,6 @@
         transition: opacity var(--transition-s);
     }
 
-    /* Hide blur when video is ready */
     .video-container:has(video.loaded)::before {
         opacity: 0;
     }

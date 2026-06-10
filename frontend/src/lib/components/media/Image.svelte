@@ -66,7 +66,7 @@
 		/>    </picture>
 </figure>
 
-<style>
+<style lang="scss">
     .image-container {
         position: relative;
         overflow: hidden;

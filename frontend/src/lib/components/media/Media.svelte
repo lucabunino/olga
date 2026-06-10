@@ -42,7 +42,7 @@
     {/if}
 </div>
 
-<style>
+<style lang="scss">
     .media-container {
         justify-self: center;
         align-content: center;

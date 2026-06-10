@@ -25,21 +25,21 @@
 	})
 </script>
 
-<HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Contatti'}}/>
+<HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Contact'}}/>
 
 <main class="md-24">
 	<section id="contacts">
-		<h1 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>contattaci</h1>
+		<h1 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>contact us</h1>
 		<div class="contacts md-20-mb">
 			{#if data.info.email}
-				{#if data.info.email}<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}} class="email"><a href="mailto:{data.info.email}">{data.info.email}</a></p>{/if}
+				{#if data.info.email}<p class="email"><a href="mailto:{data.info.email}"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.email}</span></a></p>{/if}
 			{/if}
 			{#if data.info.adressLabel}
 				<div class="adress">
 					{#if data.info.adressHref}
-						<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}><a href={data.info.adressHref} target="_blank" rel="noopener noreferrer">{data.info.adressLabel}</a></p>
+						<p><a href={data.info.adressHref} target="_blank" rel="noopener noreferrer"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressLabel}</span></a></p>
 					{:else}
-						<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressLabel}</p>
+						<p><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressLabel}</span></p>
 					{/if}
 					{#if data.info.adressCountry}
 						<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressCountry}</p>
@@ -48,29 +48,29 @@
 			{/if}
 			{#if data.info.socials}
 				<div class="socials">
-					<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>seguici su</p>
+					<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>follow us on</p>
 					{#each data.info.socials as social, i}
-						<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}><a href={social.socialHref} target="_blank" rel="noopener noreferrer">{social.socialLabel}</a></p>
+						<p><a href={social.socialHref} target="_blank" rel="noopener noreferrer"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{social.socialLabel}</span></a></p>
 					{/each}
 				</div>
 			{/if}
 		</div>
 	</section>
 	<section id="services">
-		<h2 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>servizi</h2>
+		<h2 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>services</h2>
 		{#if contact.services}
 			<p class="services md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>
-				{#each contact.services as service, i}{service.title}{#if i+2 < contact.services.length}{@html ', '}{:else if i+2 == contact.services.length}{@html ' e '}{/if}{/each}
+				{#each contact.services as service, i}{service.title}{#if i+2 < contact.services.length}{@html ', '}{:else if i+2 == contact.services.length}{@html ' and '}{/if}{/each}
 			</p>
 		{/if}
 	</section>
 	<section id="clients">
-		<h2 class="md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>con chi abbiamo collaborato</h2>
+		<h2 class="md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>who we've worked with</h2>
 		{#if contact.clientLines && loaded}
 			{#each contact.clientLines as line, i}
 				<Marquee speed={50} pauseOnHover={true} direction={i%2 ? 'left' : 'right'}>
 					{#each line.clients as client, j}
-						<img in:fade|global={{duration: 100, delay: nextDelay()}} class="client" src={urlFor(client.logo)} alt="Logo di {client.title}">
+						<img in:fade|global={{duration: 100, delay: nextDelay()}} class="client" src={urlFor(client.logo)} alt="{client.title} logo">
 					{/each}
 				</Marquee>
 			{/each}
@@ -78,7 +78,7 @@
 	</section>
 </main>
 
-<style>
+<style lang="scss">
 	main {
 		margin-top: var(--headerHeight);
 		padding: var(--sp-s) var(--sp-m) var(--sp-l);
@@ -182,15 +182,13 @@
 				grid-column: 1 / span 12;
 				margin: var(--sp-l) 0 var(--sp-m);
 				column-gap: var(--sp-l);
-				
-				:global(.marquee) {
-					column-gap: var(--sp-l);
-
-					.client {
-						height: clamp(3rem, calc(2rem + 2vw), 4rem);
-						width: auto;
-					}
-				}
+			}
+			
+			:global(.marquee) {
+				column-gap: var(--sp-l);
+			}
+			:global(.marquee .client) {
+				column-gap: var(--sp-l);
 			}
 
 			:global(.marquee-container + .marquee-container) {

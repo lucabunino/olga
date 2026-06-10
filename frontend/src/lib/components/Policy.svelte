@@ -27,7 +27,7 @@
 	{/if}
 </main>
 
-<style>
+<style lang="scss">
 	main {
 		margin-top: var(--headerHeight);
 		min-height: calc(100svh - var(--headerHeight));

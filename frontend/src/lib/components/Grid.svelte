@@ -31,21 +31,15 @@
 		})
 	})
 
-	
-
-    // --- 1. Fixed Grid with Buffer ---
-    // We add +2 or +4 to the base columns to create the overscan buffer
     const cell = 3.5;
     let cols = $derived((innerWidth.current < 768 ? 3 : innerWidth.current < 1440 ? 5 : 7) + 1);
     
-    // Ensure we always have a full rectangle
     let totalSlots = $derived(Math.ceil(images?.length / cols) * cols);
     let rows = $derived(totalSlots / cols);
     
     let gridWidth = $derived(cols * cell);
     let gridHeight = $derived(rows * cell);
 
-    // --- 2. State & Physics ---
     let currentX = $state(0);
     let currentY = $state(0);
 	let y = $derived(currentY)
@@ -73,11 +67,9 @@
 
 		handleScroll();
 
-		// Natural slowdown
 		velX *= FRICTION;
 		velY *= FRICTION;
 
-		// Optional: Stop tiny movements to save performance
 		if (Math.abs(velX) < 0.0001) velX = 0;
 		if (Math.abs(velY) < 0.0001) velY = 0;
 	});
@@ -100,7 +92,7 @@
         // 1. HIDE: On Down movement OR Horizontal movement
         if (deltaY < -0.001 || isMovingHorizontally) {
             menuer.setHidden(true);
-            upMovementAccumulator = 0; // Reset the progress toward showing
+            upMovementAccumulator = 0;
         } 
         // 2. SHOW: Only on Up movement after passing the 0.02 threshold
         else if (deltaY > 0) {
@@ -136,15 +128,12 @@
 			const currentDist = getDist(p1, p2);
 			gridScale = Math.max(0.4, Math.min(2.5, initialScale * (currentDist / initialPinchDist)));
 		} else if (activePointers.size === 1) {
-			// Calculate movement
 			const dx = e.movementX * DRAG_SENS;
 			const dy = e.movementY * DRAG_SENS;
 			
 			currentX -= dx / gridScale;
 			currentY += dy / gridScale;
 
-			// Feed the velocity so it "flings" when released
-			// We use a slight multiplier here to make the flick feel stronger
 			velX = -dx * 1.5 / gridScale;
 			velY = dy * 1.5 / gridScale;
 		}

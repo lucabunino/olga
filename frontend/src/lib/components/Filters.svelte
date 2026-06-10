@@ -159,7 +159,7 @@
 	{/if}
 </div>
 
-<style>
+<style lang="scss">
 	@keyframes appear {
 		from {
 			max-width: 0;

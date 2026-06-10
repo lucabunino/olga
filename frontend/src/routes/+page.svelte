@@ -89,7 +89,7 @@
 	{/if}
 </main>
 
-<style>
+<style lang="scss">
 	main {
 		#marquee {
 			background-color: var(--yellow);
