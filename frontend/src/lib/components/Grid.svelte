@@ -10,6 +10,14 @@
     let { images, cursor = $bindable(), isExiting } = $props();
 	let body = $state()
 
+	// Freeze the layout on the last non-empty images list so the grid never
+	// collapses (e.g. mid page-transition, when `images` briefly goes undefined).
+	let lastImages = $state(images);
+	$effect(() => {
+		if (images?.length) lastImages = images;
+	});
+	let effectiveImages = $derived(images?.length ? images : lastImages);
+
 	$effect(() => {
 		body
 		if (cols || rows) {
@@ -31,7 +39,7 @@
 	})
 
     const cell = 3.5;
-    let cols = $derived(Math.max(1, Math.ceil(Math.sqrt(images?.length ?? 1))));
+    let cols = $derived(Math.max(1, Math.ceil(Math.sqrt(effectiveImages?.length ?? 1))));
     let rows = $derived(cols);
 
     let totalSlots = $derived(cols * rows);
@@ -41,7 +49,7 @@
 
     function generateSpiral(n) {
         const coords = [{ x: 0, y: 0 }];
-        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]; // right, up, left, down
+        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]; 
         let x = 0, y = 0, dirIndex = 0, steps = 1, idx = 1;
 
         while (idx < n) {
@@ -91,9 +99,13 @@
     let initialPinchDist = 0;
     let initialScale = 1;
 
+    const INTRO_DELAY = .4;
+    let elapsed = 0;
+
     useTask((delta) => {
-		if (introProgress < 2.5) introProgress += delta * 0.6;
-		
+		elapsed += delta;
+		if (elapsed > INTRO_DELAY && introProgress < 2.5) introProgress += delta * 0.6;
+
 		currentX += velX;
 		currentY += velY;
 
@@ -117,18 +129,30 @@
 
 	let lastY = $state(0);
     let upMovementAccumulator = $state(0);
+    let horizontalMovementAccumulator = $state(0);
 	function handleScroll() {
         const deltaY = currentY - lastY;
-        const isMovingHorizontally = Math.abs(velX) > 0.005;
+        const horizontalDominant = Math.abs(velX) > Math.abs(velY);
 
-        // 1. HIDE: On Down movement OR Horizontal movement
-        if (deltaY < -0.001 || isMovingHorizontally) {
+        // 1. HIDE: Down movement is unambiguous, hide immediately.
+        if (deltaY < -0.001) {
             menuer.setHidden(true);
             upMovementAccumulator = 0;
-        } 
-        // 2. SHOW: Only on Up movement after passing the 0.02 threshold
+            horizontalMovementAccumulator = 0;
+        }
+        // 2. HIDE: Horizontal-dominant movement, but only once sustained
+        //    (avoids flicker from single noisy touch frames during an up-drag).
+        else if (horizontalDominant) {
+            horizontalMovementAccumulator += Math.abs(velX);
+            upMovementAccumulator = 0;
+            if (horizontalMovementAccumulator > 0.02) {
+                menuer.setHidden(true);
+            }
+        }
+        // 3. SHOW: Only on Up movement after passing the 0.02 threshold
         else if (deltaY > 0) {
             upMovementAccumulator += deltaY;
+            horizontalMovementAccumulator = 0;
             if (upMovementAccumulator > 0.02) {
                 menuer.setHidden(false);
             }
@@ -199,9 +223,9 @@
 <T.Group scale={gridScale}>
     {#each { length: totalSlots } as _, i (i)}
         <GridItem
-            image={images[i % images?.length]}
+            image={effectiveImages[i % effectiveImages?.length]}
             {i} {cell} {totalSlots}
-            gridX={spiralPositions[i].x} gridY={spiralPositions[i].y}
+            gridX={spiralPositions[i]?.x ?? false} gridY={spiralPositions[i]?.y ?? false}
             entryOrder={entryOrder[i]}
             {gridWidth} {gridHeight}
             {currentX} {currentY} 

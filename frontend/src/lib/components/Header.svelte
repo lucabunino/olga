@@ -143,7 +143,7 @@ header {
         @media screen and (max-width: 768px) {
             // background-color: transparent;
             // backdrop-filter: none;
-			backdrop-filter: blur(.3rem);
+			backdrop-filter: blur(.6rem);
             padding: 2rem var(--margin-mb);
 			align-items: flex-start;
 			height: var(--headerHeight);

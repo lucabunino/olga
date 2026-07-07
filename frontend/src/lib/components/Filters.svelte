@@ -80,7 +80,7 @@
     });
 </script>
 
-<div id="filters" style="height: {portfolio.filters ? `${filtersHeight}px` : '1.1em'}">
+<div id="filters" class:open={portfolio.filters} style="height: {portfolio.filters ? `${filtersHeight}px` : '1.1em'}">
 	{#if portfolio.view == "grid"}
 		<button
 			class="toggle"
@@ -175,10 +175,15 @@
 		align-items: flex-start;
 		width: calc((100% - var(--gutter)*2)/12 * 11);
 		transition: var(--transition-s);
+		transition-property: height;
 		position: relative;
 
 		@media screen and (max-width: 768px) {
 			line-height: 1.2;
+
+			&.open {
+				width: 100%;
+			}
 		}
 
 		.toggle {
@@ -191,6 +196,10 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+
+			@media screen and (max-width: 768px) {
+				width: 6rem;
+			}
 
 			&:hover {
 				color: var(--gray-dark);
@@ -233,7 +242,8 @@
 			width: stretch;
 
 			.category {
-				&:hover {
+				&:hover,
+				&[aria-pressed="true"] {
 					color: var(--gray-dark);
 				}
 			}

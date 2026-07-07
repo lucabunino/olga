@@ -11,7 +11,7 @@
     import { innerHeight, innerWidth } from "svelte/reactivity/window";
 	let { data, children } = $props();
 	let scrollY = $state(0)
-	let DURATION = 500
+	let DURATION = 400
 </script>
 
 <svelte:window bind:scrollY></svelte:window>

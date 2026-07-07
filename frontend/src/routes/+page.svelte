@@ -68,22 +68,10 @@
         </div>
     {/if}
 	{#if !isExiting}
-		<!-- <section id="images" style="--cursor: {cursor ? cursor : 'grab'}"
-		out:pageOut={{ duration: DURATION, delay: 0, scrollY: scrollY, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}> -->
 		<section id="images" style="--cursor: {cursor ? cursor : 'grab'}"
 		out:mock={{ duration: DURATION}}>
 			<Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
 				<Grid images={data.homepage?.images} bind:cursor={cursor} {isExiting}/>
-				<!-- <Suspense>
-					{#snippet fallback()}
-						<T.Mesh>
-							<T.BoxGeometry args={[1, 1, 1]} />
-							<T.MeshBasicMaterial color="black" />
-						</T.Mesh>
-					{/snippet}
-
-					<Grid images={data.homepage?.images} bind:cursor={cursor}/>
-				</Suspense> -->
 			</Canvas>
 		</section>
 	{/if}

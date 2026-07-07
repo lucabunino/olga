@@ -39,8 +39,15 @@
     const offsetX = (pX - 0.5) * (cell - planeWidth);
     const offsetY = (pY - 0.5) * (cell - planeHeight);
 
-	let baseX = $derived(gridX * cell + offsetX);
-    let baseY = $derived(gridY * cell + offsetY);
+	let lastGridX = $state(gridX === false ? 0 : gridX);
+    let lastGridY = $state(gridY === false ? 0 : gridY);
+    $effect(() => {
+        if (gridX !== false) lastGridX = gridX;
+        if (gridY !== false) lastGridY = gridY;
+    });
+
+	let baseX = $derived((gridX !== false ? gridX : lastGridX) * cell + offsetX);
+    let baseY = $derived((gridY !== false ? gridY : lastGridY) * cell + offsetY);
 
     const wrap = (v, range) => {
         const half = range / 2;
@@ -50,6 +57,11 @@
 	let exitProgress = $state(0);
     useTask(() => {
         if (!mesh) return;
+
+        if (introProgress <= 0) {
+            mesh.visible = false;
+            return;
+        }
 
         const targetX = wrap(baseX - currentX, gridWidth);
         const targetY = wrap(baseY - currentY, gridHeight);
