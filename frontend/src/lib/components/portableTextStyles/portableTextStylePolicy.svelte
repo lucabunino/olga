@@ -9,10 +9,10 @@
     const listItem = $derived(value?.listItem);
 </script>
 
-{#if listItem === 'bullet'}
+{#if listItem === 'bullet' || listItem === 'number'}
     <li>{@render children()}</li>
 {:else if value._type === 'link'}
-    <a href={value?.url} target={value?.blank ? '_blank' : undefined}>
+    <a class="underline hover-gray-dark" href={value?.url} target={value?.blank ? '_blank' : undefined}>
         {@render children()}
     </a>
 {:else if style === 'h3'}
@@ -32,6 +32,10 @@
 	:global(.portableText ul) {
         margin: 1.1em 0 1.1em 2em;
 		list-style: disc;
+    }
+	:global(.portableText ol) {
+        margin: 1.1em 0 1.1em 2em;
+		list-style: decimal;
     }
 	
 	h3, h4 {

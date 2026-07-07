@@ -6,8 +6,8 @@
     import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
 
-    let { 
-        image, i, cols, rows, cell, gridWidth, gridHeight, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable(), isExiting
+    let {
+        image, i, gridX, gridY, entryOrder, cell, gridWidth, gridHeight, totalSlots, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable(), isExiting
     } = $props();
 
 	const loader = new TextureLoader();
@@ -39,8 +39,8 @@
     const offsetX = (pX - 0.5) * (cell - planeWidth);
     const offsetY = (pY - 0.5) * (cell - planeHeight);
 
-	let baseX = $derived((i % cols - (cols - 1) / 2) * cell + offsetX);
-    let baseY = $derived((Math.floor(i / cols) - (rows - 1) / 2) * -cell + offsetY);
+	let baseX = $derived(gridX * cell + offsetX);
+    let baseY = $derived(gridY * cell + offsetY);
 
     const wrap = (v, range) => {
         const half = range / 2;
@@ -55,12 +55,12 @@
         const targetY = wrap(baseY - currentY, gridHeight);
 
         // 1. Intro progress
-        const stagger = i * 0.02;
+        const stagger = entryOrder * 0.02;
         const p = Math.max(0, Math.min(1, (introProgress - stagger) * 1.8));
         const posEase = 1 - Math.pow(1 - p, 2); 
 
         // 2. Reverse Z-Depth
-        const zDepth = ((cols * rows) - i) * 0.01 * (1 - posEase);
+        const zDepth = (totalSlots - entryOrder) * 0.01 * (1 - posEase);
 
         // 3. Posizionamento
         mesh.position.set(targetX * posEase, targetY * posEase, zDepth);

@@ -32,7 +32,7 @@
 		<h1 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>contact us</h1>
 		<div class="contacts md-20-mb">
 			{#if data.info.email}
-				{#if data.info.email}<p><a class="email hover-gray-dark" href="mailto:{data.info.email}"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.email}</span></a></p>{/if}
+				{#if data.info.email}<p><a class="email underline hover-gray-dark" href="mailto:{data.info.email}"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.email}</span></a></p>{/if}
 			{/if}
 			{#if data.info.adressLabel}
 				<div class="adress">
@@ -106,9 +106,6 @@
 
 				.email {
 					grid-column: 1 / span 3;
-					text-decoration: underline;
-					text-decoration-thickness: 1.5px;
-					text-underline-offset: 7px;
 
 					&:hover {
 						text-decoration-color: var(--gray-dark);

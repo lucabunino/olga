@@ -7,7 +7,7 @@
 * {
 	margin: 0;
 }
-html, body {
+body {
 	overflow-x: hidden;
 	overscroll-behavior-x: none;
 }
@@ -49,9 +49,12 @@ button {
 }
 a,
 a:any-link {
-	text-decoration: none;
 	cursor: pointer;
 	color: inherit;
+}
+a:not(.underline),
+a:not(.underline):any-link {
+	text-decoration: none;
 }
 ul, ol {
 	list-style: none;

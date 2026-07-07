@@ -4,7 +4,6 @@
     import { innerWidth } from 'svelte/reactivity/window';
     import GridItem from './GridItem.svelte';
     import { onMount } from 'svelte';
-    import { browser } from '$app/environment';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
     let menuer = getMenu();
 
@@ -32,13 +31,45 @@
 	})
 
     const cell = 3.5;
-    let cols = $derived((innerWidth.current < 768 ? 3 : innerWidth.current < 1440 ? 5 : 7) + 1);
-    
-    let totalSlots = $derived(Math.ceil(images?.length / cols) * cols);
-    let rows = $derived(totalSlots / cols);
-    
+    let cols = $derived(Math.max(1, Math.ceil(Math.sqrt(images?.length ?? 1))));
+    let rows = $derived(cols);
+
+    let totalSlots = $derived(cols * rows);
+
     let gridWidth = $derived(cols * cell);
     let gridHeight = $derived(rows * cell);
+
+    function generateSpiral(n) {
+        const coords = [{ x: 0, y: 0 }];
+        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]; // right, up, left, down
+        let x = 0, y = 0, dirIndex = 0, steps = 1, idx = 1;
+
+        while (idx < n) {
+            for (let rep = 0; rep < 2 && idx < n; rep++) {
+                const [dx, dy] = dirs[dirIndex % 4];
+                for (let s = 0; s < steps && idx < n; s++) {
+                    x += dx; y += dy;
+                    coords.push({ x, y });
+                    idx++;
+                }
+                dirIndex++;
+            }
+            steps++;
+        }
+        return coords;
+    }
+
+    let spiralPositions = $derived.by(() => generateSpiral(totalSlots));
+
+    // Entry animation should stagger top-left to bottom-right, independent of spiral spatial order.
+    let entryOrder = $derived.by(() => {
+        const rank = new Array(spiralPositions.length);
+        spiralPositions
+            .map((pos, i) => ({ i, pos }))
+            .sort((a, b) => (b.pos.y - a.pos.y) || (a.pos.x - b.pos.x))
+            .forEach(({ i }, order) => { rank[i] = order; });
+        return rank;
+    });
 
     let currentX = $state(0);
     let currentY = $state(0);
@@ -52,9 +83,9 @@
     let velX = 0;
     let velY = 0;
 	
-	const FRICTION = 0.9;
-	const DRAG_SENS = 0.003;
-	const WHEEL_SENS = 0.0006;
+	const FRICTION = $derived(innerWidth.current > 768 ? .8 : .98); 
+	const DRAG_SENS = $derived(innerWidth.current > 768 ? .003 : .006); ;
+	const WHEEL_SENS = 0.0008;
 
     let activePointers = new Map();
     let initialPinchDist = 0;
@@ -167,9 +198,11 @@
 
 <T.Group scale={gridScale}>
     {#each { length: totalSlots } as _, i (i)}
-        <GridItem 
-            image={images[i % images?.length]} 
-            {i} {cols} {rows} {cell}
+        <GridItem
+            image={images[i % images?.length]}
+            {i} {cell} {totalSlots}
+            gridX={spiralPositions[i].x} gridY={spiralPositions[i].y}
+            entryOrder={entryOrder[i]}
             {gridWidth} {gridHeight}
             {currentX} {currentY} 
             {introProgress} {isDragging}
