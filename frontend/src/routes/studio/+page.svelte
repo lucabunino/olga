@@ -9,7 +9,7 @@
     import HeadSingle from '$lib/components/HeadSingle.svelte';
     import { fade } from 'svelte/transition';
 	let { data } = $props()
-	const studio = data.studio
+	let studio = data.studio
 	let isLoaded = $state(false)
 	let isPast = $state(false)
 	let D = 250

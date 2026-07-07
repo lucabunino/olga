@@ -32,12 +32,12 @@
 		<h1 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>contact us</h1>
 		<div class="contacts md-20-mb">
 			{#if data.info.email}
-				{#if data.info.email}<p class="email"><a href="mailto:{data.info.email}"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.email}</span></a></p>{/if}
+				{#if data.info.email}<p><a class="email hover-gray-dark" href="mailto:{data.info.email}"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.email}</span></a></p>{/if}
 			{/if}
 			{#if data.info.adressLabel}
 				<div class="adress">
 					{#if data.info.adressHref}
-						<p><a href={data.info.adressHref} target="_blank" rel="noopener noreferrer"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressLabel}</span></a></p>
+						<p><a class="hover-gray-dark" href={data.info.adressHref} target="_blank" rel="noopener noreferrer"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressLabel}</span></a></p>
 					{:else}
 						<p><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{data.info.adressLabel}</span></p>
 					{/if}
@@ -50,7 +50,7 @@
 				<div class="socials">
 					<p use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>follow us on</p>
 					{#each data.info.socials as social, i}
-						<p><a href={social.socialHref} target="_blank" rel="noopener noreferrer"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{social.socialLabel}</span></a></p>
+						<p><a class="hover-gray-dark" href={social.socialHref} target="_blank" rel="noopener noreferrer"><span use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>{social.socialLabel}</span></a></p>
 					{/each}
 				</div>
 			{/if}
@@ -107,8 +107,12 @@
 				.email {
 					grid-column: 1 / span 3;
 					text-decoration: underline;
-					text-decoration-thickness: 2px;
+					text-decoration-thickness: 1.5px;
 					text-underline-offset: 7px;
+
+					&:hover {
+						text-decoration-color: var(--gray-dark);
+					}
 
 					@media screen and (max-width: 1280px) {
 						grid-column: 1 / span 6;

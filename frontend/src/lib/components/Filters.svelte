@@ -177,6 +177,10 @@
 		transition: var(--transition-s);
 		position: relative;
 
+		@media screen and (max-width: 768px) {
+			line-height: 1.2;
+		}
+
 		.toggle {
 			position: relative;
 			border: none;
@@ -244,6 +248,12 @@
 			width: 70%;
 			position: absolute;
 			right: 0;
+
+			@media screen and (max-width: 768px) {
+				position: relative;
+				width: stretch;
+				display: block;
+			}
 
 			.subcategory {
 				&:hover,

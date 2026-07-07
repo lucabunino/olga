@@ -128,7 +128,7 @@
         display: block;
         object-fit: cover;
         object-position: center;
-        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
         backface-visibility: hidden;
     }
 </style>

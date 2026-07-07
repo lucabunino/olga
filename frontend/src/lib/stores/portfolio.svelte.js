@@ -7,7 +7,14 @@ let search = $state('search')
 export function getPortfolio() {
     return {
         get view() { return view; },
-        setView(v) { view = v; },
+        setView(v) {
+            view = v;
+            if (v === 'list') {
+                category = undefined;
+                subcategories = [];
+                filters = false;
+            }
+        },
         
         get category() { return category; },
         setCategory(c) {

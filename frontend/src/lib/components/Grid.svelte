@@ -45,14 +45,15 @@
 	let y = $derived(currentY)
 	let y_old = $state(0)
 	let y_threshold = $state(0)
-    let gridScale = $state(1); 
+    let gridScale = $derived(innerWidth.current > 768 ? 1 : .7); 
     let isDragging = $state(false);
     let introProgress = $state(0);
 
     let velX = 0;
     let velY = 0;
+	
 	const FRICTION = 0.9;
-	const DRAG_SENS = 0.01;
+	const DRAG_SENS = 0.003;
 	const WHEEL_SENS = 0.0006;
 
     let activePointers = new Map();

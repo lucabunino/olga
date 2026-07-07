@@ -103,6 +103,10 @@ footer {
 
 		.typewriter {
 			display: inline-flex;
+
+			p {
+				height: 1em;
+			}
 		}
 	}
 

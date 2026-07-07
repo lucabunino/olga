@@ -45,7 +45,14 @@
 	$effect(() => {
 		domLoaded = true
 	})
-	
+
+	let hasResults = $derived(sortedPortfolio.some(matchesSearch));
+
+	$effect(() => {
+		const idx = sortedPortfolio.findIndex(matchesSearch);
+		activeProject = idx === -1 ? 0 : idx;
+	})
+
 	function getSortValue(project, key) {
 		switch (key) {
 			case 'year': return project.date ? new Date(project.date).getTime() : 0;
@@ -65,7 +72,6 @@
 			// Just switch the active key, keeping its last known direction
 			sortKey = key;
 		}
-		activeProject = 0;
 	}
 	function matchesSearch(project) {
 		if (!portfolio.search || portfolio.search === 'search') return true;
@@ -111,7 +117,7 @@
 						project.subcategories?.some(sub => portfolio.subcategories.includes(sub.slug.current)))
 					)}
 						<div class="cover-wrapper">
-							<div in:fly|global={{ duration: 500, y: FLY_Y, delay: i*75 }}>
+							<div in:fly|global={{ duration: 300, y: FLY_Y, delay: i*75 }}>
 								<ProjectCover {project}/>
 							</div>
 						</div>
@@ -144,40 +150,47 @@
 					<path d="M9.14645 0.146447C9.34171 -0.0488153 9.65821 -0.0488153 9.85348 0.146447C10.0487 0.341709 10.0487 0.658216 9.85348 0.853478L5.35348 5.35348C5.15822 5.54874 4.84171 5.54874 4.64645 5.35348L0.146447 0.853478C-0.0488155 0.658216 -0.0488155 0.341709 0.146447 0.146447C0.341709 -0.0488155 0.658216 -0.0488155 0.853478 0.146447L4.99996 4.29293L9.14645 0.146447Z" fill="#939393"/>
 				</svg>
 			{/snippet}
+			
 			{#if portfolio.view == 'list'}
-				<section class="labels">
-					<button class="label year" onclick={() => sortby('year')}>
-						<span>year</span>
-						<!-- {#if sortKey === 'year'} -->
-							{@render arrow('year')}
-						<!-- {/if} -->
-					</button>
-					<button class="label client" onclick={() => sortby('client')}>
-						<span>client</span>
-						<!-- {#if sortKey === 'client'} -->
-							{@render arrow('client')}
-						<!-- {/if} -->
-					</button>
-					<button class="label title" onclick={() => sortby('title')}>
-						<span>project</span>
-						<!-- {#if sortKey === 'title'} -->
-							{@render arrow('title')}
-						<!-- {/if} -->
-					</button>
-					<button class="label category" onclick={() => sortby('category')}>
-						<span>category</span>
-						<!-- {#if sortKey === 'category'} -->
-							{@render arrow('category')}
-						<!-- {/if} -->
-					</button>
-				</section>
-				{#key activeProject}
-					<div class="cover-wrapper">
-						<div class="cover" in:fly|global={{ duration: 500, y: FLY_Y }} out:fly|global={{ duration: 500, y: -FLY_Y }}>
-							<Media media={sortedPortfolio[activeProject].cover} size='m'/>
+				{#if hasResults}
+					<section class="labels">
+						<button class="label year" onclick={() => sortby('year')}>
+							<span>year</span>
+							<!-- {#if sortKey === 'year'} -->
+								{@render arrow('year')}
+							<!-- {/if} -->
+						</button>
+						<button class="label client" onclick={() => sortby('client')}>
+							<span>client</span>
+							<!-- {#if sortKey === 'client'} -->
+								{@render arrow('client')}
+							<!-- {/if} -->
+						</button>
+						<button class="label title" onclick={() => sortby('title')}>
+							<span>project</span>
+							<!-- {#if sortKey === 'title'} -->
+								{@render arrow('title')}
+							<!-- {/if} -->
+						</button>
+						<button class="label category" onclick={() => sortby('category')}>
+							<span>category</span>
+							<!-- {#if sortKey === 'category'} -->
+								{@render arrow('category')}
+							<!-- {/if} -->
+						</button>
+					</section>
+				{:else}
+					<p class="no-results">no results for "{portfolio.search}"</p>
+				{/if}
+				{#if hasResults}
+					{#key activeProject}
+						<div class="cover-wrapper">
+							<div class="cover" in:fly|global={{ duration: 300, y: FLY_Y }} out:fly|global={{ duration: 300, y: -FLY_Y }}>
+								<Media media={sortedPortfolio[activeProject].cover} size='m'/>
+							</div>
 						</div>
-					</div>
-				{/key}
+					{/key}
+				{/if}
 			{/if}
 		{/if}
 	</section>
@@ -309,6 +322,14 @@
 						}
 					}
 				}
+			}
+			.no-results {
+				position: absolute;
+				top: -1.3rem;
+				width: 100%;
+				left: 0;
+				text-align: center;
+				color: var(--gray-dark);
 			}
 			.labels {
 				position: absolute;

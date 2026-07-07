@@ -141,13 +141,16 @@ header {
         }
 
         @media screen and (max-width: 768px) {
-            background-color: transparent;
-            backdrop-filter: none;
+            // background-color: transparent;
+            // backdrop-filter: none;
+			backdrop-filter: blur(.3rem);
             padding: 2rem var(--margin-mb);
+			align-items: flex-start;
+			height: var(--headerHeight);
             
-            &.bg-gray {
-                background-color: transparent;
-            }
+            // &.bg-gray {
+            //     background-color: transparent;
+            // }
 
             .logo svg { height: 4rem; }
 
@@ -156,6 +159,7 @@ header {
                 width: 2.5rem;
                 height: 1.666rem;
                 position: relative;
+				top: 1rem;
 
                 .line {
                     position: absolute;
@@ -188,6 +192,10 @@ header {
                 }
             }
 
+			&.open {
+				height: 100dvh;
+			}
+
             .menu {
                 position: fixed;
                 top: 0;
@@ -199,9 +207,8 @@ header {
                 row-gap: var(--sp-m);
                 transform: translateY(-100%);
                 transition: var(--transition-s);
-				transition-property: transform;
-                background-color: var(--white-70);
-                backdrop-filter: blur(1rem);
+                // background-color: var(--white-70);
+                // backdrop-filter: blur(1rem);
                 z-index: 10;
                 
                 &.open {
