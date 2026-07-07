@@ -81,7 +81,7 @@
         const viewportHalfHeight = CAMERA_DISTANCE * Math.tan((CAMERA_FOV_DEG / 2) * Math.PI / 180);
         const ENTRY_FROM_Y = -viewportHalfHeight / gridScale;
         // mesh.position.set(targetX * posEase, ENTRY_FROM_Y + (targetY - ENTRY_FROM_Y) * posEase, zDepth);
-		mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
+		 mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
 
         // 4. Rotazione
         const targetHover = hovered ? 1.1 : 1.0;
