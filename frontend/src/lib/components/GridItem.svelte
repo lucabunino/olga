@@ -74,8 +74,14 @@
         // 2. Reverse Z-Depth
         const zDepth = (totalSlots - entryOrder) * 0.01 * (1 - posEase);
 
-        // 3. Posizionamento
-        mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
+        // 3. Posizionamento (radiates out from the bottom-center edge of the screen, not the center)
+        // Original: mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
+        const CAMERA_DISTANCE = 10;
+        const CAMERA_FOV_DEG = 45;
+        const viewportHalfHeight = CAMERA_DISTANCE * Math.tan((CAMERA_FOV_DEG / 2) * Math.PI / 180);
+        const ENTRY_FROM_Y = -viewportHalfHeight / gridScale;
+        // mesh.position.set(targetX * posEase, ENTRY_FROM_Y + (targetY - ENTRY_FROM_Y) * posEase, zDepth);
+		mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
 
         // 4. Rotazione
         const targetHover = hovered ? 1.1 : 1.0;

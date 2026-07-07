@@ -104,7 +104,7 @@
 
     useTask((delta) => {
 		elapsed += delta;
-		if (elapsed > INTRO_DELAY && introProgress < 2.5) introProgress += delta * 0.6;
+		if (elapsed > INTRO_DELAY && introProgress < 2.5) introProgress += delta * .8;
 
 		currentX += velX;
 		currentY += velY;

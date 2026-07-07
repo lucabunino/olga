@@ -190,6 +190,8 @@
 			}
 			:global(.marquee .client) {
 				column-gap: var(--sp-l);
+				height: 4rem;
+				width: auto;
 			}
 
 			:global(.marquee-container + .marquee-container) {
