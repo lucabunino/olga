@@ -7,7 +7,13 @@
 	import { getMenu } from '$lib/stores/menu.svelte.js';
 
     let {
-        image, i, gridX, gridY, entryOrder, cell, gridWidth, gridHeight, totalSlots, currentX, currentY, introProgress, isDragging, gridScale, cursor = $bindable(), isExiting
+        image, i, gridX, gridY, entryOrder, cell, gridWidth, gridHeight, totalSlots,
+        currentX, currentY, t, isDragging, gridScale, cursor = $bindable(), isExiting,
+        isCentral, clusterX, clusterY,
+        CENTRAL_COUNT, CENTRAL_APPEAR_STAGGER, CENTRAL_APPEAR_DURATION,
+        CENTRAL_HOLD, CENTRAL_FLYOUT_STAGGER, CENTRAL_FLYOUT_DURATION,
+        centralPhaseEnd, REST_FADE_STAGGER, REST_FADE_DURATION,
+        skipIntro
     } = $props();
 
 	const loader = new TextureLoader();
@@ -22,9 +28,11 @@
 	let projectUrl = $derived(`/works/${image.project.slug.current}`)
 	let menuer = getMenu();
     let mesh;
+    let material;
     let hovered = $state(false);
-    let lerpScale = $state(0);
-    
+    let lerpScale = $state(skipIntro ? 1 : 0.5);
+    let settled = $state(skipIntro);
+
     // Sizing
     const dims = image.cover.asset.metadata.dimensions;
     const aspect = dims.width / dims.height;
@@ -54,45 +62,73 @@
         return ((((v + half) % range) + range) % range) - half;
     };
 
-	let exitProgress = $state(0);
+    // A central item's own fly-out start time within the shared timeline.
+    // Reversed: the last item to appear (highest i) is the first to fly to its position.
+    const flyStart = (CENTRAL_COUNT - 1) * CENTRAL_APPEAR_STAGGER + CENTRAL_APPEAR_DURATION
+        + CENTRAL_HOLD + (CENTRAL_COUNT - 1 - i) * CENTRAL_FLYOUT_STAGGER;
+
     useTask(() => {
         if (!mesh) return;
 
-        if (introProgress <= 0) {
-            mesh.visible = false;
-            return;
-        }
-
         const targetX = wrap(baseX - currentX, gridWidth);
         const targetY = wrap(baseY - currentY, gridHeight);
-
-        // 1. Intro progress
-        const stagger = entryOrder * 0.02;
-        const p = Math.max(0, Math.min(1, (introProgress - stagger) * 1.8));
-        const posEase = 1 - Math.pow(1 - p, 2); 
-
-        // 2. Reverse Z-Depth
-        const zDepth = (totalSlots - entryOrder) * 0.01 * (1 - posEase);
-
-        // 3. Posizionamento (radiates out from the bottom-center edge of the screen, not the center)
-        // Original: mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
-        const CAMERA_DISTANCE = 10;
-        const CAMERA_FOV_DEG = 45;
-        const viewportHalfHeight = CAMERA_DISTANCE * Math.tan((CAMERA_FOV_DEG / 2) * Math.PI / 180);
-        const ENTRY_FROM_Y = -viewportHalfHeight / gridScale;
-        mesh.position.set(targetX * posEase, ENTRY_FROM_Y + (targetY - ENTRY_FROM_Y) * posEase, zDepth);
-		//  mesh.position.set(targetX * posEase, targetY * posEase, zDepth);
-
-        // 4. Rotazione
         const targetHover = hovered ? 1.1 : 1.0;
-        const finalTargetScale = (0.3 + 0.7 * p) * targetHover;
+
+        let posX, posY, zDepth, revealEase;
+
+        if (skipIntro) {
+            // Already played this session (e.g. re-navigating back to the homepage):
+            // render straight at the final position, no choreography.
+            posX = targetX;
+            posY = targetY;
+            zDepth = 0;
+            revealEase = 1;
+        } else if (t <= 0) {
+            mesh.visible = false;
+            return;
+        } else if (isCentral) {
+            // Phase 1: pop in, staggered, at a jittered spot near center.
+            const appearStart = i * CENTRAL_APPEAR_STAGGER;
+            const appearP = Math.max(0, Math.min(1, (t - appearStart) / CENTRAL_APPEAR_DURATION));
+            const appearEase = 1 - Math.pow(1 - appearP, 6);
+
+            // Phase 2 (hold) + Phase 3: fly out together to the real grid position.
+            const flyP = Math.max(0, Math.min(1, (t - flyStart) / CENTRAL_FLYOUT_DURATION));
+            const flyEase = 1 - Math.pow(1 - flyP, 6);
+
+            posX = clusterX + (targetX - clusterX) * flyEase;
+            posY = clusterY + (targetY - clusterY) * flyEase;
+            zDepth = i * 0.01 * (1 - flyEase);
+            revealEase = appearEase;
+            settled = flyP >= 1;
+        } else {
+            // Phase 4: fade-in at the real position, once the central phase is done.
+            const restStart = centralPhaseEnd + entryOrder * REST_FADE_STAGGER;
+            const restP = Math.max(0, Math.min(1, (t - restStart) / REST_FADE_DURATION));
+
+            posX = targetX;
+            posY = targetY;
+            zDepth = 0;
+            revealEase = 1 - Math.pow(1 - restP, 6);
+            settled = restP >= 1;
+        }
+
+        mesh.position.set(posX, posY, zDepth);
+
+        // Every item reveals the same way: scale 0.5 -> 1 (x hover) together with opacity 0 -> 1.
+        const finalTargetScale = (0.9 + 0.1 * revealEase) * targetHover;
         lerpScale += (finalTargetScale - lerpScale) * 0.15;
         mesh.scale.set(lerpScale, lerpScale, 1);
 
-        // Visibility Buffer
-        const threshold = 24 / Math.min(1, gridScale); 
-        mesh.visible = lerpScale > 0.01 && 
-                       Math.abs(targetX) < threshold && 
+        if (mesh.material) {
+            mesh.material.transparent = true;
+            mesh.material.opacity = revealEase;
+        }
+
+        // Visibility Buffer (wrap-around culling for off-screen tiled copies)
+        const threshold = 24 / Math.min(1, gridScale);
+        mesh.visible = lerpScale > 0.01 &&
+                       Math.abs(targetX) < threshold &&
                        Math.abs(targetY) < threshold;
     });
 </script>
@@ -100,18 +136,18 @@
 <T.Mesh
     bind:ref={mesh}
     onclick={() => {
-		if (!isDragging && introProgress > 1.2 && image.project?.slug) {
+		if (!isDragging && settled && image.project?.slug) {
 			goto(projectUrl);
 			setTimeout(() => {
 				menuer.setHidden(false)
-			}, 400);
+			}, 600);
 		}
 	}
 	}
     onpointerenter={() => {
 		preloadCode(projectUrl);
         preloadData(projectUrl);
-		if (introProgress > 1.2) {
+		if (settled) {
 			hovered = true;
 			cursor = 'pointer';
 		}
@@ -122,14 +158,16 @@
 	}}
 >
     <T.PlaneGeometry args={[planeWidth, planeHeight]} />
-		<T.MeshBasicMaterial 
-			map={mainTexture} 
-			transparent 
+		<T.MeshBasicMaterial
+			map={mainTexture}
+			transparent
 			toneMapped={false}
 			oncreate={(e) => {
-				const material = e.ref;
+				material = e.ref;
+				if (!material) return;
+				material.opacity = skipIntro || isCentral ? 1 : 0;
 
-				if (material && !mainTexture.image) {
+				if (!mainTexture.image) {
 					material.map = placeholderTexture;
 					mainTexture.onUpdate = () => {
 						material.map = mainTexture;
