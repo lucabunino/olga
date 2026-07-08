@@ -92,11 +92,11 @@
             .forEach(({ i }, order) => { rank[i] = order; });
         return rank;
     });
-    const CENTRAL_APPEAR_STAGGER = .1; // seconds between each central item popping in
-    const CENTRAL_APPEAR_DURATION = .3; // seconds for a single central item's pop-in
+    const CENTRAL_APPEAR_STAGGER = .03; // seconds between each central item popping in
+    const CENTRAL_APPEAR_DURATION = .2; // seconds for a single central item's pop-in
     const CENTRAL_HOLD = 1; // seconds the cluster sits still before flying out
     const CENTRAL_FLYOUT_STAGGER = .01; // seconds between each item's fly-out start (tune or set to 0 for a synced burst)
-    const CENTRAL_FLYOUT_DURATION = 1.5; // seconds for the fly-out motion
+    const CENTRAL_FLYOUT_DURATION = 2; // seconds for the fly-out motion
     const REST_FADE_STAGGER = .01; // seconds between each remaining item's fade start
     const REST_FADE_DURATION = .3; // seconds for a remaining item's fade-in
 

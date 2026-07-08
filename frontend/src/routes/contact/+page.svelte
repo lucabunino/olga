@@ -7,7 +7,7 @@
 
 	const SPEED = 10
 	const START = 500;
-	const STEP = 50;
+	const STEP = 20;
 
 	let { data } = $props()
 	let loaded = $state(false)
@@ -195,7 +195,7 @@
 			}
 
 			:global(.marquee-container + .marquee-container) {
-				margin: 0 0 var(--sp-l);
+				margin: 0 0 var(--sp-m);
 			}
 		}
 
