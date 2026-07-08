@@ -71,7 +71,7 @@
 		<section id="images" style="--cursor: {cursor ? cursor : 'grab'}"
 		out:mock={{ duration: DURATION}}>
 			<Canvas camera={{ position: [0, 0, 10], fov: 45 }}>
-				<Grid images={data.homepage?.images} bind:cursor={cursor} {isExiting}/>
+				<Grid images={data.homepage?.images} bind:cursor={cursor}/>
 			</Canvas>
 		</section>
 	{/if}

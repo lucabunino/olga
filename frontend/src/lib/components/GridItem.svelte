@@ -8,13 +8,15 @@
 
     let {
         image, i, gridX, gridY, entryOrder, cell, gridWidth, gridHeight, totalSlots,
-        currentX, currentY, t, isDragging, gridScale, cursor = $bindable(), isExiting,
-        isCentral, clusterX, clusterY,
+        currentX, currentY, t, isDragging, gridScale, cursor = $bindable(),
+        isCentral, cluster, choreography, skipIntro
+    } = $props();
+
+    const {
         CENTRAL_COUNT, CENTRAL_APPEAR_STAGGER, CENTRAL_APPEAR_DURATION,
         CENTRAL_HOLD, CENTRAL_FLYOUT_STAGGER, CENTRAL_FLYOUT_DURATION,
-        centralPhaseEnd, REST_FADE_STAGGER, REST_FADE_DURATION,
-        skipIntro
-    } = $props();
+        centralPhaseEnd, REST_FADE_STAGGER, REST_FADE_DURATION
+    } = choreography;
 
 	const loader = new TextureLoader();
 	const lqipUrl = image.cover.asset.metadata.lqip;
@@ -30,8 +32,8 @@
     let mesh;
     let material;
     let hovered = $state(false);
-    let lerpScale = $state(skipIntro ? 1 : 0.5);
-    let settled = $state(skipIntro);
+    let lerpScale = $state(0.5);
+    let settled = $state(false);
 
     // Sizing
     const dims = image.cover.asset.metadata.dimensions;
@@ -78,11 +80,16 @@
 
         if (skipIntro) {
             // Already played this session (e.g. re-navigating back to the homepage):
-            // render straight at the final position, no choreography.
+            // skip the choreography, but every item still simple-fades in at its final position,
+            // staggered 0 -> n by index.
+            const fadeStart = i * REST_FADE_STAGGER;
+            const fadeP = Math.max(0, Math.min(1, (t - fadeStart) / REST_FADE_DURATION));
+
             posX = targetX;
             posY = targetY;
             zDepth = 0;
-            revealEase = 1;
+            revealEase = 1 - Math.pow(1 - fadeP, 6);
+            settled = fadeP >= 1;
         } else if (t <= 0) {
             mesh.visible = false;
             return;
@@ -96,8 +103,8 @@
             const flyP = Math.max(0, Math.min(1, (t - flyStart) / CENTRAL_FLYOUT_DURATION));
             const flyEase = 1 - Math.pow(1 - flyP, 6);
 
-            posX = clusterX + (targetX - clusterX) * flyEase;
-            posY = clusterY + (targetY - clusterY) * flyEase;
+            posX = cluster.x + (targetX - cluster.x) * flyEase;
+            posY = cluster.y + (targetY - cluster.y) * flyEase;
             zDepth = i * 0.01 * (1 - flyEase);
             revealEase = appearEase;
             settled = flyP >= 1;
@@ -165,7 +172,7 @@
 			oncreate={(e) => {
 				material = e.ref;
 				if (!material) return;
-				material.opacity = skipIntro || isCentral ? 1 : 0;
+				material.opacity = 0;
 
 				if (!mainTexture.image) {
 					material.map = placeholderTexture;

@@ -8,7 +8,7 @@
 	import { getIntro } from '$lib/stores/intro.svelte.js';
     let menuer = getMenu();
 
-    let { images, cursor = $bindable(), isExiting } = $props();
+    let { images, cursor = $bindable() } = $props();
 	let body = $state()
 
 	// The intro choreography (central cluster pop/hold/fly-out + rest fade-in) should only
@@ -56,7 +56,7 @@
 
     function generateSpiral(n) {
         const coords = [{ x: 0, y: 0 }];
-        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]]; 
+        const dirs = [[1, 0], [0, 1], [-1, 0], [0, -1]];
         let x = 0, y = 0, dirIndex = 0, steps = 1, idx = 1;
 
         while (idx < n) {
@@ -81,8 +81,23 @@
     //          one after another, clustered in a tight jittered spread near center.
     // Phase 2: that cluster holds still for CENTRAL_HOLD seconds.
     // Phase 3: the cluster flies out together to each item's real grid position.
-    // Phase 4: only then do the remaining items simple-fade in at their real position.
+    // Phase 4: the remaining items simple-fade in at their real position, starting the
+    //          moment phase 3 begins (not once it finishes) so it reads as one motion.
     const CENTRAL_COUNT = 25;
+    const choreography = {
+        CENTRAL_COUNT,
+        CENTRAL_APPEAR_STAGGER: .03, // seconds between each central item popping in
+        CENTRAL_APPEAR_DURATION: .2, // seconds for a single central item's pop-in
+        CENTRAL_HOLD: 1, // seconds the cluster sits still before flying out
+        CENTRAL_FLYOUT_STAGGER: .01, // seconds between each item's fly-out start (tune or set to 0 for a synced burst)
+        CENTRAL_FLYOUT_DURATION: 2, // seconds for the fly-out motion
+        REST_FADE_STAGGER: .01, // seconds between each remaining item's fade start
+        REST_FADE_DURATION: .3, // seconds for a remaining item's fade-in
+    };
+    choreography.centralPhaseEnd =
+        (CENTRAL_COUNT - 1) * choreography.CENTRAL_APPEAR_STAGGER + choreography.CENTRAL_APPEAR_DURATION +
+        choreography.CENTRAL_HOLD;
+
     let entryOrder = $derived.by(() => {
         const rank = new Array(spiralPositions.length);
         spiralPositions
@@ -92,19 +107,6 @@
             .forEach(({ i }, order) => { rank[i] = order; });
         return rank;
     });
-    const CENTRAL_APPEAR_STAGGER = .03; // seconds between each central item popping in
-    const CENTRAL_APPEAR_DURATION = .2; // seconds for a single central item's pop-in
-    const CENTRAL_HOLD = 1; // seconds the cluster sits still before flying out
-    const CENTRAL_FLYOUT_STAGGER = .01; // seconds between each item's fly-out start (tune or set to 0 for a synced burst)
-    const CENTRAL_FLYOUT_DURATION = 2; // seconds for the fly-out motion
-    const REST_FADE_STAGGER = .01; // seconds between each remaining item's fade start
-    const REST_FADE_DURATION = .3; // seconds for a remaining item's fade-in
-
-    // Rest items should start fading in the moment the central cluster starts flying out
-    // (not once it's finished) so the whole thing reads as one continuous motion.
-    const centralPhaseEnd =
-        (CENTRAL_COUNT - 1) * CENTRAL_APPEAR_STAGGER + CENTRAL_APPEAR_DURATION +
-        CENTRAL_HOLD;
 
     // Deterministic small jitter (not random per-frame) so the central cluster is stable across renders.
     function pseudoRandom(seed) {
@@ -121,18 +123,15 @@
 
     let currentX = $state(0);
     let currentY = $state(0);
-	let y = $derived(currentY)
-	let y_old = $state(0)
-	let y_threshold = $state(0)
-    let gridScale = $derived(innerWidth.current > 768 ? 1 : .55); 
+    let gridScale = $derived(innerWidth.current > 768 ? 1 : .55);
     let isDragging = $state(false);
     let t = $state(0); // seconds since the intro choreography started (0 while still waiting)
 
     let velX = 0;
     let velY = 0;
-	
-	const FRICTION = $derived(innerWidth.current > 768 ? .8 : .98); 
-	const DRAG_SENS = $derived(innerWidth.current > 768 ? .003 : .006); ;
+
+	const FRICTION = $derived(innerWidth.current > 768 ? .8 : .98);
+	const DRAG_SENS = $derived(innerWidth.current > 768 ? .003 : .006);
 	const WHEEL_SENS = 0.0008;
 
     let activePointers = new Map();
@@ -226,7 +225,7 @@
 		} else if (activePointers.size === 1) {
 			const dx = e.movementX * DRAG_SENS;
 			const dy = e.movementY * DRAG_SENS;
-			
+
 			currentX -= dx / gridScale;
 			currentY += dy / gridScale;
 
@@ -251,7 +250,7 @@
 	}
 </script>
 
-<svelte:window 
+<svelte:window
     onpointermove={onPointerMove}
     onpointerdown={handlePointerDown}
     onpointerup={handlePointerUp}
@@ -271,12 +270,9 @@
             {currentX} {currentY}
             {t} {isDragging}
             {gridScale}
-			{isExiting}
             isCentral={i < CENTRAL_COUNT}
-            clusterX={clusterOffsets[i]?.x ?? 0} clusterY={clusterOffsets[i]?.y ?? 0}
-            {CENTRAL_COUNT} {CENTRAL_APPEAR_STAGGER} {CENTRAL_APPEAR_DURATION}
-            {CENTRAL_HOLD} {CENTRAL_FLYOUT_STAGGER} {CENTRAL_FLYOUT_DURATION}
-            {centralPhaseEnd} {REST_FADE_STAGGER} {REST_FADE_DURATION}
+            cluster={clusterOffsets[i] ?? { x: 0, y: 0 }}
+            {choreography}
             {skipIntro}
             bind:cursor
         />
