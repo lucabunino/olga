@@ -12,7 +12,7 @@ Glossary of domain terms for the Olga site (SvelteKit frontend + Sanity backend)
 - **Collaborations block** — CMS-editable rich-text section on the contact page, between services and the client marquee. Heading "collaborations" is fixed (not CMS).
 - **Poem** — the animated typewriter poem on the studio page. Reveals once, when its section reaches the sticky header; never replays within the visit.
 - **Cookie banner** — informational-only notice (technical cookies, no profiling). Dismissal is permanent per browser. Not a consent mechanism.
-- **Related** — the "explore our world" project carousel at the bottom of project/studio pages.
+- **Related** — the "explore our world" project carousel at the bottom of project/studio pages. Items are plain links: click/tap navigates to the project, never re-centers the carousel, and interaction must never stop the automatic scroll.
 
 ## Implementation notes
 
@@ -22,4 +22,12 @@ Glossary of domain terms for the Olga site (SvelteKit frontend + Sanity backend)
 - **Client-marquee seam** (`contact/+page.svelte`): logo spacing must go through the Marquee `gap` prop, never external `column-gap` — the library adds a matching `padding-right` at the loop seam; outside gaps reintroduce the reset jump.
 - **LQIP placeholder** (`media/Image|Video|Gif.svelte`): the LQIP is painted only on the fading `::before` overlay (via the `--lqip` custom property), never as the container's own background — a permanent base background bleeds through as a 1px edge line in Safari, which rounds fractional `aspect-ratio` heights short.
 - **Intro input lock** (`Grid.svelte`): wheel/drag are ignored until the intro fly-out finishes (`inputLocked`); skip-intro re-navigations are never locked.
-- **Intro cluster size** (`Grid.svelte`): the cluster is exactly the spiral slots visible in the viewport at rest (computed from camera z=10 / fov 45 and `gridScale`), not a fixed count; stagger and fly-out order key on rank within that set.
+- **Intro cluster size** (`Grid.svelte`): the cluster is exactly the spiral slots visible in the viewport at rest (computed from camera z=10 / fov 45 and `gridScale`), not a fixed count; stagger and fly-out order key on rank within that set. Intro length grows naturally with the count.
+- **Cluster drift** (`GridItem.svelte`): while clustered, each central item wanders slowly around its spot (sin/cos, unique phase per item, `DRIFT_AMP`/`DRIFT_SPEED`); the drift grows in with the pop-in and eases off during the fly-out.
+- **Grid zoom tiers** (`Grid.svelte`): `gridScale` = .55 mobile (≤768px), 1 desktop, .85 above 1512px, .65 above 1728px so larger screens see more images.
+- **Intro phases** (`Grid.svelte`/`GridItem.svelte`): 1 — central items pop in staggered, clustered near center; 2 — cluster holds; 3 — cluster flies out to real grid positions (last-in flies first); 4 — remaining items fade in at their position, starting the moment phase 3 begins. Plays once per session (`intro` store); SPA re-navigations get a plain staggered fade instead.
+- **Layout freeze** (`Grid.svelte`): the grid keeps the last non-empty `images` list so it never collapses mid page-transition when the prop briefly goes undefined.
+- **Grid oversizing** (`Grid.svelte`): `cols`/`rows` grow beyond √imageCount so the grid period always exceeds the visible world area — otherwise the wrap-around seam lands on-screen and items visibly teleport at the edges (ultrawide bug). Repeats images to fill.
+- **Resize reclassification** (`GridItem.svelte`): resizing changes which slots count as central; items keep their creation-time classification, and the rest-fade start falls back to `entryOrder ?? 0` — without the fallback a reclassified item computes NaN opacity and renders as a hole.
+- **Cluster jitter** (`Grid.svelte`): cluster offsets use a deterministic pseudo-random (seeded, not per-frame) so the cluster is stable across renders.
+- **Related autoplay lock** (`utils/gsap.js`): Draggable pauses the loop on press and only `onThrowComplete` resumed it — a throwless tap left it paused forever, so `onRelease` also resumes when not throwing. Click-to-center (`toIndex`/`tweenTo`) was removed from `Related.svelte`: `tweenTo` leaves the timeline paused at the target, killing autoplay.

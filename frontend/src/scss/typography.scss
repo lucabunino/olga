@@ -1,20 +1,16 @@
 @font-face {
   font-family: "Moderat";
-  src:
-  		// url("/fonts/KMRWaldenburg-Medium.woff2") format("woff2"),
-		// url("/fonts/KMRWaldenburg-Medium.woff") format("woff"),
-		url("/fonts/Moderat-Trial-Extended-Regular.otf") format("opentype");
+  src: url("$lib/fonts/Moderat-Trial-Extended-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 @font-face {
   font-family: "Moderat";
-  src:
-  		// url("/fonts/KMRWaldenburg-Medium.woff2") format("woff2"),
-		// url("/fonts/KMRWaldenburg-Medium.woff") format("woff"),
-		url("/fonts/Moderat-Trial-Extended-Medium.otf") format("opentype");
+  src: url("$lib/fonts/Moderat-Trial-Extended-Medium.otf") format("opentype");
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
 }
 
 /* Typography */

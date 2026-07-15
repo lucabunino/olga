@@ -50,6 +50,9 @@
         width: 100%;
         height: 100%;
         position: relative;
+		isolation: isolate;
+  background-color: #fff; /* Forces Chrome to flatten the layer */
+  transform: translateZ(0);
 
 		@media screen and (max-width: 768px) {
 			 width: 100% !important;

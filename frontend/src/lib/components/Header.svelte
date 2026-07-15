@@ -82,7 +82,7 @@
         >
             <li><a class="hover-gray-dark current-gray-dark" aria-current={page.route.id === '/studio' ? 'page' : undefined} href="/studio" onclick={() => {menuer.setOpen(false); menuer.setHidden(false)}}>studio</a></li>
             <li><a class="hover-gray-dark current-gray-dark" aria-current={page.route.id === '/works' ? 'page' : undefined} href="/works" onclick={() => {menuer.setOpen(false); menuer.setHidden(false)}}>works</a></li>
-            <li><a class="hover-gray-dar current-gray-dark" aria-current={page.route.id === '/contact' ? 'page' : undefined} href="/contact" onclick={() => {menuer.setOpen(false); menuer.setHidden(false)}}>contact</a></li>
+            <li><a class="hover-gray-dark current-gray-dark" aria-current={page.route.id === '/contact' ? 'page' : undefined} href="/contact" onclick={() => {menuer.setOpen(false); menuer.setHidden(false)}}>contact</a></li>
         </ul>
     </nav>
 </header>

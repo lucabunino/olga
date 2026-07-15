@@ -11,14 +11,10 @@
     let { images, cursor = $bindable() } = $props();
 	let body = $state()
 
-	// The intro choreography (central cluster pop/hold/fly-out + rest fade-in) should only
-	// play once per session, the first time the homepage loads — not on every SPA re-navigation.
 	let intro = getIntro();
 	const skipIntro = intro.played;
 	if (!skipIntro) intro.markPlayed();
 
-	// Freeze the layout on the last non-empty images list so the grid never
-	// collapses (e.g. mid page-transition, when `images` briefly goes undefined).
 	let lastImages = $state(images);
 	$effect(() => {
 		if (images?.length) lastImages = images;
@@ -46,7 +42,14 @@
 	})
 
     const cell = 3.5;
-    let cols = $derived(Math.max(1, Math.ceil(Math.sqrt(effectiveImages?.length ?? 1))));
+    const baseScale = $derived(innerWidth.current > 1728 ? .65 : innerWidth.current > 1512 ? .85 : innerWidth.current > 768 ? 1 : .55);
+
+    let cols = $derived.by(() => {
+        const sqrtSide = Math.max(1, Math.ceil(Math.sqrt(effectiveImages?.length ?? 1)));
+        const needCols = Math.ceil(viewW / (baseScale * cell)) + 2;
+        const needRows = Math.ceil(viewH / (baseScale * cell)) + 2;
+        return Math.max(sqrtSide, needCols, needRows);
+    });
     let rows = $derived(cols);
 
     let totalSlots = $derived(cols * rows);
@@ -76,20 +79,10 @@
 
     let spiralPositions = $derived.by(() => generateSpiral(totalSlots));
 
-    // --- Intro choreography ---
-    // Phase 1: the central items (the spiral slots actually visible in the viewport
-    //          at rest position 0,0) pop in one after another, clustered near center.
-    // Phase 2: that cluster holds still for CENTRAL_HOLD seconds.
-    // Phase 3: the cluster flies out together to each item's real grid position.
-    // Phase 4: the remaining items simple-fade in at their real position, starting the
-    //          moment phase 3 begins (not once it finishes) so it reads as one motion.
-
-    // Camera is fixed in +page.svelte: position z=10, fov 45 -> world-space viewport size.
-    const CAM_Z = 10, CAM_FOV = 45;
+    const CAM_Z = 10, CAM_FOV = 45; // must match the Canvas camera in +page.svelte
     const viewH = 2 * CAM_Z * Math.tan((CAM_FOV / 2) * (Math.PI / 180));
     let viewW = $derived(viewH * ((innerWidth.current ?? 1) / (innerHeight.current ?? 1)));
 
-    // Spiral slots whose cell overlaps the viewport at 0,0 — these form the intro cluster.
     let centralIndices = $derived.by(() => {
         const halfW = viewW / (2 * gridScale) + cell / 2;
         const halfH = viewH / (2 * gridScale) + cell / 2;
@@ -111,10 +104,10 @@
             CENTRAL_TOTAL: centralCount,
             CENTRAL_APPEAR_STAGGER: .13, // seconds between each central item popping in
             CENTRAL_APPEAR_DURATION: .8, // seconds for a single central item's pop-in
-            CENTRAL_HOLD: 1.8, // seconds the cluster sits still before flying out
+            CENTRAL_HOLD: 1, // seconds the cluster sits still before flying out
             CENTRAL_FLYOUT_STAGGER: .01, // seconds between each item's fly-out start (tune or set to 0 for a synced burst)
             CENTRAL_FLYOUT_DURATION: 1, // seconds for the fly-out motion
-            REST_FADE_STAGGER: .02, // seconds between each remaining item's fade start
+            REST_FADE_STAGGER: .01, // seconds between each remaining item's fade start
             REST_FADE_DURATION: .8, // seconds for a remaining item's fade-in
         };
         c.centralPhaseEnd =
@@ -122,7 +115,6 @@
         return c;
     });
 
-    // Wheel/drag input stays locked until the fly-out has finished.
     let introEnd = $derived(
         choreography.centralPhaseEnd +
         (centralCount - 1) * choreography.CENTRAL_FLYOUT_STAGGER +
@@ -140,7 +132,6 @@
         return rank;
     });
 
-    // Deterministic small jitter (not random per-frame) so the central cluster is stable across renders.
     function pseudoRandom(seed) {
         const x = Math.sin(seed * 999) * 10000;
         return x - Math.floor(x);
@@ -155,9 +146,9 @@
 
     let currentX = $state(0);
     let currentY = $state(0);
-    let gridScale = $derived(innerWidth.current > 768 ? 1 : .55);
+    let gridScale = $derived(baseScale);
     let isDragging = $state(false);
-    let t = $state(0); // seconds since the intro choreography started (0 while still waiting)
+    let t = $state(0); // seconds since the intro started
 
     let velX = 0;
     let velY = 0;
@@ -189,7 +180,6 @@
 		if (Math.abs(velY) < 0.0001) velY = 0;
 	});
 
-    // --- 3. Interaction Handlers ---
     const getDist = (p1, p2) => Math.hypot(p1.clientX - p2.clientX, p1.clientY - p2.clientY);
 
     const onWheel = (e) => {
@@ -206,14 +196,14 @@
         const deltaY = currentY - lastY;
         const horizontalDominant = Math.abs(velX) > Math.abs(velY);
 
-        // 1. HIDE: Down movement is unambiguous, hide immediately.
+        // hide on down movement, hide on sustained horizontal movement,
+        // show on up movement past the threshold (accumulators avoid flicker
+        // from single noisy touch frames)
         if (deltaY < -0.001) {
             menuer.setHidden(true);
             upMovementAccumulator = 0;
             horizontalMovementAccumulator = 0;
         }
-        // 2. HIDE: Horizontal-dominant movement, but only once sustained
-        //    (avoids flicker from single noisy touch frames during an up-drag).
         else if (horizontalDominant) {
             horizontalMovementAccumulator += Math.abs(velX);
             upMovementAccumulator = 0;
@@ -221,7 +211,6 @@
                 menuer.setHidden(true);
             }
         }
-        // 3. SHOW: Only on Up movement after passing the 0.02 threshold
         else if (deltaY > 0) {
             upMovementAccumulator += deltaY;
             horizontalMovementAccumulator = 0;

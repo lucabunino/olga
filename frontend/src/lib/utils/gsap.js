@@ -188,7 +188,9 @@ export function horizontalLoop(items, config) {
         },
         onRelease() {
           syncIndex();
-          draggable.isThrowing && (indexIsDirty = true);
+          // A press with no throw (e.g. a simple tap) never reaches onThrowComplete,
+          // which would leave the timeline paused forever — resume it here.
+          draggable.isThrowing ? (indexIsDirty = true) : (wasPlaying && tl.play());
         },
         onThrowComplete: () => {
           syncIndex();

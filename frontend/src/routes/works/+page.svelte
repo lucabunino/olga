@@ -128,13 +128,13 @@
 							<label for="year" class="md-12-mb" >year</label>
 							<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date} use:typewriterKeep={{ speed: 40, delay: i*50}}>{new Date(project.date).getFullYear()}</time>
 						{/if}
-						{#if domLoaded &&project.client}
-							<label for="client" class="md-12-mb" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>client</label>
-							<span id="client" class="client" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>{project.client.title}</span>
-						{/if}
 						{#if domLoaded &&project.title}
 							<label for="title" class="md-12-mb" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>title</label>
 							<span id="title" class="title" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>{project.title}</span>
+						{/if}
+						{#if domLoaded &&project.client}
+							<label for="client" class="md-12-mb" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>client</label>
+							<span id="client" class="client" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>{project.client.title}</span>
 						{/if}
 						{#if domLoaded &&project.categories}
 							<label for="category" class="md-12-mb" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>category</label>
@@ -160,16 +160,16 @@
 								{@render arrow('year')}
 							<!-- {/if} -->
 						</button>
-						<button class="label client" onclick={() => sortby('client')}>
-							<span>client</span>
-							<!-- {#if sortKey === 'client'} -->
-								{@render arrow('client')}
-							<!-- {/if} -->
-						</button>
 						<button class="label title" onclick={() => sortby('title')}>
 							<span>project</span>
 							<!-- {#if sortKey === 'title'} -->
 								{@render arrow('title')}
+							<!-- {/if} -->
+						</button>
+						<button class="label client" onclick={() => sortby('client')}>
+							<span>client</span>
+							<!-- {#if sortKey === 'client'} -->
+								{@render arrow('client')}
 							<!-- {/if} -->
 						</button>
 						<button class="label category" onclick={() => sortby('category')}>
@@ -277,18 +277,21 @@
 						}
 
 					}
-					.client {
-						grid-column: 5 / span 2;
+					.title {
+						grid-column: 5 / span 5;
 
+						@media screen and (max-width: 1512px) {
+							grid-column: 5 / span 4;
+						}
 						@media screen and (max-width: 768px) {
 							grid-column: 1 / span 12;
 						}
 					}
-					.title {
-						grid-column: 7 / span 5;
+					.client {
+						grid-column: 10 / span 2;
 
 						@media screen and (max-width: 1512px) {
-							grid-column: 7 / span 4;
+							grid-column: 9 / span 2;
 						}
 						@media screen and (max-width: 768px) {
 							grid-column: 1 / span 12;
@@ -359,13 +362,16 @@
 				.year {
 					grid-column: 1 / span 4;
 				}
-				.client {
-					grid-column: 5 / span 2;
-				}
 				.title {
-					grid-column: 7 / span 5;
+					grid-column: 5 / span 5;
 					@media screen and (max-width: 1512px) {
-						grid-column: 7 / span 4;
+						grid-column: 5 / span 4;
+					}
+				}
+				.client {
+					grid-column: 10 / span 2;
+					@media screen and (max-width: 1512px) {
+						grid-column: 9 / span 2;
 					}
 				}
 				.category {

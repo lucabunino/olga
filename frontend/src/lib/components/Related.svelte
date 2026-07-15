@@ -57,18 +57,6 @@
             }
         });
 
-        // Handle clicks for centered navigation using event delegation
-        const handleClick = (e) => {
-            const project = e.target.closest(".project");
-            if (project && track.contains(project)) {
-                const index = projects.indexOf(project);
-                if (index !== -1 && loop?.toIndex) {
-                    loop.toIndex(index, { duration: 0.8, ease: "power1.inOut" });
-                }
-            }
-        };
-        track.addEventListener("click", handleClick);
-
         // CLEANUP: This runs whenever the effect re-triggers (on resize or data change)
         return () => {
             if (loop) loop.kill();
@@ -76,7 +64,6 @@
             gsap.killTweensOf(projects);
             gsap.set(track, { clearProps: "all" });
             gsap.set(projects, { clearProps: "all" });
-            track.removeEventListener("click", handleClick);
         };
     });
 </script>

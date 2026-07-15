@@ -40,24 +40,6 @@
 <HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Studio'}}/>
 
 <main>
-	{#if studio.location && studio.bio}
-		<section id="bio">
-			<p class="location md-36 md-26-mb">{studio.location}</p>
-			<div class="bio portableText md-24 md-16-mb">
-				<PortableText value={studio.bio}
-				components={{
-					block: {
-						normal: PortableTextStyleProject,
-					},
-					listItem: PortableTextStyleProject,
-					marks: {
-						link: PortableTextStyleProject,
-					},
-				}}/>
-			</div>
-		</section>
-	{/if}
-
 	{#if studio.poem}
 		<section id="poem" class="md-36 md-26-mb">
 			<div class="poem-inner" bind:this={poemSection}>
@@ -106,6 +88,24 @@
 		</section>
 	{/if}
 
+	{#if studio.location && studio.bio}
+		<section id="bio">
+			<p class="location md-36 md-26-mb">{studio.location}</p>
+			<div class="bio portableText md-24 md-16-mb">
+				<PortableText value={studio.bio}
+				components={{
+					block: {
+						normal: PortableTextStyleProject,
+					},
+					listItem: PortableTextStyleProject,
+					marks: {
+						link: PortableTextStyleProject,
+					},
+				}}/>
+			</div>
+		</section>
+	{/if}
+
 	{#if studio.image}
 		<section id="image">
 			<Media media={studio.image} minHeight={300} size='xl'/>
@@ -118,36 +118,8 @@
 
 <style lang="scss">
 	main {
-		margin-top: var(--headerHeight);
+		// margin-top: var(--headerHeight);
 
-		#bio {
-			display: grid;
-			grid-template-columns: repeat(12, 1fr);
-			column-gap: var(--gutter);
-			padding: var(--sp-s) var(--sp-m);
-
-			.location {
-				grid-column: 1 / span 6;
-			}
-
-			.bio {
-				grid-column: 7 / span 6;
-			}
-
-			@media screen and (max-width: 768px) {
-				padding: 0 var(--margin-mb) var(--sp-m);
-				row-gap: var(--sp-m);
-
-				.location {
-					grid-column: 1 / span 12;
-				}
-
-				.bio {
-					grid-column: 1 / span 12;
-				}
-			}
-		}
-		
 		#poem {
 			display: flex;
 			flex-direction: column;
@@ -191,6 +163,34 @@
 			@media screen and (max-width: 768px) {
 				padding: var(--sp-xxl) var(--margin-mb);
 				width: auto;
+			}
+		}
+
+		#bio {
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			column-gap: var(--gutter);
+			padding: var(--sp-s) var(--sp-m);
+
+			.location {
+				grid-column: 1 / span 6;
+			}
+
+			.bio {
+				grid-column: 7 / span 6;
+			}
+
+			@media screen and (max-width: 768px) {
+				padding: 0 var(--margin-mb) var(--sp-m);
+				row-gap: var(--sp-m);
+
+				.location {
+					grid-column: 1 / span 12;
+				}
+
+				.bio {
+					grid-column: 1 / span 12;
+				}
 			}
 		}
 	}

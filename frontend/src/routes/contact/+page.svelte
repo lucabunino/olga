@@ -77,9 +77,10 @@
 	<section id="clients">
 		{#if contact.clientLines && loaded}
 			{#each contact.clientLines as line, i}
-				<Marquee speed={50} pauseOnHover={true} direction={i%2 ? 'left' : 'right'} gap="var(--sp-l)">
+				{@const lineDelay = nextDelay()}
+				<Marquee speed={50} pauseOnHover={true} autoFill={true} direction={i%2 ? 'left' : 'right'} gap="var(--sp-l)">
 					{#each line.clients.filter(c => c?.logo) as client, j}
-						<img in:fade|global={{duration: 100, delay: nextDelay()}} class="client" src={urlFor(client.logo)} alt="{client.title} logo">
+						<img in:fade|global={{duration: 100, delay: lineDelay + j * STEP}} class="client" src={urlFor(client.logo)} alt="{client.title} logo">
 					{/each}
 				</Marquee>
 			{/each}

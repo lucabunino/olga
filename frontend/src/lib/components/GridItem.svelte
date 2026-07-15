@@ -37,14 +37,12 @@
     let lerpScale = $state(0.5);
     let settled = $state(false);
 
-    // Sizing
     const dims = image.cover.asset.metadata.dimensions;
     const aspect = dims.width / dims.height;
     const baseSize = (image.size ?? 0.7) * cell;
     const planeWidth = aspect > 1 ? baseSize : baseSize * aspect;
     const planeHeight = aspect > 1 ? baseSize / aspect : baseSize;
 
-	// Positioning
     const pX = image.positionX ?? Math.random();
     const pY = image.positionY ?? Math.random();
 
@@ -66,10 +64,14 @@
         return ((((v + half) % range) + range) % range) - half;
     };
 
-    // A central item's own fly-out start time within the shared timeline.
-    // Reversed: the last item to appear (highest rank) is the first to fly to its position.
     const flyStart = (CENTRAL_TOTAL - 1) * CENTRAL_APPEAR_STAGGER + CENTRAL_APPEAR_DURATION
         + CENTRAL_HOLD + (CENTRAL_TOTAL - 1 - (centralRank ?? 0)) * CENTRAL_FLYOUT_STAGGER;
+
+    const DRIFT_AMP = cell * 0.03; // world units of wander around the cluster spot
+    const DRIFT_SPEED = 0.45; // radians per second
+    const driftSeed = (centralRank ?? 0) + 1;
+    const driftPhaseX = Math.sin(driftSeed * 127.1) * Math.PI * 2;
+    const driftPhaseY = Math.sin(driftSeed * 311.7) * Math.PI * 2;
 
     useTask(() => {
         if (!mesh) return;
@@ -81,9 +83,6 @@
         let posX, posY, zDepth, revealEase;
 
         if (skipIntro) {
-            // Already played this session (e.g. re-navigating back to the homepage):
-            // skip the choreography, but every item still simple-fades in at its final position,
-            // staggered 0 -> n by index.
             const fadeStart = i * REST_FADE_STAGGER;
             const fadeP = Math.max(0, Math.min(1, (t - fadeStart) / REST_FADE_DURATION));
 
@@ -96,25 +95,26 @@
             mesh.visible = false;
             return;
         } else if (isCentral) {
-            // Phase 1: pop in, staggered, at a jittered spot near center.
             const appearStart = centralRank * CENTRAL_APPEAR_STAGGER;
             const appearP = Math.max(0, Math.min(1, (t - appearStart) / CENTRAL_APPEAR_DURATION));
             const appearEase = 1 - Math.pow(1 - appearP, 6);
 
-            // Phase 2 (hold) + Phase 3: fly out together to the real grid position.
             const flyP = Math.max(0, Math.min(1, (t - flyStart) / CENTRAL_FLYOUT_DURATION));
             const flyEase = flyP < 0.5
                 ? 4 * flyP * flyP * flyP
                 : 1 - Math.pow(-2 * flyP + 2, 3) / 2;
 
-            posX = cluster.x + (targetX - cluster.x) * flyEase;
-            posY = cluster.y + (targetY - cluster.y) * flyEase;
+            const driftFade = appearEase * (1 - flyEase);
+            const driftX = Math.sin(t * DRIFT_SPEED + driftPhaseX) * DRIFT_AMP * driftFade;
+            const driftY = Math.cos(t * DRIFT_SPEED * 1.3 + driftPhaseY) * DRIFT_AMP * driftFade;
+
+            posX = cluster.x + (targetX - cluster.x) * flyEase + driftX;
+            posY = cluster.y + (targetY - cluster.y) * flyEase + driftY;
             zDepth = centralRank * 0.01 * (1 - flyEase);
             revealEase = appearEase;
             settled = flyP >= 1;
         } else {
-            // Phase 4: fade-in at the real position, once the central phase is done.
-            const restStart = centralPhaseEnd + entryOrder * REST_FADE_STAGGER;
+            const restStart = centralPhaseEnd + (entryOrder ?? 0) * REST_FADE_STAGGER;
             const restP = Math.max(0, Math.min(1, (t - restStart) / REST_FADE_DURATION));
 
             posX = targetX;
@@ -126,7 +126,6 @@
 
         mesh.position.set(posX, posY, zDepth);
 
-        // Every item reveals the same way: scale 0.5 -> 1 (x hover) together with opacity 0 -> 1.
         const finalTargetScale = (0.9 + 0.1 * revealEase) * targetHover;
         lerpScale += (finalTargetScale - lerpScale) * 0.15;
         mesh.scale.set(lerpScale, lerpScale, 1);
@@ -136,7 +135,6 @@
             mesh.material.opacity = revealEase;
         }
 
-        // Visibility Buffer (wrap-around culling for off-screen tiled copies)
         const threshold = 24 / Math.min(1, gridScale);
         mesh.visible = lerpScale > 0.01 &&
                        Math.abs(targetX) < threshold &&
