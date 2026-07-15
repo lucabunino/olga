@@ -5,9 +5,9 @@
     import Marquee from 'svelte-fast-marquee';
     import { fade } from 'svelte/transition';
 
-	const SPEED = 10
+	const SPEED = 7
 	const START = 500;
-	const STEP = 20;
+	const STEP = 30;
 
 	let { data } = $props()
 	let loaded = $state(false)
@@ -64,12 +64,21 @@
 			</p>
 		{/if}
 	</section>
+	{#if contact.collaborations}
+		<section id="collaborations">
+			<h2 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>collaborations</h2>
+			<div class="collaborations md-20-mb">
+				{#each contact.collaborations as block (block._key)}
+					<p use:typewriterKeep={{ speed: SPEED/2, delay: nextDelay()}}>{block.children?.map(c => c.text).join('')}</p>
+				{/each}
+			</div>
+		</section>
+	{/if}
 	<section id="clients">
-		<h2 class="md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>who we've worked with</h2>
 		{#if contact.clientLines && loaded}
 			{#each contact.clientLines as line, i}
-				<Marquee speed={50} pauseOnHover={true} direction={i%2 ? 'left' : 'right'}>
-					{#each line.clients as client, j}
+				<Marquee speed={50} pauseOnHover={true} direction={i%2 ? 'left' : 'right'} gap="var(--sp-l)">
+					{#each line.clients.filter(c => c?.logo) as client, j}
 						<img in:fade|global={{duration: 100, delay: nextDelay()}} class="client" src={urlFor(client.logo)} alt="{client.title} logo">
 					{/each}
 				</Marquee>
@@ -160,8 +169,32 @@
 			}
 		}
 
+		#collaborations {
+			margin-top: var(--sp-l);
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			column-gap: var(--gutter);
+			row-gap: var(--sp-s);
+
+			h2 {
+				grid-column: 1 / span 6;
+
+				@media screen and (max-width: 576px) {
+					grid-column: 1 / span 12;
+				}
+			}
+
+			.collaborations {
+				grid-column: 7 / span 6;
+
+				@media screen and (max-width: 576px) {
+					grid-column: 1 / span 12;
+				}
+			}
+		}
+
 		#clients {
-			margin: var(--sp-m) calc(var(--sp-m)*-1) var(--sp-xl);
+			margin: var(--sp-xl) calc(var(--sp-m)*-1) var(--sp-xl);
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
@@ -170,32 +203,18 @@
 				margin: var(--sp-m) calc(var(--margin-mb)*-1) var(--sp-xl);
 			}
 
-			h2 {
-				grid-column: 7 / span 6;
-
-				@media screen and (max-width: 576px) {
-					grid-column: 1 / span 12;
-					padding: 0 var(--margin-mb);
-				}
-			}
-
 			:global(.marquee-container) {
 				grid-column: 1 / span 12;
-				margin: var(--sp-l) 0 var(--sp-m);
-				column-gap: var(--sp-l);
+				margin: var(--sp-l) 0 var(--sp-l);
 			}
-			
-			:global(.marquee) {
-				column-gap: var(--sp-l);
-			}
+
 			:global(.marquee .client) {
-				column-gap: var(--sp-l);
-				height: 4rem;
+				height: 3rem;
 				width: auto;
 			}
 
 			:global(.marquee-container + .marquee-container) {
-				margin: 0 0 var(--sp-m);
+				margin: 0 0 var(--sp-l);
 			}
 		}
 

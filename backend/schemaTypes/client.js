@@ -22,7 +22,7 @@ export default {
 		{
 			name: 'logo',
 			type: 'image',
-			validation: Rule => Rule.required(),
+			description: 'Optional — clients without a logo are not shown on the contact page.',
 		},
 	],
 };

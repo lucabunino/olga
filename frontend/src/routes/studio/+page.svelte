@@ -8,17 +8,28 @@
 	import { typewriterKeep } from '$lib/utils/typewriter.js';
     import HeadSingle from '$lib/components/HeadSingle.svelte';
     import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
 	let { data } = $props()
 	let studio = data.studio
+	let poemSection = $state()
 	let isLoaded = $state(false)
 	let isPast = $state(false)
 	let D = 250
 	let lineOffset =$state(4)
-	$effect(() => {
-		isLoaded = true
-		setTimeout(() => {
-			isPast = true
-		}, D);
+
+	onMount(() => {
+		if (!poemSection) return
+		const observer = new IntersectionObserver(([entry]) => {
+			if (entry.isIntersecting) {
+				isLoaded = true
+				setTimeout(() => {
+					isPast = true
+				}, D);
+				observer.disconnect()
+			}
+		}, { rootMargin: '0px 0px -30% 0px' })
+		observer.observe(poemSection)
+		return () => observer.disconnect()
 	})
 
 	const getBlankOffset = (index) => {
@@ -49,6 +60,7 @@
 
 	{#if studio.poem}
 		<section id="poem" class="md-36 md-26-mb">
+			<div class="poem-inner" bind:this={poemSection}>
 			{#if isLoaded}
 				{#each studio.poem as line, i}
 					{@const activeIndex = i - getBlankOffset(i)}
@@ -79,7 +91,18 @@
 					{@const totalActiveLines = studio.poem.length - getBlankOffset(studio.poem.length)}
 					<p use:typewriterKeep={{ speed: 40, delay: totalActiveLines*D*2.5 }} class="author md-24 md-16-mb">{@html studio.poemAuthor}</p>
 				{/if}
+			{:else}
+				{#each studio.poem as line (line._key)}
+					<p class="line">
+						{#each line.units as span, j (j)}<span class="animated {span._type}">{@html span.text}</span>{/each}
+						<br>
+					</p>
+				{/each}
+				{#if studio.poemAuthor}
+					<p class="author md-24 md-16-mb" style:visibility="hidden">{@html studio.poemAuthor}</p>
+				{/if}
 			{/if}
+			</div>
 		</section>
 	{/if}
 
@@ -133,6 +156,12 @@
 			justify-self: center;
 			width: max-content;
 			padding: var(--sp-xxxl) var(--sp-m);
+
+			.poem-inner {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+			}
 
 			.line {
 				flex-basis: 100%;

@@ -9,14 +9,16 @@
     let {
         image, i, gridX, gridY, entryOrder, cell, gridWidth, gridHeight, totalSlots,
         currentX, currentY, t, isDragging, gridScale, cursor = $bindable(),
-        isCentral, cluster, choreography, skipIntro
+        centralRank, cluster, choreography, skipIntro
     } = $props();
 
     const {
-        CENTRAL_COUNT, CENTRAL_APPEAR_STAGGER, CENTRAL_APPEAR_DURATION,
+        CENTRAL_TOTAL, CENTRAL_APPEAR_STAGGER, CENTRAL_APPEAR_DURATION,
         CENTRAL_HOLD, CENTRAL_FLYOUT_STAGGER, CENTRAL_FLYOUT_DURATION,
         centralPhaseEnd, REST_FADE_STAGGER, REST_FADE_DURATION
     } = choreography;
+
+    const isCentral = centralRank !== undefined;
 
 	const loader = new TextureLoader();
 	const lqipUrl = image.cover.asset.metadata.lqip;
@@ -65,9 +67,9 @@
     };
 
     // A central item's own fly-out start time within the shared timeline.
-    // Reversed: the last item to appear (highest i) is the first to fly to its position.
-    const flyStart = (CENTRAL_COUNT - 1) * CENTRAL_APPEAR_STAGGER + CENTRAL_APPEAR_DURATION
-        + CENTRAL_HOLD + (CENTRAL_COUNT - 1 - i) * CENTRAL_FLYOUT_STAGGER;
+    // Reversed: the last item to appear (highest rank) is the first to fly to its position.
+    const flyStart = (CENTRAL_TOTAL - 1) * CENTRAL_APPEAR_STAGGER + CENTRAL_APPEAR_DURATION
+        + CENTRAL_HOLD + (CENTRAL_TOTAL - 1 - (centralRank ?? 0)) * CENTRAL_FLYOUT_STAGGER;
 
     useTask(() => {
         if (!mesh) return;
@@ -95,17 +97,19 @@
             return;
         } else if (isCentral) {
             // Phase 1: pop in, staggered, at a jittered spot near center.
-            const appearStart = i * CENTRAL_APPEAR_STAGGER;
+            const appearStart = centralRank * CENTRAL_APPEAR_STAGGER;
             const appearP = Math.max(0, Math.min(1, (t - appearStart) / CENTRAL_APPEAR_DURATION));
             const appearEase = 1 - Math.pow(1 - appearP, 6);
 
             // Phase 2 (hold) + Phase 3: fly out together to the real grid position.
             const flyP = Math.max(0, Math.min(1, (t - flyStart) / CENTRAL_FLYOUT_DURATION));
-            const flyEase = 1 - Math.pow(1 - flyP, 6);
+            const flyEase = flyP < 0.5
+                ? 4 * flyP * flyP * flyP
+                : 1 - Math.pow(-2 * flyP + 2, 3) / 2;
 
             posX = cluster.x + (targetX - cluster.x) * flyEase;
             posY = cluster.y + (targetY - cluster.y) * flyEase;
-            zDepth = i * 0.01 * (1 - flyEase);
+            zDepth = centralRank * 0.01 * (1 - flyEase);
             revealEase = appearEase;
             settled = flyP >= 1;
         } else {
@@ -116,7 +120,7 @@
             posX = targetX;
             posY = targetY;
             zDepth = 0;
-            revealEase = 1 - Math.pow(1 - restP, 6);
+            revealEase = 1 - Math.pow(1 - restP, 3);
             settled = restP >= 1;
         }
 

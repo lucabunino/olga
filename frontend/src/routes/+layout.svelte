@@ -2,6 +2,7 @@
 	import "../scss/reset.scss"
 	import "../scss/typography.scss"
 	import "../scss/main.scss"
+    import CookieBanner from '$lib/components/CookieBanner.svelte';
     import Footer from '$lib/components/Footer.svelte';
     import Head from '$lib/components/Head.svelte';
     import Header from '$lib/components/Header.svelte';
@@ -29,3 +30,4 @@
 		{/if}
 	</div>
 {/key}
+<CookieBanner/>

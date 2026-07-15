@@ -1,7 +1,7 @@
 <script>
     import { useTask, T } from '@threlte/core';
     import { interactivity } from '@threlte/extras';interactivity();
-    import { innerWidth } from 'svelte/reactivity/window';
+    import { innerWidth, innerHeight } from 'svelte/reactivity/window';
     import GridItem from './GridItem.svelte';
     import { onMount } from 'svelte';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
@@ -77,32 +77,64 @@
     let spiralPositions = $derived.by(() => generateSpiral(totalSlots));
 
     // --- Intro choreography ---
-    // Phase 1: the CENTRAL_COUNT most central items (spiral index 0..N-1) pop in,
-    //          one after another, clustered in a tight jittered spread near center.
+    // Phase 1: the central items (the spiral slots actually visible in the viewport
+    //          at rest position 0,0) pop in one after another, clustered near center.
     // Phase 2: that cluster holds still for CENTRAL_HOLD seconds.
     // Phase 3: the cluster flies out together to each item's real grid position.
     // Phase 4: the remaining items simple-fade in at their real position, starting the
     //          moment phase 3 begins (not once it finishes) so it reads as one motion.
-    const CENTRAL_COUNT = 25;
-    const choreography = {
-        CENTRAL_COUNT,
-        CENTRAL_APPEAR_STAGGER: .03, // seconds between each central item popping in
-        CENTRAL_APPEAR_DURATION: .2, // seconds for a single central item's pop-in
-        CENTRAL_HOLD: 1, // seconds the cluster sits still before flying out
-        CENTRAL_FLYOUT_STAGGER: .01, // seconds between each item's fly-out start (tune or set to 0 for a synced burst)
-        CENTRAL_FLYOUT_DURATION: 2, // seconds for the fly-out motion
-        REST_FADE_STAGGER: .01, // seconds between each remaining item's fade start
-        REST_FADE_DURATION: .3, // seconds for a remaining item's fade-in
-    };
-    choreography.centralPhaseEnd =
-        (CENTRAL_COUNT - 1) * choreography.CENTRAL_APPEAR_STAGGER + choreography.CENTRAL_APPEAR_DURATION +
-        choreography.CENTRAL_HOLD;
+
+    // Camera is fixed in +page.svelte: position z=10, fov 45 -> world-space viewport size.
+    const CAM_Z = 10, CAM_FOV = 45;
+    const viewH = 2 * CAM_Z * Math.tan((CAM_FOV / 2) * (Math.PI / 180));
+    let viewW = $derived(viewH * ((innerWidth.current ?? 1) / (innerHeight.current ?? 1)));
+
+    // Spiral slots whose cell overlaps the viewport at 0,0 — these form the intro cluster.
+    let centralIndices = $derived.by(() => {
+        const halfW = viewW / (2 * gridScale) + cell / 2;
+        const halfH = viewH / (2 * gridScale) + cell / 2;
+        const arr = [];
+        spiralPositions.forEach((p, i) => {
+            if (Math.abs(p.x * cell) <= halfW && Math.abs(p.y * cell) <= halfH) arr.push(i);
+        });
+        return arr;
+    });
+    let centralCount = $derived(centralIndices.length);
+    let centralRank = $derived.by(() => {
+        const m = new Map();
+        centralIndices.forEach((idx, r) => m.set(idx, r));
+        return m;
+    });
+
+    let choreography = $derived.by(() => {
+        const c = {
+            CENTRAL_TOTAL: centralCount,
+            CENTRAL_APPEAR_STAGGER: .13, // seconds between each central item popping in
+            CENTRAL_APPEAR_DURATION: .8, // seconds for a single central item's pop-in
+            CENTRAL_HOLD: 1.3, // seconds the cluster sits still before flying out
+            CENTRAL_FLYOUT_STAGGER: .01, // seconds between each item's fly-out start (tune or set to 0 for a synced burst)
+            CENTRAL_FLYOUT_DURATION: 2, // seconds for the fly-out motion
+            REST_FADE_STAGGER: .02, // seconds between each remaining item's fade start
+            REST_FADE_DURATION: .8, // seconds for a remaining item's fade-in
+        };
+        c.centralPhaseEnd =
+            (c.CENTRAL_TOTAL - 1) * c.CENTRAL_APPEAR_STAGGER + c.CENTRAL_APPEAR_DURATION + c.CENTRAL_HOLD;
+        return c;
+    });
+
+    // Wheel/drag input stays locked until the fly-out has finished.
+    let introEnd = $derived(
+        choreography.centralPhaseEnd +
+        (centralCount - 1) * choreography.CENTRAL_FLYOUT_STAGGER +
+        choreography.CENTRAL_FLYOUT_DURATION
+    );
+    let inputLocked = $derived(!skipIntro && t < introEnd);
 
     let entryOrder = $derived.by(() => {
         const rank = new Array(spiralPositions.length);
         spiralPositions
             .map((pos, i) => ({ i, pos }))
-            .filter(({ i }) => i >= CENTRAL_COUNT)
+            .filter(({ i }) => !centralRank.has(i))
             .sort((a, b) => (b.pos.y - a.pos.y) || (a.pos.x - b.pos.x))
             .forEach(({ i }, order) => { rank[i] = order; });
         return rank;
@@ -114,7 +146,7 @@
         return x - Math.floor(x);
     }
     let clusterOffsets = $derived.by(() => {
-        return Array.from({ length: CENTRAL_COUNT }, (_, idx) => {
+        return Array.from({ length: centralCount }, (_, idx) => {
             const angle = pseudoRandom(idx) * Math.PI * 2;
             const radius = pseudoRandom(idx + 100) * (cell * 0.15);
             return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
@@ -130,8 +162,8 @@
     let velX = 0;
     let velY = 0;
 
-	const FRICTION = $derived(innerWidth.current > 768 ? .8 : .98);
-	const DRAG_SENS = $derived(innerWidth.current > 768 ? .003 : .006);
+	const FRICTION = $derived(innerWidth.current > 768 ? .8 : .94);
+	const DRAG_SENS = $derived(innerWidth.current > 768 ? .003 : .004);
 	const WHEEL_SENS = 0.0008;
 
     let activePointers = new Map();
@@ -162,6 +194,7 @@
 
     const onWheel = (e) => {
 		e.preventDefault();
+		if (inputLocked) return;
 		velX += e.deltaX * WHEEL_SENS;
 		velY -= e.deltaY * WHEEL_SENS;
     };
@@ -201,6 +234,7 @@
     }
 
     const handlePointerDown = (e) => {
+        if (inputLocked) return;
         if (e.target.setPointerCapture) e.target.setPointerCapture(e.pointerId);
         activePointers.set(e.pointerId, e);
         isDragging = true;
@@ -270,8 +304,8 @@
             {currentX} {currentY}
             {t} {isDragging}
             {gridScale}
-            isCentral={i < CENTRAL_COUNT}
-            cluster={clusterOffsets[i] ?? { x: 0, y: 0 }}
+            centralRank={centralRank.get(i)}
+            cluster={clusterOffsets[centralRank.get(i)] ?? { x: 0, y: 0 }}
             {choreography}
             {skipIntro}
             bind:cursor

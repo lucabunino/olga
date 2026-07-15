@@ -44,7 +44,7 @@
     class="image-container" 
     style:aspect-ratio={width / height}
     style:min-height={minHeight ? `${minHeight}px` : undefined}
-    style:background-image={lqip ? `url(${lqip})` : 'none'}
+    style:--lqip={lqip ? `url(${lqip})` : 'none'}
 >
     <picture>
 		{#if imageMobile}
@@ -70,15 +70,15 @@
     .image-container {
         position: relative;
         overflow: hidden;
-        background-size: cover;
-        background-position: center;
     }
 
     .image-container::before {
         content: '';
         position: absolute;
         inset: 0;
-        background: inherit;
+        background-image: var(--lqip);
+        background-size: cover;
+        background-position: center;
         filter: blur(20px);
         transform: scale(1.1);
         z-index: 1;

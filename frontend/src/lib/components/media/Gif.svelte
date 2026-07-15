@@ -61,7 +61,7 @@
     class="gif-container" 
     class:loaded={isLoaded}
     style:aspect-ratio={width ? width / height : 'auto'}
-    style:background-image={lqip ? `url(${lqip})` : 'none'}
+    style:--lqip={lqip ? `url(${lqip})` : 'none'}
 >
     {#each currentFrames as frame, i}
         <div 
@@ -87,14 +87,14 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        background-size: cover;
-        background-position: center;
 
 		&::before {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: inherit;
+			background-image: var(--lqip);
+			background-size: cover;
+			background-position: center;
 			filter: blur(20px);
 			transform: scale(1.1);
 			z-index: 4;

@@ -23,11 +23,16 @@ export default {
 		},
 		{
 			name: 'services',
-			type: 'array', 
+			type: 'array',
 			of: [{
 				type: 'reference',
 				to: [{ type: 'category' }],
 			}],
+		},
+		{
+			name: 'collaborations',
+			type: 'array',
+			of: [{type: 'block'}],
 		},
 		{
 			name: 'clientLines',
