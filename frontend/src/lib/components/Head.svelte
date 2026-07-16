@@ -1,11 +1,12 @@
 <script>
     let { seo } = $props()
-    import { browser } from "$app/environment";
+    import { browser, dev } from "$app/environment";
     import { page } from "$app/state";
 </script>
 
 <svelte:head>
-    {#if browser}
+    {#if browser && !dev}
+		<script defer src="https://cloud.umami.is/script.js" data-website-id="195a7fd8-121d-4444-bcd7-19004f4674e9"></script>
     {/if}
 
     <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />

@@ -129,7 +129,7 @@
 							<time id="year" class="year {!isFirst && (!portfolio.search || portfolio.search == 'search') ? 'hidden' : ''}" datetime={project.date} use:typewriterKeep={{ speed: 40, delay: i*50}}>{new Date(project.date).getFullYear()}</time>
 						{/if}
 						{#if domLoaded &&project.title}
-							<label for="title" class="md-12-mb" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>title</label>
+							<label for="title" class="md-12-mb" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>project</label>
 							<span id="title" class="title" use:typewriterKeep={{ speed: SPEED, delay: i*50}}>{project.title}</span>
 						{/if}
 						{#if domLoaded &&project.client}
@@ -253,6 +253,9 @@
 
 					label {
 						display: none;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: pre;
 
 						@media screen and (max-width: 768px) {
 							color: var(--gray-dark);
@@ -265,6 +268,9 @@
 
 					.year {
 						grid-column: 1 / span 1;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: pre;
 						
 						&.hidden {
 							@media screen and (min-width: 769px) {
@@ -279,6 +285,9 @@
 					}
 					.title {
 						grid-column: 5 / span 5;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: pre;
 
 						@media screen and (max-width: 1512px) {
 							grid-column: 5 / span 4;
@@ -289,6 +298,9 @@
 					}
 					.client {
 						grid-column: 10 / span 2;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: pre;
 
 						@media screen and (max-width: 1512px) {
 							grid-column: 9 / span 2;
@@ -299,6 +311,9 @@
 					}
 					.category {
 						grid-column: 12 / span 1;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: pre;
 						
 						@media screen and (max-width: 1512px) {
 							grid-column: 11 / span 2;

@@ -59,7 +59,8 @@
 
         // CLEANUP: This runs whenever the effect re-triggers (on resize or data change)
         return () => {
-            if (loop) loop.kill();
+            if (loop?.cleanup) loop.cleanup();
+            else if (loop) loop.kill();
             gsap.killTweensOf(track);
             gsap.killTweensOf(projects);
             gsap.set(track, { clearProps: "all" });

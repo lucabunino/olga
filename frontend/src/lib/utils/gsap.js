@@ -21,7 +21,7 @@ export function horizontalLoop(items, config) {
   let timeline;
   items = gsap.utils.toArray(items);
   config = config || {};
-  gsap.context(() => { // use a context so that if this is called from within another context or a gsap.matchMedia(), we can perform proper cleanup like the "resize" event handler on the window
+  const ctx = gsap.context(() => { // use a context so that if this is called from within another context or a gsap.matchMedia(), we can perform proper cleanup like the "resize" event handler on the window
     let onChange = config.onChange,
       lastIndex = 0,
       tl = gsap.timeline({repeat: config.repeat, onUpdate: onChange && function() {
@@ -160,7 +160,10 @@ export function horizontalLoop(items, config) {
         onPressInit() {
           let x = this.x;
           gsap.killTweensOf(tl);
-          wasPlaying = !tl.paused();
+          // The timeline is paused during an inertia throw, so a press that
+          // interrupts a throw must still count as "was playing" — otherwise
+          // nothing ever resumes the loop and it locks permanently.
+          wasPlaying = !tl.paused() || draggable.isThrowing || wasPlaying;
           tl.pause();
           startProgress = tl.progress();
           refresh();
@@ -199,6 +202,7 @@ export function horizontalLoop(items, config) {
       })[0];
       tl.draggable = draggable;
     }
+	let wheelCleanup;
 	if (config.wheel) {
 		const speed = config.wheelSpeed || 1;
 		const el = config.wheel === true ? items[0].parentNode : config.wheel;
@@ -218,13 +222,18 @@ export function horizontalLoop(items, config) {
 			));
 		};
 		el.addEventListener("wheel", onWheel, { passive: false });
-		return () => el.removeEventListener("wheel", onWheel);
+		wheelCleanup = () => el.removeEventListener("wheel", onWheel);
 	}
     tl.closestIndex(true);
     lastIndex = curIndex;
     onChange && onChange(items[curIndex], curIndex);
     timeline = tl;
-    return () => window.removeEventListener("resize", onResize); // cleanup
+    return () => { // cleanup, runs on ctx.revert()
+      window.removeEventListener("resize", onResize);
+      wheelCleanup && wheelCleanup();
+      tl.draggable && tl.draggable.kill();
+    };
   });
+  if (timeline) timeline.cleanup = () => ctx.revert();
   return timeline;
 }

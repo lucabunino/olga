@@ -42,7 +42,7 @@
 	})
 
     const cell = 3.5;
-    const baseScale = $derived(innerWidth.current > 1728 ? .65 : innerWidth.current > 1512 ? .85 : innerWidth.current > 768 ? 1 : .55);
+    const baseScale = $derived(innerWidth.current > 1728 ? .85 : innerWidth.current > 768 ? 1 : .55);
 
     let cols = $derived.by(() => {
         const sqrtSide = Math.max(1, Math.ceil(Math.sqrt(effectiveImages?.length ?? 1)));
