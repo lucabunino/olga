@@ -15,32 +15,21 @@
 
 /* Typography */
 html {
-	font-size: clamp(12px, calc(10px + 0.2646vw), 16px);
+	background-color: #EAE6E4;
 	font-size: clamp(12px, calc(4px + 0.625vw), 16px);
-	// font-size: clamp(12px, 12px, 16px);
 }
 .md {
 	&,
-	&-12,
-	&-18,
-	&-24,
-	&-36 {
+	&-16,
+	&-58 {
 		font-family: "Moderat", Helvetica, Arial, sans-serif;
 		font-weight: 400;
 		font-style: normal;
 	}
-
-	&-12		{ font-size: 1rem; letter-spacing: 0em; line-height: 1.1;}
-	&-18		{ font-size: 1.5rem; letter-spacing: 0em; line-height: 1.1;}
-	// &-24		{ font-size: 2rem; letter-spacing: 0em; line-height: 1.1;}
-	&-24		{ font-size: 1.75rem; letter-spacing: 0em; line-height: 1.1;}
-	&-36		{ font-size: 3rem; letter-spacing: 0em; line-height: 1.1;}
+	&-16		{ font-size: 1.333rem; letter-spacing: 0em; line-height: 1.1;}
+	&-58		{ font-size: 4.833rem; letter-spacing: 0em; line-height: 0.759;}
 
 	@media screen and (max-width: 768px) {
-		&-12-mb	{ font-size: 1rem; letter-spacing: 0em; line-height: 1.1;}
-		&-16-mb	{ font-size: 1.333rem; letter-spacing: 0em; line-height: 1.1;}
-		&-20-mb	{ font-size: 1.666rem; letter-spacing: 0em; line-height: 1.1;}
-		&-26-mb	{ font-size: 2.166rem; letter-spacing: 0em; line-height: 1.1;}
+		&-58	{ font-size: 3.5rem; }
 	}
 }
-.uppercase		{ text-transform: uppercase; }

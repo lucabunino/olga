@@ -4,8 +4,5 @@ import { defineConfig } from 'vite';
 export default defineConfig(({ mode }) => {
     return {
         plugins: [sveltekit()],
-        ssr: {
-            noExternal: mode === 'development' ? [] : ['gsap']
-        }
     };
 });
