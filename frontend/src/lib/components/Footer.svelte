@@ -1,5 +1,6 @@
 <script>
 	import { typewriterLoop } from '$lib/utils/typewriter.js';
+	import FooterCircle from '$lib/components/FooterCircle.svelte';
 	let { info, policies } = $props()
 
 	let wordsIndex = $state(0)
@@ -18,13 +19,27 @@
 
 <footer>
 	<section id="contacts">
-		<div>
-			{#if info.adressLabel}
+		<div class="contacts">
+			{#if info.adressLabel || info.legalAdressLabel}
 				<div>
-					{#if info.adressHref}
-						<p><a class="hover-gray-dark" href={info.adressHref} target="_blank" rel="noopener noreferrer">{info.adressLabel}</a></p>
-					{:else}
-						<p>{info.adressLabel}</p>
+					{#if info.adressLabel}
+						{#if info.adressHref}
+							<p><a class="hover-gray-dark" href={info.adressHref} target="_blank" rel="noopener noreferrer">{info.adressLabel}</a></p>
+						{:else}
+							<p>{info.adressLabel}</p>
+						{/if}
+					{/if}
+					{#if info.legalAdressLabel}
+						<div class="legal-adress">
+							{#if info.legalAdressHref}
+								<p><a class="hover-gray-dark" href={info.legalAdressHref} target="_blank" rel="noopener noreferrer">{info.legalAdressLabel}</a></p>
+							{:else}
+								<p>{info.legalAdressLabel}</p>
+							{/if}
+							{#if info.legalAdressCountry}
+								<p>{info.legalAdressCountry}</p>
+							{/if}
+						</div>
 					{/if}
 				</div>
 			{/if}
@@ -42,7 +57,10 @@
 				</div>
 			{/if}
 		</div>
-		<div>
+		<div class="circle">
+			<FooterCircle/>
+		</div>
+		<div class="policies">
 			<p>©{new Date().getFullYear()}</p>
 			{#if policies}
 				{#each policies as policy}
@@ -73,7 +91,7 @@ footer {
 		grid-template-columns: repeat(12, 1fr);
 		column-gap: var(--gutter);
 
-		>div:nth-child(1) {
+		.contacts {
 			grid-column: 1 / span 9;
 			display: grid;
 			grid-template-columns: repeat(9, 1fr);
@@ -82,10 +100,19 @@ footer {
 			div {
 				grid-column: span 2;
 			}
+
+			.legal-adress {
+				margin-top: var(--sp-s);
+			}
+		}
+
+		.circle {
+			grid-column: 10 / span 1;
+			margin-top: var(--sp-xs);
 		}
 		
-		>div:nth-child(2) {
-			grid-column: 10 / span 3;
+		.policies {
+			grid-column: 11 / span 2;
 			color: var(--gray-dark);
 			width: fit-content;
             margin-left: auto;
@@ -117,8 +144,9 @@ footer {
 			display: flex;
 			flex-direction: column;
 			row-gap: var(--sp-m);
+			position: relative;
 
-			>div:nth-child(1) {
+			.contacts {
 				grid-template-columns: repeat(6, 1fr);
 				column-gap: var(--gutter);
 				grid-auto-flow: dense;
@@ -140,8 +168,15 @@ footer {
 					}
 				}
 			}
+
+			.circle {
+				position: absolute;
+				right: 23%;
+				top: 48%;
+			}
 			
-			>div:nth-child(2) {
+			.policies {
+				grid-column: 1 / span 4;
 				margin-left: unset;
 			}
 		}

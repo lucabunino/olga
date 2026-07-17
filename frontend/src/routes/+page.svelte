@@ -26,17 +26,9 @@
 		}
 	})
 
-    onNavigate(() => {
-        // 1. Attiviamo lo stato di uscita per far partire eventuali animazioni/fade
+    onNavigate((navigation) => {
+        if (navigation.to?.url.pathname === navigation.from?.url.pathname) return;
         isExiting = true;
-
-        // 2. Restituiamo una Promise: SvelteKit aspetterà che si risolva
-        // prima di distruggere questa pagina e montare la prossima.
-        // return new Promise((resolve) => {
-        //     setTimeout(() => {
-        //         resolve();
-        //     }, DURATION);
-        // });
     });
 </script>
 

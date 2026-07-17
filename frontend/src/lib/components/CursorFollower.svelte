@@ -1,20 +1,15 @@
 <script>
-    import { Tween } from 'svelte/motion';
-    import { cubicOut } from 'svelte/easing';
-
-    let visible = $state(false);
-
-    const pos = new Tween({ x: 0, y: 0 }, { duration: 2000, easing: cubicOut });
+    import { getCursor } from '$lib/stores/cursor.svelte.js';
+    const cursor = getCursor();
 
     function move(e) {
-        visible = true;
-        pos.set({ x: e.clientX, y: e.clientY });
+        cursor.move(e.clientX, e.clientY);
     }
 </script>
 
 <svelte:window onmousemove={move} />
 
-<div class="cursor" class:visible style:transform="translate3d({pos.current.x}px, {pos.current.y}px, 0)"></div>
+<div class="cursor" class:visible={cursor.visible} style:transform="translate3d({cursor.x}px, {cursor.y}px, 0)"></div>
 
 <style lang="scss">
     .cursor {

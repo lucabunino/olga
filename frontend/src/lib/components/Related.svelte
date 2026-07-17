@@ -44,10 +44,11 @@
 
         // Initialize the loop
         const loop = horizontalLoop(projects, {
-            paused: false, 
+            paused: false,
+			repeat: -1,
             draggable: true,
             center: false,
-            speed: 0.5,
+            speed: .5,
             wheel: true,
             wheelSpeed: 1.2,
             onChange: (element, index) => {

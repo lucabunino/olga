@@ -4,7 +4,10 @@ import { HeartIcon } from "@sanity/icons";
 export default {
 	name: 'info',
 	type: 'document',
-	fieldsets: [{ name: 'adress'}],
+	fieldsets: [
+		{name: 'adress', title: 'Operative adress'},
+		{name: 'legalAdress', title: 'Legal adress'},
+	],
 	fields: [
 		{
 			name: 'title',
@@ -26,7 +29,7 @@ export default {
 			name: 'adressLabel',
 			title: 'Label',
 			type: 'text',
-			rows: 2,
+			rows: 3,
 			fieldset: 'adress',
 		},
 		{
@@ -40,6 +43,25 @@ export default {
 			title: 'Href',
 			type: 'url',
 			fieldset: 'adress',
+		},
+		{
+			name: 'legalAdressLabel',
+			title: 'Label',
+			type: 'text',
+			rows: 3,
+			fieldset: 'legalAdress',
+		},
+		{
+			name: 'legalAdressCountry',
+			title: 'Country',
+			type: 'string',
+			fieldset: 'legalAdress',
+		},
+		{
+			name: 'legalAdressHref',
+			title: 'Href',
+			type: 'url',
+			fieldset: 'legalAdress',
 		},
 		{
 			name: 'email',
