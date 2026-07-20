@@ -11,7 +11,6 @@
 
 	let { data } = $props()
 	let loaded = $state(false)
-	const contact = data.contact
 
 	let currentDelay = START;
     function nextDelay() {
@@ -58,25 +57,25 @@
 	</section>
 	<section id="services">
 		<h2 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>services</h2>
-		{#if contact.services}
+		{#if data.contact.services}
 			<p class="services md-20-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>
-				{#each contact.services as service, i}{service.title}{#if i+2 < contact.services.length}{@html ', '}{:else if i+2 == contact.services.length}{@html ' and '}{/if}{/each}
+				{#each data.contact.services as service, i}{service.title}{#if i+2 < data.contact.services.length}{@html ', '}{:else if i+2 == data.contact.services.length}{@html ' and '}{/if}{/each}
 			</p>
 		{/if}
 	</section>
-	{#if contact.collaborations}
+	{#if data.contact.collaborations}
 		<section id="collaborations">
 			<h2 class="md-36 md-26-mb" use:typewriterKeep={{ speed: SPEED, delay: nextDelay()}}>collaborations</h2>
 			<div class="collaborations md-20-mb">
-				{#each contact.collaborations as block (block._key)}
+				{#each data.contact.collaborations as block (block._key)}
 					<p use:typewriterKeep={{ speed: SPEED/2, delay: nextDelay()}}>{block.children?.map(c => c.text).join('')}</p>
 				{/each}
 			</div>
 		</section>
 	{/if}
 	<section id="clients">
-		{#if contact.clientLines && loaded}
-			{#each contact.clientLines as line, i}
+		{#if data.contact.clientLines && loaded}
+			{#each data.contact.clientLines as line, i}
 				{@const lineDelay = nextDelay()}
 				<Marquee speed={50} pauseOnHover={true} autoFill={true} direction={i%2 ? 'left' : 'right'} gap="var(--sp-l)">
 					{#each line.clients.filter(c => c?.logo) as client, j}

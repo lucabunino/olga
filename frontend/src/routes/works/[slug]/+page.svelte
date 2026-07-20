@@ -5,8 +5,7 @@
 	import {PortableText} from '@portabletext/svelte'
     import HeadSingle from '$lib/components/HeadSingle.svelte';
 	let { data } = $props()
-	const project = data.project[0]
-
+	
 	function getGutter(size) {
 		if (size == 'xs') {
 			return '.416rem'
@@ -25,30 +24,30 @@
 		}
 	}
 
-	let seoSingle = $derived(project.seo)
+	let seoSingle = $derived(data.project[0].seo)
 </script>
 
 {#if seoSingle}
-	<HeadSingle seo={data.seo[0]} {seoSingle} hidden={project.hidden} />
+	<HeadSingle seo={data.seo[0]} {seoSingle} hidden={data.project[0].hidden} />
 {/if}
 
 <main>
 	<section id="opening">
-		<Media media={project.opening} size='xl'/>
+		<Media media={data.project[0].opening} size='xl'/>
 	</section>
 	<section id="info">
 		<div class="md-36 md-26-mb">
-			<h1>{project.title}</h1>
-			{#if project.subtitle}<h2>{project.subtitle}</h2>{/if}
+			<h1>{data.project[0].title}</h1>
+			{#if data.project[0].subtitle}<h2>{data.project[0].subtitle}</h2>{/if}
 		</div>
 		<div class="md-24 md-16-mb">
-			<p><label>Year</label><span>{new Date(project.date).getFullYear()}</span></p>
-			{#if project.client}<p><label>Client</label><span>{project.client.title}</span></p>{/if}
-			{#if project.categories}<p><label>Category</label><span>{project.categories[0].title}</span></p>{/if}
+			<p><span class="key">Year</span><span>{new Date(data.project[0].date).getFullYear()}</span></p>
+			{#if data.project[0].client}<p><span class="key">Client</span><span>{data.project[0].client.title}</span></p>{/if}
+			{#if data.project[0].categories}<p><span class="key">Category</span><span>{data.project[0].categories[0].title}</span></p>{/if}
 		</div>
 	</section>
 	<section id="media" class="md-24 md-16-mb">
-		{#each project.media as block, i}
+		{#each data.project[0].media as block, i}
 			{#if block._type == "mediaText"}
 				<div class="mediaText portableText {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment ? block.alignment : 'left'}"
 				style="--row: {i + 1};">
@@ -89,8 +88,8 @@
 			{/if}
 		{/each}
 	</section>
-	{#if project.related}
-		<Related related={project.related} title={"Related projects"}/>
+	{#if data.project[0].related}
+		<Related related={data.project[0].related} title={"Related projects"}/>
 	{/if}
 </main>
 
@@ -126,10 +125,10 @@
 					grid-template-columns: repeat(6, 1fr);
 					column-gap: var(--gutter);
 
-					label {
+					.key {
 						grid-column: 1 / span 2;
 					}
-					span {
+					span:not(.key) {
 						grid-column: 3 / span 4;
 					}
 				}

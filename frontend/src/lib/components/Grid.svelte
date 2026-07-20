@@ -3,7 +3,7 @@
     import { interactivity } from '@threlte/extras';interactivity();
     import { innerWidth, innerHeight } from 'svelte/reactivity/window';
     import GridItem from './GridItem.svelte';
-    import { onMount } from 'svelte';
+    import { onMount, untrack } from 'svelte';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
 	import { getIntro } from '$lib/stores/intro.svelte.js';
     let menuer = getMenu();
@@ -15,7 +15,7 @@
 	const skipIntro = intro.played;
 	if (!skipIntro) intro.markPlayed();
 
-	let lastImages = $state(images);
+	let lastImages = $state(untrack(() => images));
 	$effect(() => {
 		if (images?.length) lastImages = images;
 	});
@@ -42,7 +42,7 @@
 	})
 
     const cell = 3.5;
-    const baseScale = $derived(innerWidth.current > 1728 ? .9 : innerWidth.current > 768 ? 1 : .55);
+    const baseScale = $derived(innerWidth.current > 1728 ? .95 : innerWidth.current > 768 ? 1 : .55);
 
     let cols = $derived.by(() => {
         const sqrtSide = Math.max(1, Math.ceil(Math.sqrt(effectiveImages?.length ?? 1)));
@@ -147,23 +147,52 @@
     // Maps each grid slot to an image index. The first N slots (N = image count)
     // are the original set in order. Every slot beyond that is a repeat: each
     // repeat block gets its own deterministic shuffle so repeats don't line up
-    // in a fixed stride, then a swap pass removes any grid-adjacent duplicates
-    // (including ones straddling a block boundary).
+    // in a fixed stride, then a swap pass removes duplicates within a
+    // viewport-sized window around each slot — toroidal (wraps at cols/rows,
+    // matching GridItem's wrap()), so it holds no matter how far the grid is
+    // panned, not just at rest. Below the window's slot count, a repeat-free
+    // window is mathematically impossible (pigeonhole), so N too small
+    // silently falls back to the cheap immediate-neighbor check instead of
+    // claiming a guarantee that can't hold.
     let slotImageIndex = $derived.by(() => {
         const N = effectiveImages?.length ?? 0;
         if (!N || !totalSlots) return [];
 
+        const mod = (v, m) => ((v % m) + m) % m;
+        const Rx = Math.max(1, Math.ceil((viewW / (2 * gridScale) + cell / 2) / cell));
+        const Ry = Math.max(1, Math.ceil((viewH / (2 * gridScale) + cell / 2) / cell));
+        const windowArea = (2 * Rx + 1) * (2 * Ry + 1);
+
+        // Toroidal: keyed by position mod (cols, rows), same wrap the grid
+        // itself uses, so a slot's neighbors include ones across the seam.
         const coordToSlot = new Map();
-        spiralPositions.forEach((p, i) => coordToSlot.set(`${p.x},${p.y}`, i));
-        const neighborsOf = (i) => {
+        spiralPositions.forEach((p, i) => {
+            const key = `${mod(p.x, cols)},${mod(p.y, rows)}`;
+            if (!coordToSlot.has(key)) coordToSlot.set(key, i);
+        });
+
+        const windowNeighborsOf = (i) => {
+            const p = spiralPositions[i];
+            const out = [];
+            for (let dx = -Rx; dx <= Rx; dx++) {
+                for (let dy = -Ry; dy <= Ry; dy++) {
+                    if (dx === 0 && dy === 0) continue;
+                    const s = coordToSlot.get(`${mod(p.x + dx, cols)},${mod(p.y + dy, rows)}`);
+                    if (s !== undefined) out.push(s);
+                }
+            }
+            return out;
+        };
+        const adjacentNeighborsOf = (i) => {
             const p = spiralPositions[i];
             return [
-                coordToSlot.get(`${p.x + 1},${p.y}`),
-                coordToSlot.get(`${p.x - 1},${p.y}`),
-                coordToSlot.get(`${p.x},${p.y + 1}`),
-                coordToSlot.get(`${p.x},${p.y - 1}`),
+                coordToSlot.get(`${mod(p.x + 1, cols)},${mod(p.y, rows)}`),
+                coordToSlot.get(`${mod(p.x - 1, cols)},${mod(p.y, rows)}`),
+                coordToSlot.get(`${mod(p.x, cols)},${mod(p.y + 1, rows)}`),
+                coordToSlot.get(`${mod(p.x, cols)},${mod(p.y - 1, rows)}`),
             ].filter(s => s !== undefined);
         };
+        const neighborsOf = N >= windowArea ? windowNeighborsOf : adjacentNeighborsOf;
 
         const idx = new Array(totalSlots);
         for (let i = 0; i < Math.min(N, totalSlots); i++) idx[i] = i;

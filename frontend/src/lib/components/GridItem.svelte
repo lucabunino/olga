@@ -5,6 +5,7 @@
     import { urlFor } from '$lib/utils/image';
     import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
+	import { untrack } from 'svelte';
 
     let {
         image, i, gridX, gridY, entryOrder, cell, gridWidth, gridHeight, totalSlots,
@@ -12,17 +13,23 @@
         centralRank, cluster, choreography, skipIntro
     } = $props();
 
+    // Each grid item is created once per slot and keeps its creation-time values
+    // (position/rank/image never reflow live) — untrack marks these one-time
+    // reads as intentional so Svelte doesn't warn they "should" be reactive.
+    const { image: image0, cell: cell0, centralRank: centralRank0, choreography: choreography0 } =
+        untrack(() => ({ image, cell, centralRank, choreography }));
+
     const {
         CENTRAL_TOTAL, CENTRAL_APPEAR_STAGGER, CENTRAL_APPEAR_DURATION,
         CENTRAL_HOLD, CENTRAL_FLYOUT_STAGGER, CENTRAL_FLYOUT_DURATION,
         centralPhaseEnd, REST_FADE_STAGGER, REST_FADE_DURATION
-    } = choreography;
+    } = choreography0;
 
-    const isCentral = centralRank !== undefined;
+    const isCentral = centralRank0 !== undefined;
 
 	const loader = new TextureLoader();
-	const lqipUrl = image.cover.asset.metadata.lqip;
-    const mainUrl = urlFor(image.cover).width(600).quality(60).auto('format').url();
+	const lqipUrl = image0.cover.asset.metadata.lqip;
+    const mainUrl = urlFor(image0.cover).width(600).quality(60).auto('format').url();
 	const placeholderTexture = loader.load(lqipUrl);
     const mainTexture = loader.load(mainUrl, (tex) => {
 		tex.colorSpace = 'srgb';
@@ -31,26 +38,26 @@
 
 	let projectUrl = $derived(`/works/${image.project.slug.current}`)
 	let menuer = getMenu();
-    let mesh;
+    let mesh = $state();
     let material;
     let hovered = $state(false);
     let lerpScale = $state(0.5);
     let settled = $state(false);
 
-    const dims = image.cover.asset.metadata.dimensions;
+    const dims = image0.cover.asset.metadata.dimensions;
     const aspect = dims.width / dims.height;
-    const baseSize = (image.size ?? 0.7) * cell;
+    const baseSize = (image0.size ?? 0.7) * cell0;
     const planeWidth = aspect > 1 ? baseSize : baseSize * aspect;
     const planeHeight = aspect > 1 ? baseSize / aspect : baseSize;
 
-    const pX = image.positionX ?? Math.random();
-    const pY = image.positionY ?? Math.random();
+    const pX = image0.positionX ?? Math.random();
+    const pY = image0.positionY ?? Math.random();
 
-    const offsetX = (pX - 0.5) * (cell - planeWidth);
-    const offsetY = (pY - 0.5) * (cell - planeHeight);
+    const offsetX = (pX - 0.5) * (cell0 - planeWidth);
+    const offsetY = (pY - 0.5) * (cell0 - planeHeight);
 
-	let lastGridX = $state(gridX === false ? 0 : gridX);
-    let lastGridY = $state(gridY === false ? 0 : gridY);
+	let lastGridX = $state(untrack(() => gridX === false ? 0 : gridX));
+    let lastGridY = $state(untrack(() => gridY === false ? 0 : gridY));
     $effect(() => {
         if (gridX !== false) lastGridX = gridX;
         if (gridY !== false) lastGridY = gridY;
@@ -65,11 +72,11 @@
     };
 
     const flyStart = (CENTRAL_TOTAL - 1) * CENTRAL_APPEAR_STAGGER + CENTRAL_APPEAR_DURATION
-        + CENTRAL_HOLD + (CENTRAL_TOTAL - 1 - (centralRank ?? 0)) * CENTRAL_FLYOUT_STAGGER;
+        + CENTRAL_HOLD + (CENTRAL_TOTAL - 1 - (centralRank0 ?? 0)) * CENTRAL_FLYOUT_STAGGER;
 
-    const DRIFT_AMP = cell * 0.03; // world units of wander around the cluster spot
+    const DRIFT_AMP = cell0 * 0.03; // world units of wander around the cluster spot
     const DRIFT_SPEED = 0.45; // radians per second
-    const driftSeed = (centralRank ?? 0) + 1;
+    const driftSeed = (centralRank0 ?? 0) + 1;
     const driftPhaseX = Math.sin(driftSeed * 127.1) * Math.PI * 2;
     const driftPhaseY = Math.sin(driftSeed * 311.7) * Math.PI * 2;
 

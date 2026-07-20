@@ -306,19 +306,6 @@
 			}
 		}
 
-		input {
-			position: absolute;
-			left: 0;
-			border-bottom: solid 1px var(--black);
-			border: none;
-			padding: 0;
-			width: 300px;
-
-			@media screen and (max-width: 768px) {
-				width: unset;
-			}
-		}
-
 		.underline {
 			position: absolute;
 			left: 0;
