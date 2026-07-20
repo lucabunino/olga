@@ -42,7 +42,7 @@
 	})
 
     const cell = 3.5;
-    const baseScale = $derived(innerWidth.current > 1728 ? .95 : innerWidth.current > 768 ? 1 : .55);
+    const baseScale = $derived(innerWidth.current > 1728 ? .9 : innerWidth.current > 768 ? 1 : .55);
 
     let cols = $derived.by(() => {
         const sqrtSide = Math.max(1, Math.ceil(Math.sqrt(effectiveImages?.length ?? 1)));
@@ -142,6 +142,58 @@
             const radius = pseudoRandom(idx + 100) * (cell * 0.15);
             return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
         });
+    });
+
+    // Maps each grid slot to an image index. The first N slots (N = image count)
+    // are the original set in order. Every slot beyond that is a repeat: each
+    // repeat block gets its own deterministic shuffle so repeats don't line up
+    // in a fixed stride, then a swap pass removes any grid-adjacent duplicates
+    // (including ones straddling a block boundary).
+    let slotImageIndex = $derived.by(() => {
+        const N = effectiveImages?.length ?? 0;
+        if (!N || !totalSlots) return [];
+
+        const coordToSlot = new Map();
+        spiralPositions.forEach((p, i) => coordToSlot.set(`${p.x},${p.y}`, i));
+        const neighborsOf = (i) => {
+            const p = spiralPositions[i];
+            return [
+                coordToSlot.get(`${p.x + 1},${p.y}`),
+                coordToSlot.get(`${p.x - 1},${p.y}`),
+                coordToSlot.get(`${p.x},${p.y + 1}`),
+                coordToSlot.get(`${p.x},${p.y - 1}`),
+            ].filter(s => s !== undefined);
+        };
+
+        const idx = new Array(totalSlots);
+        for (let i = 0; i < Math.min(N, totalSlots); i++) idx[i] = i;
+
+        for (let start = N; start < totalSlots; start += N) {
+            const blockLen = Math.min(N, totalSlots - start);
+            const blockNum = Math.floor(start / N);
+            const pool = Array.from({ length: N }, (_, k) => k);
+            for (let k = N - 1; k > 0; k--) {
+                const r = Math.floor(pseudoRandom(blockNum * 1000 + k) * (k + 1));
+                [pool[k], pool[r]] = [pool[r], pool[k]];
+            }
+            for (let k = 0; k < blockLen; k++) idx[start + k] = pool[k];
+        }
+
+        for (let i = N; i < totalSlots; i++) {
+            const collides = neighborsOf(i).some(n => n < i && idx[n] === idx[i]);
+            if (!collides) continue;
+            for (let j = i + 1; j < totalSlots; j++) {
+                if (idx[j] === idx[i]) continue;
+                const iSafe = !neighborsOf(i).some(n => n < i && n !== j && idx[n] === idx[j]);
+                const jSafe = !neighborsOf(j).some(n => (n < j || n === i) && n !== i && idx[n] === idx[i]);
+                if (iSafe && jSafe) {
+                    [idx[i], idx[j]] = [idx[j], idx[i]];
+                    break;
+                }
+            }
+        }
+
+        return idx;
     });
 
     let currentX = $state(0);
@@ -285,7 +337,7 @@
 <T.Group scale={gridScale}>
     {#each { length: totalSlots } as _, i (i)}
         <GridItem
-            image={effectiveImages[i % effectiveImages?.length]}
+            image={effectiveImages[slotImageIndex[i] ?? (i % effectiveImages?.length)]}
             {i} {cell} {totalSlots}
             gridX={spiralPositions[i]?.x ?? false} gridY={spiralPositions[i]?.y ?? false}
             entryOrder={entryOrder[i]}
