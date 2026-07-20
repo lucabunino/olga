@@ -40,6 +40,7 @@
 <HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Studio'}}/>
 
 <main>
+	<h1 class="sr-only">Studio</h1>
 	{#if studio.poem}
 		<section id="poem" class="md-36 md-26-mb">
 			<div class="poem-inner" bind:this={poemSection}>

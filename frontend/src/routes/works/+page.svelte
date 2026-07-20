@@ -98,7 +98,8 @@
 <HeadSingle seo={data.seo[0]} seoSingle={{seoTitle: 'Portfolio'}}/>
 
 <main>
-	<section id="options" class="md-24 md-20-mb" aria-expanded={portfolio.filters}>
+	<h1 class="sr-only">Works</h1>
+	<section id="options" class="md-24 md-20-mb">
 		<Filters categories={data.categories} />
 		{#if !(innerWidth.current < 768 && portfolio.filters)}
 			<Views />

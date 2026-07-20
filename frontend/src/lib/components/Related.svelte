@@ -72,7 +72,7 @@
 
 <section id="related">
     {#if title}
-        <h3 class="md-36 md-26-mb">{title}</h3>
+        <h2 class="md-36 md-26-mb">{title}</h2>
     {/if}
     
     <div class="marquee" class:is-static={!isDynamic}>
@@ -93,7 +93,7 @@
 
 <style lang="scss">
     #related {
-        h3 {
+        h2 {
             padding: var(--sp-l) var(--sp-m) var(--sp-s);
             @media screen and (max-width: 768px) {
                 padding: var(--sp-l) var(--margin-mb) var(--sp-s);

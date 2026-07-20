@@ -6,11 +6,11 @@
 </script>
 
 <div id="views">
-    <button class="list" onclick={() => {portfolio.setView('list')}} aria-pressed={portfolio.view == 'list'}>
+    <button class="list" onclick={() => {portfolio.setView('list')}} aria-pressed={portfolio.view == 'list'} aria-label="List view">
         <span class="line"></span>
     </button>
-    
-    <button class="box" onclick={() => portfolio.setView('grid')} aria-pressed={portfolio.view == 'grid'}>
+
+    <button class="box" onclick={() => portfolio.setView('grid')} aria-pressed={portfolio.view == 'grid'} aria-label="Grid view">
         <span class="side top"></span>
         <span class="side right"></span>
         <span class="side bottom"></span>
