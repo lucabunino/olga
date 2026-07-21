@@ -90,13 +90,14 @@
 <style lang="scss">
 	main {
 		margin-top: var(--headerHeight);
-		padding: var(--sp-s) var(--sp-m) var(--sp-l);
+		padding: var(--sp-xl) var(--sp-m) var(--sp-l);
 
 		#contacts {
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
 			row-gap: var(--sp-s);
+			align-items: baseline;
 
 			h1 {
 				grid-column: 1 / span 6;
@@ -151,6 +152,7 @@
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
 			row-gap: var(--sp-s);
+			align-items: baseline;
 
 			h2 {
 				grid-column: 1 / span 6;
@@ -175,6 +177,7 @@
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
 			row-gap: var(--sp-s);
+			align-items: baseline;
 
 			h2 {
 				grid-column: 1 / span 6;
@@ -198,6 +201,7 @@
 			display: grid;
 			grid-template-columns: repeat(12, 1fr);
 			column-gap: var(--gutter);
+			align-items: baseline;
 
 			@media screen and (max-width: 576px) {
 				margin: var(--sp-m) calc(var(--margin-mb)*-1) var(--sp-xl);

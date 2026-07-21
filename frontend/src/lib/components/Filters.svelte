@@ -290,11 +290,6 @@
 			overflow: hidden;
 			white-space: nowrap;
 
-			&.is-placeholder {
-                color: var(--gray-dark);
-                font-style: italic;
-            }
-
             &:focus {
                 color: var(--black);
                 font-style: normal;

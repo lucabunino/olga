@@ -23,19 +23,18 @@
 			{#if info.adressLabel || info.legalAdressLabel}
 				<div>
 					{#if info.adressLabel}
-						{#if info.adressHref}
-							<p><a class="hover-gray-dark" href={info.adressHref} target="_blank" rel="noopener noreferrer">{info.adressLabel}</a></p>
-						{:else}
+						<div class="operative-adress">
+							<p>Sede operativa</p>
 							<p>{info.adressLabel}</p>
-						{/if}
+							{#if info.adressHref}
+								<p>{info.legalAdressCountry}</p>
+							{/if}
+						</div>
 					{/if}
 					{#if info.legalAdressLabel}
 						<div class="legal-adress">
-							{#if info.legalAdressHref}
-								<p><a class="hover-gray-dark" href={info.legalAdressHref} target="_blank" rel="noopener noreferrer">{info.legalAdressLabel}</a></p>
-							{:else}
-								<p>{info.legalAdressLabel}</p>
-							{/if}
+							<p>Sede legale</p>
+							<p>{info.legalAdressLabel}</p>								
 							{#if info.legalAdressCountry}
 								<p>{info.legalAdressCountry}</p>
 							{/if}
