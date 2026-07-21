@@ -89,7 +89,7 @@
 
 <style lang="scss">
 	main {
-		margin-top: var(--headerHeight);
+		margin-top: var(--sp-l);
 		padding: var(--sp-xl) var(--sp-m) var(--sp-l);
 
 		#contacts {
@@ -223,7 +223,7 @@
 		}
 
 		@media screen and (max-width: 768px) {
-			padding: var(--sp-s) var(--margin-mb) var(--sp-l);
+			padding: var(--sp-xl) var(--margin-mb) var(--sp-l);
 		}
 	}
 </style>
