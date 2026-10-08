@@ -4,7 +4,6 @@ export default {
 	name: 'homepage',
 	type: 'document',
 	icon: HomeIcon,
-	fieldsets: [{ name: 'marquee' }],
 	fields: [
 		{
 			name: 'title',
@@ -12,23 +11,43 @@ export default {
 			hidden: true,
 		},
 		{
-            name: 'marquee',
-            type: 'string',
-			fieldset: 'marquee'
-        },
-        {
-			name: 'marqueeHref',
-            type: 'string',
-            title: 'Href (optional)',
-			fieldset: 'marquee'
-        },
+			name: 'marquee',
+			type: 'array',
+			description: 'Items scroll in order, separated by a dash',
+			of: [
+				{
+					type: 'object',
+					name: 'marqueeItem',
+					fields: [
+						{
+							name: 'text',
+							type: 'string',
+							validation: (Rule) => Rule.required(),
+						},
+						{
+							name: 'href',
+							title: 'Href (optional)',
+							type: 'string',
+						},
+						{
+							name: 'external',
+							title: 'Open in new tab',
+							type: 'boolean',
+							initialValue: true,
+							hidden: ({ parent }) => !parent?.href,
+						},
+					],
+					preview: {
+						select: { title: 'text', subtitle: 'href' },
+					},
+				},
+			],
+		},
 		{
-			name: 'marqueeExternal',
-			title: 'Open in new tab',
+			name: 'showLogo',
+			title: 'Show Adi Design Index logo',
 			type: 'boolean',
-			initialValue: true,
-			fieldset: 'marquee',
-			hidden: ({ parent }) => !parent?.marqueeHref
+			initialValue: false,
 		},
 		{
 			name: 'images',

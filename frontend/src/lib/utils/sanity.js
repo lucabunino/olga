@@ -88,9 +88,8 @@ export async function getPolicies() {
 export async function getHomepage() {
 	return await client.fetch(
 		`*[_type == "homepage" && !(_id in path('drafts.**'))][0] {
-			marquee,
-			marqueeHref,
-			marqueeExternal,
+			marquee[] { text, href, external },
+			showLogo,
 			images[] {
 				cover {
 					asset->{

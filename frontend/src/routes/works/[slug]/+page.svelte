@@ -4,6 +4,7 @@
     import PortableTextStyleProject from '$lib/components/portableTextStyles/portableTextStyleProject.svelte';
 	import {PortableText} from '@portabletext/svelte'
     import HeadSingle from '$lib/components/HeadSingle.svelte';
+    import AdiDesignIndexLogo from '$lib/components/AdiDesignIndexLogo.svelte';
 	let { data } = $props()
 	
 	function getGutter(size) {
@@ -62,6 +63,12 @@
 						},
 					}}/>
 				</div>
+				{#if block.showLogo}
+					<div class="mediaLogo {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment == 'right' ? 'left' : 'right'}"
+					style="--row: {i + 1};">
+						<AdiDesignIndexLogo height="4.3125rem" />
+					</div>
+				{/if}
 			{:else if block._type == "mediaGrid"}
 				<div class="mediaGrid x{block.items.length} {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
 				style="--cols: {block.items.length}; --row: {i + 1};">
@@ -163,6 +170,19 @@
 					@media screen and (max-width: 768px) {
 						grid-column: 1 / span 12;
 					}
+				}
+			}
+
+			.mediaLogo {
+				grid-row: var(--row);
+				display: flex;
+				&.left {
+					grid-column: 1 / span 6;
+					justify-content: flex-start;
+				}
+				&.right {
+					grid-column: 7 / span 6;
+					justify-content: flex-end;
 				}
 			}
 

@@ -5,6 +5,7 @@
     import Grid from '$lib/components/Grid.svelte'
     import { innerHeight, innerWidth } from 'svelte/reactivity/window';
     import Marquee from 'svelte-fast-marquee';
+    import AdiDesignIndexLogo from '$lib/components/AdiDesignIndexLogo.svelte';
 	import { getMenu } from '$lib/stores/menu.svelte.js';
     import { pageIn, pageOut, mock } from '$lib/utils/transitions.js';
     import { fade, slide, fly } from 'svelte/transition';
@@ -14,7 +15,8 @@
     let cursor = $state()
     let domLoaded = $state(false)
     let menuer = getMenu();
-    const repeatedText = $derived(Array.from({ length: 10 }, () => data.homepage.marquee));
+    const marqueeItems = $derived(data.homepage.marquee?.filter((item) => item?.text) ?? []);
+    const repeatedItems = $derived(Array.from({ length: 10 }, () => marqueeItems).flat());
 	let isExiting = $state(false);
     const DURATION = 800;
 
@@ -33,25 +35,25 @@
 </script>
 
 <main>
-    {#if data.homepage.marquee && !isExiting}
+    {#if marqueeItems.length && !isExiting}
         <div id="marquee" class="md-12 {menuer.hidden ? 'up' : 'down'}"
 		in:pageIn={{ duration: DURATION, delay: 0, pageHeight: innerHeight.current, pageWidth: innerWidth.current}}
 		out:fly={{ duration: 300, y: -20 }}
 		>
             <Marquee speed={70} pauseOnHover={true}>
                 <div class="marquee-content">
-                    {#each repeatedText as text}
+                    {#each repeatedItems as item}
                         <p>
-                            {#if data.homepage.marqueeHref}
+                            {#if item.href}
                                 <a 
-                                    href={data.homepage.marqueeHref} 
-                                    target={data.homepage.marqueeExternal ? '_blank' : undefined}
-                                    rel={data.homepage.marqueeExternal ? 'noopener noreferrer' : undefined}
+                                    href={item.href} 
+                                    target={item.external ? '_blank' : undefined}
+                                    rel={item.external ? 'noopener noreferrer' : undefined}
                                 >
-                                    {text}
+                                    {item.text}
                                 </a>
                             {:else}
-                                {text}
+                                {item.text}
                             {/if}
                         </p>
                     {/each}
@@ -59,6 +61,14 @@
             </Marquee>
         </div>
     {/if}
+	{#if data.homepage.showLogo && !isExiting}
+		<div id="logo"
+		in:fade={{ duration: DURATION }}
+		out:fly={{ duration: 300, y: 20 }}
+		>
+			<AdiDesignIndexLogo height="2.625rem" />
+		</div>
+	{/if}
 	{#if !isExiting}
 		<section id="images" style="--cursor: {cursor ? cursor : 'grab'}"
 		out:mock={{ duration: DURATION}}>
@@ -120,6 +130,14 @@
 					top: unset;
 				}
 			}
+		}
+
+		#logo {
+			position: fixed;
+			left: var(--sp-m);
+			bottom: var(--sp-s);
+			z-index: 2;
+			pointer-events: none;
 		}
 
 		#images {

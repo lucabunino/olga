@@ -89,6 +89,12 @@ export const mediaText = {
 				},
 				initialValue: 'right'
 		},
+		{
+			name: 'showLogo',
+			title: 'Show Adi Design Index logo',
+			type: 'boolean',
+			initialValue: false,
+		},
 		marginTopField,
 	],
 	preview: {

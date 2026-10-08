@@ -6,7 +6,8 @@ Glossary of domain terms for the Olga site (SvelteKit frontend + Sanity backend)
 
 - **Intro choreography** — the homepage image-grid entrance animation: central cluster pops in, holds, flies out to grid positions, remaining images fade in. Plays once per session.
 - **Image grid** — the draggable/scrollable WebGL (Threlte) grid of project cover images on the homepage. Wraps infinitely in both axes.
-- **Marquee (homepage)** — the yellow scrolling text strip under the header, content from CMS.
+- **Marquee (homepage)** — the yellow scrolling text strip under the header, content from CMS. An ordered list of **marquee items** (text, optionally linked) shown as `item1 – item2 – item3 –`, looping.
+- **Index logo** — the two-colour "Adi Design Index" logo, toggled per place by a CMS boolean: bottom-left of the homepage, or in the empty half beside a project text block (page edge on the side opposite the text, top-aligned with it).
 - **Client marquee** — the rows of client logos on the contact page, each row scrolling in alternating directions. A client without a logo is invisible here (never a placeholder).
 - **Client line** — one CMS-ordered row of client references rendered as one client-marquee row.
 - **Collaborations block** — CMS-editable rich-text section on the contact page, between services and the client marquee. Heading "collaborations" is fixed (not CMS).
