@@ -50,25 +50,26 @@
 	<section id="media" class="md-24 md-16-mb">
 		{#each data.project[0].media as block, i}
 			{#if block._type == "mediaText"}
-				<div class="mediaText portableText {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment ? block.alignment : 'left'}"
+				<div class="mediaTextBlock {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment ? block.alignment : 'left'}"
 				style="--row: {i + 1};">
-					<PortableText value={block.text}
-					components={{
-						block: {
-							normal: PortableTextStyleProject,
-						},
-						listItem: PortableTextStyleProject,
-						marks: {
-							link: PortableTextStyleProject,
-						},
-					}}/>
-				</div>
-				{#if block.showLogo}
-					<div class="mediaLogo {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.alignment == 'right' ? 'left' : 'right'}"
-					style="--row: {i + 1};">
-						<AdiDesignIndexLogo height="4.3125rem" />
+					<div class="mediaText portableText">
+						<PortableText value={block.text}
+						components={{
+							block: {
+								normal: PortableTextStyleProject,
+							},
+							listItem: PortableTextStyleProject,
+							marks: {
+								link: PortableTextStyleProject,
+							},
+						}}/>
 					</div>
-				{/if}
+					{#if block.showLogo}
+						<div class="mediaLogo">
+							<AdiDesignIndexLogo height="var(--logo-height)" />
+						</div>
+					{/if}
+				</div>
 			{:else if block._type == "mediaGrid"}
 				<div class="mediaGrid x{block.items.length} {block.marginTop ? 'mt-' + block.marginTop : 'mt-zero'} {block.gutter ? 'sp-' + block.gutter : 'sp-zero'} {block.items.length == 1 && block.alignment ? block.alignment : undefined}"
 				style="--cols: {block.items.length}; --row: {i + 1};">
@@ -120,6 +121,14 @@
 			div:nth-child(1) {
 				grid-column: 1 / span 6;
 
+				h1 {
+					padding-right: var(--sp-l);
+
+					@media screen and (max-width: 768px) {
+						padding-right: 0;
+					}
+				}
+
 				@media screen and (max-width: 768px) {
 					grid-column: 1 / span 12;
 				}
@@ -155,34 +164,40 @@
 			column-gap: var(--gutter);
 			padding: 0 var(--sp-m) var(--sp-m);
 			
-			.mediaText {
+			.mediaTextBlock {
 				grid-row: var(--row);
-				&.left {
-					grid-column: 1 / span 6;
+				grid-column: 1 / span 12;
+				display: grid;
+				grid-template-columns: subgrid;
+				align-items: start;
+				--logo-height: 5.75rem;
 
-					@media screen and (max-width: 768px) {
-						grid-column: 1 / span 12;
-					}
+				.mediaText,
+				.mediaLogo {
+					grid-row: 1;
+				}
+				.mediaLogo {
+					display: flex;
+					padding-top: 1rem; // optical offset on top of the block's mt-*
+				}
+				&.left {
+					.mediaText { grid-column: 1 / span 6; }
+					.mediaLogo { grid-column: 7 / span 6; justify-content: flex-end; }
 				}
 				&.right {
-					grid-column: 7 / span 6;
+					.mediaText { grid-column: 7 / span 6; }
+					.mediaLogo { grid-column: 1 / span 6; justify-content: flex-start; }
+				}
 
-					@media screen and (max-width: 768px) {
-						grid-column: 1 / span 12;
+				@media screen and (max-width: 768px) {
+					display: flex;
+					flex-direction: column;
+					--logo-height: 5rem;
+
+					.mediaLogo {
+						padding-top: 0;
+						margin-top: calc(var(--sp-l) * .75);
 					}
-				}
-			}
-
-			.mediaLogo {
-				grid-row: var(--row);
-				display: flex;
-				&.left {
-					grid-column: 1 / span 6;
-					justify-content: flex-start;
-				}
-				&.right {
-					grid-column: 7 / span 6;
-					justify-content: flex-end;
 				}
 			}
 
@@ -329,6 +344,13 @@
 				margin-top: var(--sp-xxl);
 				@media screen and (max-width: 768px) {
 					margin-top: var(--sp-l);
+				}
+			}
+
+			// after the mt-* rules so it wins on equal specificity
+			.mediaTextBlock {
+				@media screen and (max-width: 768px) {
+					margin-top: calc(var(--sp-l) * .75);
 				}
 			}
 

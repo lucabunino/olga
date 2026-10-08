@@ -66,7 +66,7 @@
 		in:fade={{ duration: DURATION }}
 		out:fly={{ duration: 300, y: 20 }}
 		>
-			<AdiDesignIndexLogo height="2.625rem" />
+			<AdiDesignIndexLogo height="3.5rem" />
 		</div>
 	{/if}
 	{#if !isExiting}
@@ -135,9 +135,13 @@
 		#logo {
 			position: fixed;
 			left: var(--sp-m);
-			bottom: var(--sp-s);
+			bottom: calc(var(--sp-s) * 1.5);
 			z-index: 2;
 			pointer-events: none;
+
+			@media screen and (max-width: 768px) {
+				left: var(--margin-mb);
+			}
 		}
 
 		#images {
